@@ -8,6 +8,10 @@ import androidx.appcompat.app.AppCompatActivity
 import coil.imageLoader
 import coil.request.ImageRequest
 import com.example.videojuegosandroidtienda.R
+import android.widget.Button
+import android.widget.Toast
+import com.example.videojuegosandroidtienda.data.entities.CartProduct
+import com.example.videojuegosandroidtienda.data.cart.CartManager
 
 class DetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,8 +25,10 @@ class DetailActivity : AppCompatActivity() {
         val platform = findViewById<TextView>(R.id.detailPlatform)
         val price = findViewById<TextView>(R.id.detailPrice)
         val description = findViewById<TextView>(R.id.detailDescription)
+        val buttonAdd = findViewById<Button>(R.id.buttonAddToCart)
 
         val imageUrl = intent.getStringExtra(EXTRA_IMAGE_URL)
+        val id = intent.getStringExtra(EXTRA_ID).orEmpty()
         val titleText = intent.getStringExtra(EXTRA_TITLE).orEmpty()
         val genreText = intent.getStringExtra(EXTRA_GENRE_NAME).orEmpty()
         val platformText = intent.getStringExtra(EXTRA_PLATFORM_NAME).orEmpty()
@@ -44,9 +50,21 @@ class DetailActivity : AppCompatActivity() {
         platform.text = "Plataforma: $platformText"
         price.text = "Precio: $priceValue"
         description.text = "Descripción: $descText"
+
+        buttonAdd.setOnClickListener {
+            val product = CartProduct(
+                id = id,
+                title = titleText,
+                price = priceValue,
+                imageUrl = imageUrl
+            )
+            CartManager.add(product, 1)
+            Toast.makeText(this@DetailActivity, "Este producto se agregó al carrito", Toast.LENGTH_SHORT).show()
+        }
     }
 
     companion object {
+        const val EXTRA_ID = "extra_id"
         const val EXTRA_IMAGE_URL = "extra_image_url"
         const val EXTRA_TITLE = "extra_title"
         const val EXTRA_GENRE_NAME = "extra_genre_name"

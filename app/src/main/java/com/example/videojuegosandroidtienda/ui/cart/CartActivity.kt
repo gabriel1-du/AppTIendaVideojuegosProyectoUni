@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -13,13 +14,14 @@ import androidx.lifecycle.lifecycleScope
 import com.example.videojuegosandroidtienda.MainActivity
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.network.TokenStore
-import com.example.videojuegosandroidtienda.data.repository.StoreRepository
+import com.example.videojuegosandroidtienda.data.cart.CartManager
 import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
+import coil.imageLoader
+import coil.request.ImageRequest
 
 class CartActivity : AppCompatActivity() {
-    private val repository = StoreRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -40,31 +42,64 @@ class CartActivity : AppCompatActivity() {
         val totalText = findViewById<TextView>(R.id.cartTotal)
         val payButton = findViewById<Button>(R.id.buttonPay)
 
-        lifecycleScope.launch {
-            try {
-                val carts = repository.getCarts()
-                itemsContainer.removeAllViews()
-                var accumulatedTotal = 0.0
-                if (carts.isEmpty()) {
-                    val tv = TextView(this@CartActivity).apply {
-                        text = "No hay items en el carrito"
-                        setTextColor(resources.getColor(R.color.textSecondary, theme))
-                    }
-                    itemsContainer.addView(tv)
-                } else {
-                    carts.forEach { cart ->
-                        accumulatedTotal += cart.total
-                        val itemView = layoutInflater.inflate(R.layout.view_cart_item_price, itemsContainer, false)
-                        itemView.findViewById<TextView>(R.id.textCartItemTitle).text = "Carrito #${cart.id}"
-                        itemView.findViewById<TextView>(R.id.textCartItemPrice).text = "Precio total: ${cart.total}"
-                        itemsContainer.addView(itemView)
-                    }
+        fun renderCart() {
+            itemsContainer.removeAllViews()
+            val items = CartManager.getItems()
+            if (items.isEmpty()) {
+                val tv = TextView(this@CartActivity).apply {
+                    text = "No hay productos en el carrito"
+                    setTextColor(resources.getColor(R.color.textSecondary, theme))
                 }
-                totalText.text = "Total acumulado: ${accumulatedTotal}"
-            } catch (e: Exception) {
-                Toast.makeText(this@CartActivity, "Error al cargar carrito", Toast.LENGTH_SHORT).show()
+                itemsContainer.addView(tv)
+            } else {
+                items.forEach { (product, qty) ->
+                    val view = layoutInflater.inflate(R.layout.view_cart_product, itemsContainer, false)
+                    val image = view.findViewById<ImageView>(R.id.imageProduct)
+                    val title = view.findViewById<TextView>(R.id.textTitle)
+                    val price = view.findViewById<TextView>(R.id.textPrice)
+                    val quantity = view.findViewById<TextView>(R.id.textQuantity)
+                    val minus = view.findViewById<Button>(R.id.buttonMinus)
+                    val plus = view.findViewById<Button>(R.id.buttonPlus)
+                    val remove = view.findViewById<Button>(R.id.buttonRemove)
+
+                    title.text = product.title
+                    price.text = "Precio: ${product.price}"
+                    quantity.text = qty.toString()
+
+                    val url = product.imageUrl
+                    if (!url.isNullOrBlank()) {
+                        val req = ImageRequest.Builder(this@CartActivity)
+                            .data(url)
+                            .target(image)
+                            .build()
+                        image.context.imageLoader.enqueue(req)
+                    } else {
+                        image.setImageResource(android.R.color.darker_gray)
+                    }
+
+                    minus.setOnClickListener {
+                        CartManager.decrease(product.id)
+                        updateTotal(totalText)
+                        renderCart()
+                    }
+                    plus.setOnClickListener {
+                        CartManager.increase(product.id)
+                        updateTotal(totalText)
+                        renderCart()
+                    }
+                    remove.setOnClickListener {
+                        CartManager.remove(product.id)
+                        updateTotal(totalText)
+                        renderCart()
+                    }
+
+                    itemsContainer.addView(view)
+                }
             }
+            updateTotal(totalText)
         }
+
+        renderCart()
 
         payButton.setOnClickListener {
             Toast.makeText(this@CartActivity, "compra exitosamente realizada", Toast.LENGTH_LONG).show()
@@ -94,5 +129,9 @@ class CartActivity : AppCompatActivity() {
                 else -> false
             }
         }
+    }
+
+    private fun updateTotal(totalText: TextView) {
+        totalText.text = "Total acumulado: ${CartManager.getTotal()}"
     }
 }

@@ -112,6 +112,7 @@ class MainActivity : AppCompatActivity() {
                 adapter.submit(allVideogames, genreNamesMap, platformNamesMap)
                 adapter.setOnItemClickListener { vg ->
                     val intent = Intent(this@MainActivity, DetailActivity::class.java).apply {
+                        putExtra(DetailActivity.EXTRA_ID, vg.id)
                         putExtra(DetailActivity.EXTRA_IMAGE_URL, vg.cover_image?.url)
                         putExtra(DetailActivity.EXTRA_TITLE, vg.title)
                         putExtra(DetailActivity.EXTRA_GENRE_NAME, genreNamesMap[vg.genre_id] ?: "-")
