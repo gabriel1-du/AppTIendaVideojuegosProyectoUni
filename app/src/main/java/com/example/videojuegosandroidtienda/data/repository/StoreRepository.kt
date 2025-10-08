@@ -5,6 +5,8 @@ import com.example.videojuegosandroidtienda.data.api.StoreService
 import com.example.videojuegosandroidtienda.data.entities.*
 import com.example.videojuegosandroidtienda.data.network.ApiConfig
 import com.example.videojuegosandroidtienda.data.network.RetrofitProvider
+import com.example.videojuegosandroidtienda.data.network.TokenStore
+import retrofit2.HttpException
 
 class StoreRepository {
     private val storeService: StoreService =
@@ -18,6 +20,19 @@ class StoreRepository {
     suspend fun getCarts(): List<Cart> = storeService.listCarts()
     suspend fun getCartItem(id: String): CartItem = storeService.getCartItem(id)
     suspend fun getAuthMe(): User = authService.getAuthMe()
+
+    suspend fun login(email: String, password: String): String {
+        val res = authService.login(LoginRequest(email, password))
+        TokenStore.token = res.token
+        return res.token
+    }
+
+    suspend fun register(name: String, email: String, password: String): String {
+        // Usar explícitamente /auth/signup según endpoints proporcionados
+        val res = authService.signup(SignupRequest(name, email, password))
+        TokenStore.token = res.token
+        return res.token
+    }
 
     fun filterVideogames(
         all: List<Videogame>,

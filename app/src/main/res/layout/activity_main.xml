@@ -14,7 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:title="Videojuegos"
-        app:titleCentered="true" />
+        app:titleCentered="true"
+        app:menu="@menu/menu_main" />
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"
@@ -68,5 +69,12 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:padding="8dp" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:menu="@menu/menu_bottom_nav"
+        android:background="@color/cardLight" />
 
 </LinearLayout>

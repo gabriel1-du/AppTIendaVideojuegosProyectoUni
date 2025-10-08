@@ -4,5 +4,6 @@ data class User(
     val id: String,
     val created_at: String?,
     val name: String,
-    val email: String
+    val email: String,
+    val admin: Boolean
 )

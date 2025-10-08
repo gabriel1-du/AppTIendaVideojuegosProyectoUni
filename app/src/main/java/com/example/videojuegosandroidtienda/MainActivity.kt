@@ -18,9 +18,13 @@ import com.example.videojuegosandroidtienda.ui.detail.DetailActivity
 import com.example.videojuegosandroidtienda.ui.main.VideogameAdapter
 import com.example.videojuegosandroidtienda.ui.main.SimpleItemSelectedListener
 import com.google.android.material.appbar.MaterialToolbar
+import android.view.MenuItem
+import androidx.core.content.ContextCompat
+import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
 import kotlinx.coroutines.launch
 import android.widget.Spinner
 import android.content.Intent
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     private val repository = StoreRepository()
@@ -43,13 +47,57 @@ class MainActivity : AppCompatActivity() {
         }
 
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+        // Listener de clics del menú de la toolbar
+        toolbar.setOnMenuItemClickListener { item: MenuItem ->
+            when (item.itemId) {
+                R.id.action_login -> {
+                    startActivity(Intent(this, LoginActivity::class.java))
+                    true
+                }
+                R.id.action_cart -> {
+                    val t = com.example.videojuegosandroidtienda.data.network.TokenStore.token
+                    if (t.isNullOrBlank()) {
+                        startActivity(Intent(this, com.example.videojuegosandroidtienda.ui.auth.LoginActivity::class.java))
+                    } else {
+                        startActivity(Intent(this, com.example.videojuegosandroidtienda.ui.cart.CartActivity::class.java))
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
+        // Ajustar icono de carrito según estado inicial
+        updateCartIcon(toolbar)
         val searchView = findViewById<SearchView>(R.id.searchView)
         val spinnerPlatform = findViewById<Spinner>(R.id.spinnerPlatform)
         val spinnerGenre = findViewById<Spinner>(R.id.spinnerGenre)
         val recycler = findViewById<androidx.recyclerview.widget.RecyclerView>(R.id.recyclerVideogames)
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
 
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
+
+        // Bottom navigation
+        bottomNav.selectedItemId = R.id.nav_search
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_search -> true
+                R.id.nav_cart -> {
+                    val t = com.example.videojuegosandroidtienda.data.network.TokenStore.token
+                    if (t.isNullOrBlank()) {
+                        startActivity(Intent(this, com.example.videojuegosandroidtienda.ui.auth.LoginActivity::class.java))
+                    } else {
+                        startActivity(Intent(this, com.example.videojuegosandroidtienda.ui.cart.CartActivity::class.java))
+                    }
+                    true
+                }
+                R.id.nav_profile -> {
+                    startActivity(Intent(this, com.example.videojuegosandroidtienda.ui.profile.ProfileActivity::class.java))
+                    true
+                }
+                else -> false
+            }
+        }
 
         lifecycleScope.launch {
             try {
@@ -97,6 +145,23 @@ class MainActivity : AppCompatActivity() {
         spinnerGenre.setOnItemSelectedListener(SimpleItemSelectedListener { 
             applyFilters(searchView.query.toString(), spinnerPlatform, spinnerGenre)
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
+        updateCartIcon(toolbar)
+    }
+
+    private fun updateCartIcon(toolbar: MaterialToolbar) {
+        val t = com.example.videojuegosandroidtienda.data.network.TokenStore.token
+        if (!t.isNullOrBlank()) {
+            toolbar.navigationIcon = ContextCompat.getDrawable(this, android.R.drawable.ic_menu_view)
+        } else {
+            toolbar.navigationIcon = null
+        }
+        val menuItem = toolbar.menu.findItem(R.id.action_cart)
+        menuItem?.isVisible = !t.isNullOrBlank()
     }
 
     private fun setupSpinners(spPlatform: Spinner, spGenre: Spinner) {
