@@ -19,6 +19,7 @@ import android.util.Log
 class SignupActivity : AppCompatActivity() {
     private val repository = StoreRepository()
 
+    // Registra usuario y redirige según resultado
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

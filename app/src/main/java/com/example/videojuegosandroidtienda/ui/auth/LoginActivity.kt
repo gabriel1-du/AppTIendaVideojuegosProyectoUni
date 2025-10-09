@@ -18,6 +18,7 @@ import android.util.Log
 class LoginActivity : AppCompatActivity() {
     private val repository = StoreRepository()
 
+    // Maneja inicio de sesión y navegación según autenticación
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

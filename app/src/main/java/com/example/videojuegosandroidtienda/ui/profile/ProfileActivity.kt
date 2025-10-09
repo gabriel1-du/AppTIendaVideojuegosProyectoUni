@@ -19,6 +19,7 @@ import kotlinx.coroutines.launch
 class ProfileActivity : AppCompatActivity() {
     private val repository = StoreRepository()
 
+    // Muestra nombre y email del usuario y permite cerrar sesión
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -36,8 +37,6 @@ class ProfileActivity : AppCompatActivity() {
 
         val textName = findViewById<TextView>(R.id.textName)
         val textEmail = findViewById<TextView>(R.id.textEmail)
-        val textCreated = findViewById<TextView>(R.id.textCreated)
-        val textAdmin = findViewById<TextView>(R.id.textAdmin)
         val buttonLogout = findViewById<Button>(R.id.buttonLogout)
 
         lifecycleScope.launch {
@@ -45,8 +44,6 @@ class ProfileActivity : AppCompatActivity() {
                 val user = repository.getAuthMe()
                 textName.text = "Nombre: ${user.name}"
                 textEmail.text = "Email: ${user.email}"
-                textCreated.text = "Creado: ${user.created_at ?: "-"}"
-                textAdmin.text = "Admin: ${if (user.admin) "Sí" else "No"}"
             } catch (e: Exception) {
                 Toast.makeText(this@ProfileActivity, "Error al cargar usuario", Toast.LENGTH_SHORT).show()
             }
@@ -62,6 +59,7 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
+    // Configura navegación inferior y marca Perfil como seleccionado
     private fun setupBottomNav() {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
         bottomNav.selectedItemId = R.id.nav_profile

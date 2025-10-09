@@ -7,7 +7,6 @@
         app:showAsAction="never" />
     <item
         android:id="@+id/action_cart"
-        android:icon="@android:drawable/ic_menu_view"
         android:title="Carrito"
         app:showAsAction="always" />
 </menu>

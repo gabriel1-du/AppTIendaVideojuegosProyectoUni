@@ -23,6 +23,7 @@ import coil.request.ImageRequest
 
 class CartActivity : AppCompatActivity() {
 
+    // Renderiza el carrito y prepara acciones de compra
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -42,6 +43,7 @@ class CartActivity : AppCompatActivity() {
         val totalText = findViewById<TextView>(R.id.cartTotal)
         val payButton = findViewById<Button>(R.id.buttonPay)
 
+        // Dibuja tarjetas del carrito y sincroniza cantidades
         fun renderCart() {
             itemsContainer.removeAllViews()
             val items = CartManager.getItems()
@@ -59,7 +61,7 @@ class CartActivity : AppCompatActivity() {
                     val price = view.findViewById<TextView>(R.id.textPrice)
                     val quantity = view.findViewById<TextView>(R.id.textQuantity)
                     val minus = view.findViewById<Button>(R.id.buttonMinus)
-                    val plus = view.findViewById<Button>(R.id.buttonPlus)
+                    val plus = view.findViewById<View>(R.id.buttonPlus) // Puede ser Button o ImageButton
                     val remove = view.findViewById<Button>(R.id.buttonRemove)
 
                     title.text = product.title
@@ -110,6 +112,7 @@ class CartActivity : AppCompatActivity() {
         }
     }
 
+    // Configura navegación inferior y selección en Carrito
     private fun setupBottomNav() {
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
         bottomNav.selectedItemId = R.id.nav_cart
@@ -131,6 +134,7 @@ class CartActivity : AppCompatActivity() {
         }
     }
 
+    // Actualiza el total acumulado del carrito
     private fun updateTotal(totalText: TextView) {
         totalText.text = "Total acumulado: ${CartManager.getTotal()}"
     }

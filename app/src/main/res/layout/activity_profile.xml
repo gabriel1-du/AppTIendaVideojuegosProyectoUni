@@ -1,61 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/backgroundDark"
-    android:padding="16dp">
+    android:background="@color/backgroundDark">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Perfil"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:textColor="@color/textPrimary" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:gravity="center"
+            android:paddingBottom="72dp">
 
-    <TextView
-        android:id="@+id/textName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/textSecondary"
-        android:layout_marginTop="12dp" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Perfil"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="@color/textPrimary"
+            android:gravity="center" />
 
-    <TextView
-        android:id="@+id/textEmail"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/textSecondary"
-        android:layout_marginTop="8dp" />
+        <TextView
+            android:id="@+id/textName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textSecondary"
+            android:layout_marginTop="12dp"
+            android:gravity="center" />
 
-    <TextView
-        android:id="@+id/textCreated"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/textSecondary"
-        android:layout_marginTop="8dp" />
+        <TextView
+            android:id="@+id/textEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textSecondary"
+            android:layout_marginTop="8dp"
+            android:gravity="center" />
 
-    <TextView
-        android:id="@+id/textAdmin"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@color/textSecondary"
-        android:layout_marginTop="8dp" />
+        <Button
+            android:id="@+id/buttonLogout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cerrar sesión"
+            android:layout_marginTop="16dp" />
 
-    <Button
-        android:id="@+id/buttonLogout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Cerrar sesión"
-        android:layout_marginTop="16dp" />
+    </LinearLayout>
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
+        <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
         app:menu="@menu/menu_bottom_nav"
-        android:layout_marginTop="24dp"
         android:background="@color/cardLight" />
 
-</LinearLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>

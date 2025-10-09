@@ -19,10 +19,12 @@ class VideogameAdapter(
 
     private var onItemClick: ((Videogame) -> Unit)? = null
 
+    // Define el listener de click para navegar al detalle
     fun setOnItemClickListener(listener: (Videogame) -> Unit) {
         onItemClick = listener
     }
 
+    // Carga items y mapas de nombres y refresca la vista
     fun submit(
         newItems: List<Videogame>,
         genreMap: Map<String, String>,

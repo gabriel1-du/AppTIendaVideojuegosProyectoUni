@@ -4,9 +4,10 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="16dp"
+    android:gravity="center_vertical"
     android:background="@color/backgroundDark">
 
-    <TextView
+        <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Iniciar sesión"
@@ -14,7 +15,7 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
-    <EditText
+        <EditText
         android:id="@+id/inputEmail"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,7 +26,7 @@
         android:textColor="@color/textPrimary"
         android:textColorHint="@color/textSecondary" />
 
-    <EditText
+        <EditText
         android:id="@+id/inputPassword"
         android:padding="16dp"
         android:layout_width="match_parent"
@@ -36,14 +37,14 @@
         android:textColor="@color/textPrimary"
         android:textColorHint="@color/textSecondary" />
 
-    <Button
+        <Button
         android:id="@+id/buttonLogin"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Entrar" />
 
-    <TextView
+        <TextView
         android:id="@+id/linkSignup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -51,4 +52,4 @@
         android:text="Crear cuenta"
         android:textColor="@color/textSecondary" />
 
-</LinearLayout>
+    </LinearLayout>

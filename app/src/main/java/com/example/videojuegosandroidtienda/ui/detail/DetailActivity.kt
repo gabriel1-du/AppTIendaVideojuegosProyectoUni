@@ -14,6 +14,7 @@ import com.example.videojuegosandroidtienda.data.entities.CartProduct
 import com.example.videojuegosandroidtienda.data.cart.CartManager
 
 class DetailActivity : AppCompatActivity() {
+    // Muestra detalle del videojuego y permite agregar al carrito
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -63,6 +64,7 @@ class DetailActivity : AppCompatActivity() {
         }
     }
 
+    // Claves de extras para intercambio de datos con detalle
     companion object {
         const val EXTRA_ID = "extra_id"
         const val EXTRA_IMAGE_URL = "extra_image_url"

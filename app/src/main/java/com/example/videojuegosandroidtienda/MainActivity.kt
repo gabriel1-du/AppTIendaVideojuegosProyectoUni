@@ -148,23 +148,23 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
+    // Refresca el icono del carrito al reanudar la actividad
     override fun onResume() {
         super.onResume()
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         updateCartIcon(toolbar)
     }
 
+    // Muestra/oculta acción de carrito según sesión
     private fun updateCartIcon(toolbar: MaterialToolbar) {
         val t = com.example.videojuegosandroidtienda.data.network.TokenStore.token
-        if (!t.isNullOrBlank()) {
-            toolbar.navigationIcon = ContextCompat.getDrawable(this, android.R.drawable.ic_menu_view)
-        } else {
-            toolbar.navigationIcon = null
-        }
+        // No establecer icono de navegación (evita el "ojo" sobre la barra inferior)
+        toolbar.navigationIcon = null
         val menuItem = toolbar.menu.findItem(R.id.action_cart)
         menuItem?.isVisible = !t.isNullOrBlank()
     }
 
+    // Inicializa los spinners de plataforma y género
     private fun setupSpinners(spPlatform: Spinner, spGenre: Spinner) {
         val platformNames = listOf("Todas") + platforms.map { it.name }
         val genreNames = listOf("Todos") + genres.map { it.name }
@@ -173,6 +173,7 @@ class MainActivity : AppCompatActivity() {
         spGenre.adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, genreNames)
     }
 
+    // Aplica filtros y actualiza la lista de videojuegos
     private fun applyFilters(query: String?, spPlatform: Spinner, spGenre: Spinner) {
         val selectedPlatformName = spPlatform.selectedItem?.toString()
         val selectedGenreName = spGenre.selectedItem?.toString()

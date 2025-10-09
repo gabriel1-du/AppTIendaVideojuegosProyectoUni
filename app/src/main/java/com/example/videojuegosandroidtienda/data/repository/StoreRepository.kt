@@ -14,19 +14,27 @@ class StoreRepository {
     private val authService: AuthService =
         RetrofitProvider.createService(ApiConfig.AUTH_BASE_URL, AuthService::class.java)
 
+    // Obtiene lista de videojuegos desde el servicio de tienda
     suspend fun getVideogames(): List<Videogame> = storeService.listVideogames()
+    // Obtiene plataformas disponibles
     suspend fun getPlatforms(): List<Platform> = storeService.listPlatforms()
+    // Obtiene géneros disponibles
     suspend fun getGenres(): List<Genre> = storeService.listGenres()
+    // Lista carritos remotos (ejemplo/demo)
     suspend fun getCarts(): List<Cart> = storeService.listCarts()
+    // Obtiene detalle de ítem de carrito por id
     suspend fun getCartItem(id: String): CartItem = storeService.getCartItem(id)
+    // Obtiene datos del usuario autenticado
     suspend fun getAuthMe(): User = authService.getAuthMe()
 
+    // Inicia sesión y devuelve token
     suspend fun login(email: String, password: String): String {
         val res = authService.login(LoginRequest(email, password))
         TokenStore.token = res.token
         return res.token
     }
 
+    // Registra usuario y devuelve token
     suspend fun register(name: String, email: String, password: String): String {
         // Usar explícitamente /auth/signup según endpoints proporcionados
         val res = authService.signup(SignupRequest(name, email, password))
@@ -34,6 +42,7 @@ class StoreRepository {
         return res.token
     }
 
+    // Filtra videojuegos por texto, plataforma y género
     fun filterVideogames(
         all: List<Videogame>,
         query: String?,
