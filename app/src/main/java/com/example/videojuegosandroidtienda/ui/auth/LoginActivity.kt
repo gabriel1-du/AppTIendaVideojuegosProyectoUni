@@ -46,7 +46,7 @@ class LoginActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             if (!password.any { it.isLetter() }) {
-                Toast.makeText(this@LoginActivity, "La contraseñai debe conetenr un caracter", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginActivity, "La contraseña debe conetenr un caracter", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             lifecycleScope.launch {

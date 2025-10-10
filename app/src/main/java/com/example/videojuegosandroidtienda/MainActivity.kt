@@ -54,6 +54,10 @@ class MainActivity : AppCompatActivity() {
                     startActivity(Intent(this, LoginActivity::class.java))
                     true
                 }
+                R.id.action_upload_videogame -> {
+                    startActivity(Intent(this, com.example.videojuegosandroidtienda.ui.upload.AddVideogameActivity::class.java))
+                    true
+                }
                 R.id.action_cart -> {
                     val t = com.example.videojuegosandroidtienda.data.network.TokenStore.token
                     if (t.isNullOrBlank()) {

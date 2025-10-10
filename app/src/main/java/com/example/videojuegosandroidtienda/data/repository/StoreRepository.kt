@@ -6,6 +6,9 @@ import com.example.videojuegosandroidtienda.data.entities.*
 import com.example.videojuegosandroidtienda.data.network.ApiConfig
 import com.example.videojuegosandroidtienda.data.network.RetrofitProvider
 import com.example.videojuegosandroidtienda.data.network.TokenStore
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
 
 class StoreRepository {
@@ -56,5 +59,24 @@ class StoreRepository {
             val matchesGenre = genreId?.let { vg.genre_id == it } ?: true
             matchesQuery && matchesPlatform && matchesGenre
         }
+    }
+
+    // Crea un videojuego enviando título, plataforma, género, precio, descripción y portada
+    suspend fun createVideogame(
+        title: String,
+        platformId: String,
+        genreId: String,
+        price: Int,
+        description: String?,
+        imagePart: MultipartBody.Part
+    ): Videogame {
+        val titleBody = title.toRequestBody("text/plain".toMediaType())
+        val platformBody = platformId.toRequestBody("text/plain".toMediaType())
+        val genreBody = genreId.toRequestBody("text/plain".toMediaType())
+        // Enviar price como entero
+        val priceBody = price.toString().toRequestBody("text/plain".toMediaType())
+        // Enviar description siempre como cadena (vacía si no hay)
+        val descriptionBody = (description ?: "").toRequestBody("text/plain".toMediaType())
+        return storeService.createVideogame(titleBody, platformBody, genreBody, priceBody, descriptionBody, imagePart)
     }
 }
