@@ -1,66 +1,57 @@
-<?xml version="1.0" encoding="utf-8"?>
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cartRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundDark">
+    android:background="@color/backgroundDark"
+    tools:context=".ui.cart.CartActivity">
 
-    <!-- Contenido principal del carrito -->
-    <LinearLayout
+    <!-- Contenedor de los productos del carrito -->
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:paddingTop="24dp"
-        android:paddingBottom="72dp"
-        android:paddingHorizontal="16dp"
-        android:layout_gravity="top">
+        android:padding="16dp"
+        android:layout_marginBottom="80dp">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Carrito"
-            android:textStyle="bold"
-            android:textSize="20sp"
-            android:padding="12dp"
-            android:textColor="@color/textPrimary"
-            android:gravity="center" />
-
-        <ScrollView
+        <LinearLayout
+            android:id="@+id/cartItemsContainer"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1">
-            <LinearLayout
-                android:id="@+id/cartItemsContainer"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                android:padding="12dp" />
-        </ScrollView>
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+    </ScrollView>
+
+    <!-- Sección inferior fija (total + pagar) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:orientation="vertical"
+        android:background="@color/cardLight"
+        android:elevation="4dp"
+        android:padding="12dp">
 
         <TextView
             android:id="@+id/cartTotal"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Total acumulado: 0.0"
-            android:textStyle="bold"
+            android:text="Total acumulado: 0"
             android:textSize="16sp"
-            android:padding="12dp"
+            android:textStyle="bold"
             android:textColor="@color/textPrimary"
-            android:gravity="center" />
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="6dp" />
 
         <Button
             android:id="@+id/buttonPay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Pagar"
-            android:layout_margin="12dp"
-            android:gravity="center" />
-
+            android:textStyle="bold"
+            android:textColor="@android:color/white" />
     </LinearLayout>
 
-    <!-- Barra inferior fija -->
+    <!-- Barra inferior de navegación -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
