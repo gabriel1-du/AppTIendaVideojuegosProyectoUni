@@ -1,5 +1,8 @@
 package com.example.videojuegosandroidtienda.ui.upload
 
+
+import okio.buffer
+import okio.source
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
@@ -27,13 +30,19 @@ import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import android.content.Intent
 import com.example.videojuegosandroidtienda.data.network.TokenStore
+import android.util.Log
+import androidx.appcompat.app.AlertDialog
+import android.content.ClipboardManager
+import android.content.ClipData
 
 class AddVideogameActivity : AppCompatActivity() {
+    companion object {
+        private const val TAG = "AddVideogameActivity"
+    }
     private val repository = StoreRepository()
     private var selectedImageUri: Uri? = null
     private var platforms: List<Platform> = emptyList()
     private var genres: List<Genre> = emptyList()
-
     // Pantalla de subida: nombre y portada (multipart)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -132,14 +141,23 @@ class AddVideogameActivity : AppCompatActivity() {
                     val imagePart = buildImagePartFromUri(uri)
                     val platformId = platforms[platformPos].id
                     val genreId = genres[genrePos].id
-                    repository.createVideogame(
+                    // Log de parámetros antes de enviar
+                    val mime = contentResolver.getType(uri)
+                    val fileName = queryDisplayName(uri) ?: "(desconocido)"
+                    Log.d(TAG, "Subiendo videojuego -> title=$title, platform_id=$platformId, genre_id=$genreId, price=$priceInt, descriptionLen=${description?.length ?: 0}, cover_image(name=$fileName, mime=$mime)")
+                    val cover = repository.uploadCoverImage(imagePart)
+                    Log.d(TAG, "Upload OK, cover_image.path=${cover.path}, name=${cover.name}, mime=${cover.mime}")
+                    repository.createVideogameJson(
                         title = title,
                         platformId = platformId,
                         genreId = genreId,
                         price = priceInt,
                         description = description,
-                        imagePart = imagePart
+                        cover = cover,
+                        overrideName = fileName,
+                        overrideMime = mime
                     )
+                    Log.i(TAG, "Subida exitosa del videojuego: title=$title")
                     Toast.makeText(this@AddVideogameActivity, "Videojuego subido correctamente", Toast.LENGTH_LONG).show()
                     finish()
                 } catch (e: Exception) {
@@ -147,26 +165,52 @@ class AddVideogameActivity : AppCompatActivity() {
                         is retrofit2.HttpException -> {
                             val code = e.code()
                             val body = try { e.response()?.errorBody()?.string() } catch (_: Exception) { null }
+                            Log.e(TAG, "Error HTTP al subir (code=$code): ${body ?: e.message()}", e)
                             "HTTP $code: ${body ?: e.message()}"
                         }
-                        else -> e.message ?: "Error desconocido"
+                        else -> {
+                            Log.e(TAG, "Error al subir (no HTTP): ${e.message}", e)
+                            e.message ?: "Error desconocido"
+                        }
                     }
-                    Toast.makeText(this@AddVideogameActivity, "Error al subir: $msg", Toast.LENGTH_LONG).show()
+                    showErrorDialog("Error al subir: $msg")
                 }
             }
         }
     }
 
+    private fun showErrorDialog(message: String) {
+        val dialog = AlertDialog.Builder(this)
+            .setTitle("Error al subir")
+            .setMessage(message)
+            .setPositiveButton("Cerrar", null)
+            .setNeutralButton("Copiar") { _, _ ->
+                val cm = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
+                cm.setPrimaryClip(ClipData.newPlainText("Error", message))
+                Toast.makeText(this, "Error copiado al portapapeles", Toast.LENGTH_SHORT).show()
+            }
+            .create()
+        dialog.show()
+    }
+
     private fun buildImagePartFromUri(uri: Uri): MultipartBody.Part {
         val contentResolver = applicationContext.contentResolver
         val fileName = queryDisplayName(uri) ?: "cover.jpg"
-        val inputStream = contentResolver.openInputStream(uri) ?: throw IllegalStateException("No se pudo abrir la imagen")
-        val bytes = inputStream.readBytes()
-        inputStream.close()
         val detected = contentResolver.getType(uri)
         val mediaType = (detected ?: "application/octet-stream").toMediaType()
-        val requestBody: RequestBody = bytes.toRequestBody(mediaType)
-        return MultipartBody.Part.createFormData("cover_image", fileName, requestBody)
+        val requestBody: RequestBody = object : RequestBody() {
+            override fun contentType() = mediaType
+            override fun writeTo(sink: okio.BufferedSink) {
+                val input = contentResolver.openInputStream(uri) ?: throw IllegalStateException("No se pudo abrir la imagen")
+                input.use { stream ->
+                    val out = sink.outputStream()
+                    stream.copyTo(out)
+                    out.flush()
+                }
+            }
+        }
+        Log.d(TAG, "Construido Multipart file: name=$fileName, mime=${mediaType}")
+        return MultipartBody.Part.createFormData("content", fileName, requestBody)
     }
 
     private fun queryDisplayName(uri: Uri): String? {

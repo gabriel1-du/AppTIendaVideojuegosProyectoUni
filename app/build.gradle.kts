@@ -52,7 +52,13 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     // Image loading
     implementation(libs.coil)
+    // Network inspector
+    debugImplementation(libs.chucker)
+    releaseImplementation(libs.chuckerNoOp)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+
+    implementation("com.squareup.okio:okio:3.9.0")
 }

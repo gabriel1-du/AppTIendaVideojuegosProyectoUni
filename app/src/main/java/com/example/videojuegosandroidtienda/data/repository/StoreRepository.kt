@@ -2,6 +2,7 @@ package com.example.videojuegosandroidtienda.data.repository
 
 import com.example.videojuegosandroidtienda.data.api.AuthService
 import com.example.videojuegosandroidtienda.data.api.StoreService
+// Upload services are encapsulated via UploadClient
 import com.example.videojuegosandroidtienda.data.entities.*
 import com.example.videojuegosandroidtienda.data.network.ApiConfig
 import com.example.videojuegosandroidtienda.data.network.RetrofitProvider
@@ -10,12 +11,15 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
+import com.example.videojuegosandroidtienda.data.entities.CreateVideogameRequest
+import com.example.videojuegosandroidtienda.data.entities.CoverImageRef
 
 class StoreRepository {
     private val storeService: StoreService =
         RetrofitProvider.createService(ApiConfig.STORE_BASE_URL, StoreService::class.java)
     private val authService: AuthService =
         RetrofitProvider.createService(ApiConfig.AUTH_BASE_URL, AuthService::class.java)
+    private val uploadClient = com.example.videojuegosandroidtienda.data.upload.UploadClient()
 
     // Obtiene lista de videojuegos desde el servicio de tienda
     suspend fun getVideogames(): List<Videogame> = storeService.listVideogames()
@@ -61,22 +65,57 @@ class StoreRepository {
         }
     }
 
-    // Crea un videojuego enviando título, plataforma, género, precio, descripción y portada
-    suspend fun createVideogame(
+    // Sube archivo y devuelve objeto completo para usar en cover_image
+    suspend fun uploadCoverImage(imagePart: MultipartBody.Part): UploadResponse {
+        return uploadClient.uploadFile(imagePart)
+    }
+
+
+    // Crea videojuego enviando JSON con cover_image completo
+    suspend fun createVideogameJson(
         title: String,
         platformId: String,
         genreId: String,
         price: Int,
         description: String?,
-        imagePart: MultipartBody.Part
+        cover: UploadResponse,
+        overrideName: String? = null,
+        overrideMime: String? = null
     ): Videogame {
-        val titleBody = title.toRequestBody("text/plain".toMediaType())
-        val platformBody = platformId.toRequestBody("text/plain".toMediaType())
-        val genreBody = genreId.toRequestBody("text/plain".toMediaType())
-        // Enviar price como entero
-        val priceBody = price.toString().toRequestBody("text/plain".toMediaType())
-        // Enviar description siempre como cadena (vacía si no hay)
-        val descriptionBody = (description ?: "").toRequestBody("text/plain".toMediaType())
-        return storeService.createVideogame(titleBody, platformBody, genreBody, priceBody, descriptionBody, imagePart)
+        val req = CreateVideogameRequest(
+            id = java.util.UUID.randomUUID().toString(), // Genera UUID único
+            created_at = System.currentTimeMillis(), // Timestamp actual en ms
+            title = title,
+            price = price,
+            description = description ?: "",
+            cover_image = CoverImageRef(
+                path = cover.path,
+                name = cover.name ?: overrideName,
+                mime = cover.mime ?: overrideMime,
+                access = cover.access,
+                type = cover.type,
+                size = cover.size,
+                url = cover.url,
+                meta = cover.meta // Asegura que meta se incluya si existe
+            ),
+            genre_id = genreId,
+            platform_id = platformId
+        )
+        // LOG: Imprimir JSON, URL y headers
+        val gson = com.google.gson.GsonBuilder().setPrettyPrinting().create()
+        android.util.Log.d("VideogameUpload", "JSON enviado: " + gson.toJson(req))
+        android.util.Log.d("VideogameUpload", "URL: " + ApiConfig.STORE_BASE_URL + "videogame")
+        android.util.Log.d("VideogameUpload", "Token: " + (com.example.videojuegosandroidtienda.data.network.TokenStore.token ?: "(sin token)"))
+        try {
+            return storeService.createVideogame(req)
+        } catch (e: HttpException) {
+            if (e.code() == 404) {
+                // Fallback absoluto al endpoint
+                return storeService.createVideogameAbsolute(req)
+            }
+            throw e
+        }
     }
+
+    
 }

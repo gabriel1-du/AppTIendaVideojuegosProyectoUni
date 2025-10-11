@@ -9,6 +9,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import com.example.videojuegosandroidtienda.data.network.TokenStore
 import com.google.gson.GsonBuilder
 import com.example.videojuegosandroidtienda.data.entities.AuthTokenResponse
+import com.example.videojuegosandroidtienda.App
+import com.chuckerteam.chucker.api.ChuckerInterceptor
+import java.util.concurrent.TimeUnit
 
 object RetrofitProvider {
     private fun okHttpClient(): OkHttpClient {
@@ -26,8 +29,12 @@ object RetrofitProvider {
             chain.proceed(req)
         }
         return OkHttpClient.Builder()
+            .addInterceptor(ChuckerInterceptor.Builder(App.appContext).build())
             .addInterceptor(logging)
             .addInterceptor(authInterceptor)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
             .build()
     }
 

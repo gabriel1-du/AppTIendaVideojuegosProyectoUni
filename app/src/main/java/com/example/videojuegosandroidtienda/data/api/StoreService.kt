@@ -4,10 +4,10 @@ import com.example.videojuegosandroidtienda.data.entities.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.GET
-import retrofit2.http.Multipart
 import retrofit2.http.POST
-import retrofit2.http.Part
+import retrofit2.http.Body
 import retrofit2.http.Path
+import com.example.videojuegosandroidtienda.data.entities.CreateVideogameRequest
 
 interface StoreService {
     @GET("videogame")
@@ -25,14 +25,14 @@ interface StoreService {
     @GET("cart_item/{id}")
     suspend fun getCartItem(@Path("id") id: String): CartItem
 
-    @Multipart
     @POST("videogame")
     suspend fun createVideogame(
-        @Part("title") title: RequestBody,
-        @Part("platform_id") platformId: RequestBody,
-        @Part("genre_id") genreId: RequestBody,
-        @Part("price") price: RequestBody,
-        @Part("description") description: RequestBody?,
-        @Part cover_image: MultipartBody.Part
+        @Body req: CreateVideogameRequest
+    ): Videogame
+
+    // Fallback absoluto si hubiese problemas con la base URL
+    @POST("https://x8ki-letl-twmt.n7.xano.io/api:k6eLeFyi/videogame")
+    suspend fun createVideogameAbsolute(
+        @Body req: CreateVideogameRequest
     ): Videogame
 }
