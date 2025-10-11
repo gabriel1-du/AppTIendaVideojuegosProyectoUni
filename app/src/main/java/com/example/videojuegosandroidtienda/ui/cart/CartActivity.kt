@@ -62,7 +62,7 @@ class CartActivity : AppCompatActivity() {
                     val quantity = view.findViewById<TextView>(R.id.textQuantity)
                     val minus = view.findViewById<Button>(R.id.buttonMinus)
                     val plus = view.findViewById<View>(R.id.buttonPlus) // Puede ser Button o ImageButton
-                    val remove = view.findViewById<Button>(R.id.buttonRemove)
+
 
                     title.text = product.title
                     price.text = "Precio: ${product.price}"
@@ -86,11 +86,6 @@ class CartActivity : AppCompatActivity() {
                     }
                     plus.setOnClickListener {
                         CartManager.increase(product.id)
-                        updateTotal(totalText)
-                        renderCart()
-                    }
-                    remove.setOnClickListener {
-                        CartManager.remove(product.id)
                         updateTotal(totalText)
                         renderCart()
                     }
