@@ -99,7 +99,17 @@ class CartActivity : AppCompatActivity() {
         renderCart()
 
         payButton.setOnClickListener {
-            Toast.makeText(this@CartActivity, "compra exitosamente realizada", Toast.LENGTH_LONG).show()
+            val inflater = layoutInflater
+                        val layout = inflater.inflate(R.layout.custom_toast, null)
+
+                        val textView = layout.findViewById<TextView>(R.id.toast_text)
+                        textView.text = "compra exitosamente realizada"
+
+                        with (Toast(applicationContext)) {
+                            duration = Toast.LENGTH_LONG
+                            view = layout
+                            show()
+                        }
             startActivity(Intent(this@CartActivity, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             })

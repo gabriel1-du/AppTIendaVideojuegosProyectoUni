@@ -1,8 +1,7 @@
 package com.example.videojuegosandroidtienda.ui.upload
 
 
-import okio.buffer
-import okio.source
+
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
@@ -11,6 +10,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.ArrayAdapter
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -158,7 +158,17 @@ class AddVideogameActivity : AppCompatActivity() {
                         overrideMime = mime
                     )
                     Log.i(TAG, "Subida exitosa del videojuego: title=$title")
-                    Toast.makeText(this@AddVideogameActivity, "Videojuego subido correctamente", Toast.LENGTH_LONG).show()
+                    val inflater = layoutInflater
+                    val layout = inflater.inflate(R.layout.custom_toast, null)
+
+                    val textView = layout.findViewById<TextView>(R.id.toast_text)
+                    textView.text = "Videojuego subido correctamente"
+
+                    with (Toast(applicationContext)) {
+                        duration = Toast.LENGTH_LONG
+                        view = layout
+                        show()
+                    }
                     finish()
                 } catch (e: Exception) {
                     val msg = when (e) {

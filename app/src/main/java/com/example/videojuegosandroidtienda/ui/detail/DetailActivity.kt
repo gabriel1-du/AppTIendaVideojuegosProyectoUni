@@ -60,7 +60,17 @@ class DetailActivity : AppCompatActivity() {
                 imageUrl = imageUrl
             )
             CartManager.add(product, 1)
-            Toast.makeText(this@DetailActivity, "Este producto se agregó al carrito", Toast.LENGTH_SHORT).show()
+            val inflater = layoutInflater
+            val layout = inflater.inflate(R.layout.custom_toast, null)
+
+            val textView = layout.findViewById<TextView>(R.id.toast_text)
+            textView.text = "Este producto se agregó al carrito"
+
+            with (Toast(applicationContext)) {
+                duration = Toast.LENGTH_SHORT
+                view = layout
+                show()
+            }
         }
     }
 

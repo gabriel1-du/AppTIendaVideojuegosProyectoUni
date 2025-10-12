@@ -15,6 +15,7 @@ import com.example.videojuegosandroidtienda.data.network.TokenStore
 import com.example.videojuegosandroidtienda.MainActivity
 import retrofit2.HttpException
 import android.util.Log
+import android.widget.TextView
 
 class SignupActivity : AppCompatActivity() {
     private val repository = StoreRepository()
@@ -35,15 +36,51 @@ class SignupActivity : AppCompatActivity() {
             val email = inputEmail.text.toString()
             val password = inputPassword.text.toString()
             if (name.isBlank() || email.isBlank() || password.isBlank()) {
-                Toast.makeText(this@SignupActivity, "Completa nombre, email y contraseña", Toast.LENGTH_SHORT).show()
+                val inflater = layoutInflater
+                val layout = inflater.inflate(R.layout.custom_toast, null)
+                val textView = layout.findViewById<TextView>(R.id.toast_text)
+                textView.text = "Completa nombre, email y contraseña"
+                with(Toast(applicationContext)) {
+                    duration = Toast.LENGTH_SHORT
+                    view = layout
+                    show()
+                }
                 return@setOnClickListener
             }
             if (password.length < 8) {
-                Toast.makeText(this@SignupActivity, "La contraseña debe tener mas de 8 caracteres", Toast.LENGTH_SHORT).show()
+                val inflater = layoutInflater
+                val layout = inflater.inflate(R.layout.custom_toast, null)
+                val textView = layout.findViewById<TextView>(R.id.toast_text)
+                textView.text = "La contraseña debe tener mas de 8 caracteres"
+                with(Toast(applicationContext)) {
+                    duration = Toast.LENGTH_SHORT
+                    view = layout
+                    show()
+                }
                 return@setOnClickListener
             }
             if (!password.any { it.isLetter() }) {
-                Toast.makeText(this@SignupActivity, "La contraseña debe contener al menos un carácter", Toast.LENGTH_SHORT).show()
+                val inflater = layoutInflater
+                val layout = inflater.inflate(R.layout.custom_toast, null)
+                val textView = layout.findViewById<TextView>(R.id.toast_text)
+                textView.text = "La contraseña debe contener al menos un carácter"
+                with(Toast(applicationContext)) {
+                    duration = Toast.LENGTH_SHORT
+                    view = layout
+                    show()
+                }
+                return@setOnClickListener
+            }
+            if (!password.any { !it.isLetterOrDigit() }) {
+                val inflater = layoutInflater
+                val layout = inflater.inflate(R.layout.custom_toast, null)
+                val textView = layout.findViewById<TextView>(R.id.toast_text)
+                textView.text = "La contraseña debe contener al menos un carácter especial"
+                with(Toast(applicationContext)) {
+                    duration = Toast.LENGTH_SHORT
+                    view = layout
+                    show()
+                }
                 return@setOnClickListener
             }
             lifecycleScope.launch {
@@ -51,6 +88,15 @@ class SignupActivity : AppCompatActivity() {
                     repository.register(name, email, password)
                     // Iniciar sesión automáticamente y redirigir a MainActivity
                     repository.login(email, password)
+                    val inflater = layoutInflater
+                    val layout = inflater.inflate(R.layout.custom_toast, null)
+                    val textView = layout.findViewById<TextView>(R.id.toast_text)
+                    textView.text = "Registro exitoso"
+                    with(Toast(applicationContext)) {
+                        duration = Toast.LENGTH_SHORT
+                        view = layout
+                        show()
+                    }
                     val intent = Intent(this@SignupActivity, MainActivity::class.java)
                     startActivity(intent)
                     finish()
@@ -60,10 +106,26 @@ class SignupActivity : AppCompatActivity() {
                         val code = e.code()
                         val errBody = e.response()?.errorBody()?.string()
                         Log.e("SignupActivity", "HTTP $code ${errBody ?: ""}")
-                        Toast.makeText(this@SignupActivity, "$baseMsg (HTTP $code)", Toast.LENGTH_SHORT).show()
+                        val inflater = layoutInflater
+                        val layout = inflater.inflate(R.layout.custom_toast, null)
+                        val textView = layout.findViewById<TextView>(R.id.toast_text)
+                        textView.text = "$baseMsg (HTTP $code)"
+                        with(Toast(applicationContext)) {
+                            duration = Toast.LENGTH_SHORT
+                            view = layout
+                            show()
+                        }
                     } else {
                         Log.e("SignupActivity", e.localizedMessage ?: baseMsg)
-                        Toast.makeText(this@SignupActivity, baseMsg, Toast.LENGTH_SHORT).show()
+                        val inflater = layoutInflater
+                        val layout = inflater.inflate(R.layout.custom_toast, null)
+                        val textView = layout.findViewById<TextView>(R.id.toast_text)
+                        textView.text = baseMsg
+                        with(Toast(applicationContext)) {
+                            duration = Toast.LENGTH_SHORT
+                            view = layout
+                            show()
+                        }
                     }
                 }
             }

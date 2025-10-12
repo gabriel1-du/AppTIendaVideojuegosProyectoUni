@@ -39,20 +39,53 @@ class LoginActivity : AppCompatActivity() {
             val email = inputEmail.text.toString()
             val password = inputPassword.text.toString()
             if (email.isBlank() || password.isBlank()) {
-                Toast.makeText(this@LoginActivity, "Completa email y contraseña", Toast.LENGTH_SHORT).show()
+                val inflater = layoutInflater
+                val layout = inflater.inflate(R.layout.custom_toast, null)
+                val textView = layout.findViewById<TextView>(R.id.toast_text)
+                textView.text = "Completa email y contraseña"
+                with(Toast(applicationContext)) {
+                    duration = Toast.LENGTH_SHORT
+                    view = layout
+                    show()
+                }
                 return@setOnClickListener
             }
             if (password.length < 8) {
-                Toast.makeText(this@LoginActivity, "La contraseña debe ser mas de 8 caracteres", Toast.LENGTH_SHORT).show()
+                val inflater = layoutInflater
+                val layout = inflater.inflate(R.layout.custom_toast, null)
+                val textView = layout.findViewById<TextView>(R.id.toast_text)
+                textView.text = "La contraseña debe ser mas de 8 caracteres"
+                with(Toast(applicationContext)) {
+                    duration = Toast.LENGTH_SHORT
+                    view = layout
+                    show()
+                }
                 return@setOnClickListener
             }
             if (!password.any { it.isLetter() }) {
-                Toast.makeText(this@LoginActivity, "La contraseña debe conetenr un caracter", Toast.LENGTH_SHORT).show()
+                val inflater = layoutInflater
+                val layout = inflater.inflate(R.layout.custom_toast, null)
+                val textView = layout.findViewById<TextView>(R.id.toast_text)
+                textView.text = "La contraseña debe coneten un caracter"
+                with(Toast(applicationContext)) {
+                    duration = Toast.LENGTH_SHORT
+                    view = layout
+                    show()
+                }
                 return@setOnClickListener
             }
             lifecycleScope.launch {
                 try {
                     repository.login(email, password)
+                    val inflater = layoutInflater
+                    val layout = inflater.inflate(R.layout.custom_toast, null)
+                    val textView = layout.findViewById<TextView>(R.id.toast_text)
+                    textView.text = "Login exitoso"
+                    with(Toast(applicationContext)) {
+                        duration = Toast.LENGTH_SHORT
+                        view = layout
+                        show()
+                    }
                     // Redirigir a MainActivity
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
                     startActivity(intent)
@@ -62,17 +95,41 @@ class LoginActivity : AppCompatActivity() {
                     if (e is HttpException) {
                         when (e.code()) {
                             403 -> {
-                                Toast.makeText(this@LoginActivity, "Correo o contraseña incorrectos", Toast.LENGTH_SHORT).show()
+                                val inflater = layoutInflater
+                                val layout = inflater.inflate(R.layout.custom_toast, null)
+                                val textView = layout.findViewById<TextView>(R.id.toast_text)
+                                textView.text = "Correo o contraseña incorrectos"
+                                with(Toast(applicationContext)) {
+                                    duration = Toast.LENGTH_SHORT
+                                    view = layout
+                                    show()
+                                }
                             }
                             else -> {
                                 val errBody = e.response()?.errorBody()?.string()
                                 Log.e("LoginActivity", "HTTP ${e.code()} ${errBody ?: ""}")
-                                Toast.makeText(this@LoginActivity, "$baseMsg (HTTP ${e.code()})", Toast.LENGTH_SHORT).show()
+                                val inflater = layoutInflater
+                                val layout = inflater.inflate(R.layout.custom_toast, null)
+                                val textView = layout.findViewById<TextView>(R.id.toast_text)
+                                textView.text = "$baseMsg (HTTP ${e.code()})"
+                                with(Toast(applicationContext)) {
+                                    duration = Toast.LENGTH_SHORT
+                                    view = layout
+                                    show()
+                                }
                             }
                         }
                     } else {
                         Log.e("LoginActivity", e.localizedMessage ?: baseMsg)
-                        Toast.makeText(this@LoginActivity, baseMsg, Toast.LENGTH_SHORT).show()
+                        val inflater = layoutInflater
+                        val layout = inflater.inflate(R.layout.custom_toast, null)
+                        val textView = layout.findViewById<TextView>(R.id.toast_text)
+                        textView.text = baseMsg
+                        with(Toast(applicationContext)) {
+                            duration = Toast.LENGTH_SHORT
+                            view = layout
+                            show()
+                        }
                     }
                 }
             }
