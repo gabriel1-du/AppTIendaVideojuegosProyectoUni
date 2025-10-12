@@ -38,9 +38,9 @@ class LoginActivity : AppCompatActivity() {
         buttonLogin.setOnClickListener {
             val email = inputEmail.text.toString()
             val password = inputPassword.text.toString()
-            if (email.isBlank() || password.isBlank()) {
+            if (email.isBlank() || password.isBlank()) { //error
                 val inflater = layoutInflater
-                val layout = inflater.inflate(R.layout.custom_toast, null)
+                val layout = inflater.inflate(R.layout.custom_toast_error, null)
                 val textView = layout.findViewById<TextView>(R.id.toast_text)
                 textView.text = "Completa email y contraseña"
                 with(Toast(applicationContext)) {
@@ -50,35 +50,11 @@ class LoginActivity : AppCompatActivity() {
                 }
                 return@setOnClickListener
             }
-            if (password.length < 8) {
-                val inflater = layoutInflater
-                val layout = inflater.inflate(R.layout.custom_toast, null)
-                val textView = layout.findViewById<TextView>(R.id.toast_text)
-                textView.text = "La contraseña debe ser mas de 8 caracteres"
-                with(Toast(applicationContext)) {
-                    duration = Toast.LENGTH_SHORT
-                    view = layout
-                    show()
-                }
-                return@setOnClickListener
-            }
-            if (!password.any { it.isLetter() }) {
-                val inflater = layoutInflater
-                val layout = inflater.inflate(R.layout.custom_toast, null)
-                val textView = layout.findViewById<TextView>(R.id.toast_text)
-                textView.text = "La contraseña debe coneten un caracter"
-                with(Toast(applicationContext)) {
-                    duration = Toast.LENGTH_SHORT
-                    view = layout
-                    show()
-                }
-                return@setOnClickListener
-            }
-            lifecycleScope.launch {
+            lifecycleScope.launch { //ok
                 try {
                     repository.login(email, password)
                     val inflater = layoutInflater
-                    val layout = inflater.inflate(R.layout.custom_toast, null)
+                    val layout = inflater.inflate(R.layout.custom_toast_ok, null)
                     val textView = layout.findViewById<TextView>(R.id.toast_text)
                     textView.text = "Login exitoso"
                     with(Toast(applicationContext)) {
@@ -94,9 +70,9 @@ class LoginActivity : AppCompatActivity() {
                     val baseMsg = "Error al iniciar sesión"
                     if (e is HttpException) {
                         when (e.code()) {
-                            403 -> {
+                            403 -> { //error
                                 val inflater = layoutInflater
-                                val layout = inflater.inflate(R.layout.custom_toast, null)
+                                val layout = inflater.inflate(R.layout.custom_toast_error, null)
                                 val textView = layout.findViewById<TextView>(R.id.toast_text)
                                 textView.text = "Correo o contraseña incorrectos"
                                 with(Toast(applicationContext)) {
@@ -109,7 +85,7 @@ class LoginActivity : AppCompatActivity() {
                                 val errBody = e.response()?.errorBody()?.string()
                                 Log.e("LoginActivity", "HTTP ${e.code()} ${errBody ?: ""}")
                                 val inflater = layoutInflater
-                                val layout = inflater.inflate(R.layout.custom_toast, null)
+                                val layout = inflater.inflate(R.layout.custom_toast_error, null)
                                 val textView = layout.findViewById<TextView>(R.id.toast_text)
                                 textView.text = "$baseMsg (HTTP ${e.code()})"
                                 with(Toast(applicationContext)) {
@@ -122,7 +98,7 @@ class LoginActivity : AppCompatActivity() {
                     } else {
                         Log.e("LoginActivity", e.localizedMessage ?: baseMsg)
                         val inflater = layoutInflater
-                        val layout = inflater.inflate(R.layout.custom_toast, null)
+                        val layout = inflater.inflate(R.layout.custom_toast_error, null)
                         val textView = layout.findViewById<TextView>(R.id.toast_text)
                         textView.text = baseMsg
                         with(Toast(applicationContext)) {

@@ -11,7 +11,6 @@ import com.example.videojuegosandroidtienda.data.repository.StoreRepository
 import kotlinx.coroutines.launch
 import android.widget.Toast
 import android.content.Intent
-import com.example.videojuegosandroidtienda.data.network.TokenStore
 import com.example.videojuegosandroidtienda.MainActivity
 import retrofit2.HttpException
 import android.util.Log
@@ -37,7 +36,7 @@ class SignupActivity : AppCompatActivity() {
             val password = inputPassword.text.toString()
             if (name.isBlank() || email.isBlank() || password.isBlank()) {
                 val inflater = layoutInflater
-                val layout = inflater.inflate(R.layout.custom_toast, null)
+                val layout = inflater.inflate(R.layout.custom_toast_error, null)
                 val textView = layout.findViewById<TextView>(R.id.toast_text)
                 textView.text = "Completa nombre, email y contraseña"
                 with(Toast(applicationContext)) {
@@ -47,9 +46,9 @@ class SignupActivity : AppCompatActivity() {
                 }
                 return@setOnClickListener
             }
-            if (password.length < 8) {
+            if (password.length < 8) { //error
                 val inflater = layoutInflater
-                val layout = inflater.inflate(R.layout.custom_toast, null)
+                val layout = inflater.inflate(R.layout.custom_toast_error, null)
                 val textView = layout.findViewById<TextView>(R.id.toast_text)
                 textView.text = "La contraseña debe tener mas de 8 caracteres"
                 with(Toast(applicationContext)) {
@@ -61,7 +60,7 @@ class SignupActivity : AppCompatActivity() {
             }
             if (!password.any { it.isLetter() }) {
                 val inflater = layoutInflater
-                val layout = inflater.inflate(R.layout.custom_toast, null)
+                val layout = inflater.inflate(R.layout.custom_toast_error, null)
                 val textView = layout.findViewById<TextView>(R.id.toast_text)
                 textView.text = "La contraseña debe contener al menos un carácter"
                 with(Toast(applicationContext)) {
@@ -73,7 +72,7 @@ class SignupActivity : AppCompatActivity() {
             }
             if (!password.any { !it.isLetterOrDigit() }) {
                 val inflater = layoutInflater
-                val layout = inflater.inflate(R.layout.custom_toast, null)
+                val layout = inflater.inflate(R.layout.custom_toast_error, null)
                 val textView = layout.findViewById<TextView>(R.id.toast_text)
                 textView.text = "La contraseña debe contener al menos un carácter especial"
                 with(Toast(applicationContext)) {
@@ -89,7 +88,7 @@ class SignupActivity : AppCompatActivity() {
                     // Iniciar sesión automáticamente y redirigir a MainActivity
                     repository.login(email, password)
                     val inflater = layoutInflater
-                    val layout = inflater.inflate(R.layout.custom_toast, null)
+                    val layout = inflater.inflate(R.layout.custom_toast_ok, null)
                     val textView = layout.findViewById<TextView>(R.id.toast_text)
                     textView.text = "Registro exitoso"
                     with(Toast(applicationContext)) {
@@ -101,13 +100,13 @@ class SignupActivity : AppCompatActivity() {
                     startActivity(intent)
                     finish()
                 } catch (e: Exception) {
-                    val baseMsg = "Error al crear cuenta"
+                    val baseMsg = "Error al crear cuenta (Comunicar con soporte)"
                     if (e is HttpException) {
                         val code = e.code()
                         val errBody = e.response()?.errorBody()?.string()
                         Log.e("SignupActivity", "HTTP $code ${errBody ?: ""}")
                         val inflater = layoutInflater
-                        val layout = inflater.inflate(R.layout.custom_toast, null)
+                        val layout = inflater.inflate(R.layout.custom_toast_error, null)
                         val textView = layout.findViewById<TextView>(R.id.toast_text)
                         textView.text = "$baseMsg (HTTP $code)"
                         with(Toast(applicationContext)) {
@@ -118,7 +117,7 @@ class SignupActivity : AppCompatActivity() {
                     } else {
                         Log.e("SignupActivity", e.localizedMessage ?: baseMsg)
                         val inflater = layoutInflater
-                        val layout = inflater.inflate(R.layout.custom_toast, null)
+                        val layout = inflater.inflate(R.layout.custom_toast_error, null)
                         val textView = layout.findViewById<TextView>(R.id.toast_text)
                         textView.text = baseMsg
                         with(Toast(applicationContext)) {

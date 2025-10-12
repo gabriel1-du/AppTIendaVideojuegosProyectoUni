@@ -3,83 +3,84 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundDark">
+    android:background="@color/backgroundDark"
+    android:fillViewport="true">
 
-    <com.google.android.material.card.MaterialCardView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_margin="16dp"
-        app:cardCornerRadius="12dp"
-        app:cardBackgroundColor="@color/cardLight"
-        app:strokeColor="@android:color/black"
-        app:strokeWidth="1dp">
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <LinearLayout
+        <ImageView
+            android:id="@+id/detailImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_marginBottom="16dp"
+            android:adjustViewBounds="true"
+            android:maxHeight="332dp"
+            android:scaleType="fitCenter" />
 
-            <ImageView
-                android:id="@+id/detailImage"
-                android:layout_width="match_parent"
-                android:layout_height="500dp"
-                android:scaleType="centerCrop" />
+        <TextView
+            android:id="@+id/detailTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textAlignment="center"
+            android:textColor="@color/textPrimary"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/detailTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:textAlignment="center"
-                android:textColor="@color/textPrimary"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+        <TextView
+            android:id="@+id/detailGenre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textAlignment="center"
+            android:textColor="@color/textSecondary" />
 
-            <TextView
-                android:id="@+id/detailGenre"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textAlignment="center"
-                android:textColor="@color/textSecondary" />
+        <TextView
+            android:id="@+id/detailPlatform"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAlignment="center"
+            android:textColor="@color/textSecondary" />
 
-            <TextView
-                android:id="@+id/detailPlatform"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:textAlignment="center"
-                android:textColor="@color/textSecondary" />
+        <TextView
+            android:id="@+id/detailPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textAlignment="center"
+            android:textColor="@color/textSecondary" />
 
-            <TextView
-                android:id="@+id/detailPrice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textAlignment="center"
-                android:textColor="@color/textSecondary" />
+        <TextView
+            android:id="@+id/detailStock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textAlignment="center"
+            android:textColor="@color/textSecondary" />
 
-            <TextView
-                android:id="@+id/detailDescription"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:textAlignment="center"
-                android:textColor="@color/textSecondary" />
+        <TextView
+            android:id="@+id/detailDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:textAlignment="center"
+            android:textColor="@color/textSecondary" />
 
-            <Button
-                android:id="@+id/buttonAddToCart"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Agregar al carrito"
-                android:layout_marginTop="12dp"
-                android:backgroundTint="@android:color/black"
-                android:textColor="@android:color/white" />
+        <Button
+            android:id="@+id/buttonAddToCart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:backgroundTint="@android:color/black"
+            android:text="Agregar al carrito"
+            android:textColor="@android:color/white" />
 
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
 
 </ScrollView>

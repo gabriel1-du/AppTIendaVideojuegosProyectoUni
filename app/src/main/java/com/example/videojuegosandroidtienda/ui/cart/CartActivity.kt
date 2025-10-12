@@ -10,14 +10,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.lifecycleScope
 import com.example.videojuegosandroidtienda.MainActivity
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.network.TokenStore
 import com.example.videojuegosandroidtienda.data.cart.CartManager
 import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.coroutines.launch
 import coil.imageLoader
 import coil.request.ImageRequest
 
@@ -100,7 +98,7 @@ class CartActivity : AppCompatActivity() {
 
         payButton.setOnClickListener {
             val inflater = layoutInflater
-                        val layout = inflater.inflate(R.layout.custom_toast, null)
+                        val layout = inflater.inflate(R.layout.custom_toast_error, null)
 
                         val textView = layout.findViewById<TextView>(R.id.toast_text)
                         textView.text = "compra exitosamente realizada"

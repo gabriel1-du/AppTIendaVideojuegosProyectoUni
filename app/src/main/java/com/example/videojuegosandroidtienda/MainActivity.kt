@@ -77,8 +77,6 @@ class MainActivity : AppCompatActivity() {
         // Ajustar icono de carrito según estado inicial
         updateCartIcon(toolbar)
 
-        loadInitialData()
-
         adapter.setOnItemClickListener { vg ->
             val intent = Intent(this@MainActivity, DetailActivity::class.java).apply {
                 putExtra(DetailActivity.EXTRA_ID, vg.id)
@@ -101,7 +99,6 @@ class MainActivity : AppCompatActivity() {
         recycler.adapter = adapter
 
         // Bottom navigation
-        bottomNav.selectedItemId = R.id.nav_search
         bottomNav.setOnItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_search -> true
@@ -156,8 +153,6 @@ class MainActivity : AppCompatActivity() {
                 val spinnerPlatform = findViewById<Spinner>(R.id.spinnerPlatform)
                 val spinnerGenre = findViewById<Spinner>(R.id.spinnerGenre)
                 setupSpinners(spinnerPlatform, spinnerGenre)
-
-                adapter.submit(allVideogames, genreNamesMap, platformNamesMap)
             } catch (e: Exception) {
                 // TODO: manejar error (mostrar mensaje)
             }
@@ -169,6 +164,10 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         updateCartIcon(toolbar)
+        loadInitialData()
+        
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        bottomNav.selectedItemId = R.id.nav_search
     }
 
     // Muestra/oculta acción de carrito según sesión

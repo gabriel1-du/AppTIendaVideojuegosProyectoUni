@@ -61,7 +61,7 @@ class DetailActivity : AppCompatActivity() {
             )
             CartManager.add(product, 1)
             val inflater = layoutInflater
-            val layout = inflater.inflate(R.layout.custom_toast, null)
+            val layout = inflater.inflate(R.layout.custom_toast_error, null)
 
             val textView = layout.findViewById<TextView>(R.id.toast_text)
             textView.text = "Este producto se agregó al carrito"
