@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import android.widget.Toast
 import retrofit2.HttpException
 import android.util.Log
+import com.example.videojuegosandroidtienda.MainActivity
 
 class LoginActivity : AppCompatActivity() {
     private val repository = StoreRepository()
@@ -52,17 +53,23 @@ class LoginActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 try {
                     repository.login(email, password)
-                    // Obtener datos del usuario para mostrar mensaje
-                    val me = repository.getAuthMe()
-                    Toast.makeText(this@LoginActivity, "Bienvenido ${me.name}", Toast.LENGTH_SHORT).show()
+                    // Redirigir a MainActivity
+                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                    startActivity(intent)
                     finish()
                 } catch (e: Exception) {
                     val baseMsg = "Error al iniciar sesión"
                     if (e is HttpException) {
-                        val code = e.code()
-                        val errBody = e.response()?.errorBody()?.string()
-                        Log.e("LoginActivity", "HTTP $code ${errBody ?: ""}")
-                        Toast.makeText(this@LoginActivity, "$baseMsg (HTTP $code)", Toast.LENGTH_SHORT).show()
+                        when (e.code()) {
+                            403 -> {
+                                Toast.makeText(this@LoginActivity, "Correo o contraseña incorrectos", Toast.LENGTH_SHORT).show()
+                            }
+                            else -> {
+                                val errBody = e.response()?.errorBody()?.string()
+                                Log.e("LoginActivity", "HTTP ${e.code()} ${errBody ?: ""}")
+                                Toast.makeText(this@LoginActivity, "$baseMsg (HTTP ${e.code()})", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     } else {
                         Log.e("LoginActivity", e.localizedMessage ?: baseMsg)
                         Toast.makeText(this@LoginActivity, baseMsg, Toast.LENGTH_SHORT).show()

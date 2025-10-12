@@ -61,10 +61,14 @@ class MainActivity : AppCompatActivity() {
                 R.id.action_cart -> {
                     val t = com.example.videojuegosandroidtienda.data.network.TokenStore.token
                     if (t.isNullOrBlank()) {
-                        startActivity(Intent(this, com.example.videojuegosandroidtienda.ui.auth.LoginActivity::class.java))
+                        startActivity(Intent( this, com.example.videojuegosandroidtienda.ui.auth.LoginActivity::class.java))
                     } else {
                         startActivity(Intent(this, com.example.videojuegosandroidtienda.ui.cart.CartActivity::class.java))
                     }
+                    true
+                }
+                R.id.action_refresh -> {
+                    loadInitialData()
                     true
                 }
                 else -> false
@@ -72,6 +76,21 @@ class MainActivity : AppCompatActivity() {
         }
         // Ajustar icono de carrito según estado inicial
         updateCartIcon(toolbar)
+
+        loadInitialData()
+
+        adapter.setOnItemClickListener { vg ->
+            val intent = Intent(this@MainActivity, DetailActivity::class.java).apply {
+                putExtra(DetailActivity.EXTRA_ID, vg.id)
+                putExtra(DetailActivity.EXTRA_IMAGE_URL, vg.cover_image?.url)
+                putExtra(DetailActivity.EXTRA_TITLE, vg.title)
+                putExtra(DetailActivity.EXTRA_GENRE_NAME, genreNamesMap[vg.genre_id] ?: "-")
+                putExtra(DetailActivity.EXTRA_PLATFORM_NAME, platformNamesMap[vg.platform_id] ?: "-")
+                putExtra(DetailActivity.EXTRA_PRICE, vg.price)
+                putExtra(DetailActivity.EXTRA_DESCRIPTION, vg.description ?: "")
+            }
+            startActivity(intent)
+        }
         val searchView = findViewById<SearchView>(R.id.searchView)
         val spinnerPlatform = findViewById<Spinner>(R.id.spinnerPlatform)
         val spinnerGenre = findViewById<Spinner>(R.id.spinnerGenre)
@@ -103,34 +122,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        lifecycleScope.launch {
-            try {
-                platforms = repository.getPlatforms()
-                genres = repository.getGenres()
-                allVideogames = repository.getVideogames()
-
-                platformNamesMap = platforms.associate { it.id to it.name }
-                genreNamesMap = genres.associate { it.id to it.name }
-
-                setupSpinners(spinnerPlatform, spinnerGenre)
-                adapter.submit(allVideogames, genreNamesMap, platformNamesMap)
-                adapter.setOnItemClickListener { vg ->
-                    val intent = Intent(this@MainActivity, DetailActivity::class.java).apply {
-                        putExtra(DetailActivity.EXTRA_ID, vg.id)
-                        putExtra(DetailActivity.EXTRA_IMAGE_URL, vg.cover_image?.url)
-                        putExtra(DetailActivity.EXTRA_TITLE, vg.title)
-                        putExtra(DetailActivity.EXTRA_GENRE_NAME, genreNamesMap[vg.genre_id] ?: "-")
-                        putExtra(DetailActivity.EXTRA_PLATFORM_NAME, platformNamesMap[vg.platform_id] ?: "-")
-                        putExtra(DetailActivity.EXTRA_PRICE, vg.price)
-                        putExtra(DetailActivity.EXTRA_DESCRIPTION, vg.description ?: "")
-                    }
-                    startActivity(intent)
-                }
-            } catch (e: Exception) {
-                // TODO: manejar error (mostrar mensaje)
-            }
-        }
-
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 applyFilters(searchView.query.toString(), spinnerPlatform, spinnerGenre)
@@ -150,6 +141,27 @@ class MainActivity : AppCompatActivity() {
         spinnerGenre.setOnItemSelectedListener(SimpleItemSelectedListener { 
             applyFilters(searchView.query.toString(), spinnerPlatform, spinnerGenre)
         })
+    }
+
+    private fun loadInitialData() {
+        lifecycleScope.launch {
+            try {
+                platforms = repository.getPlatforms()
+                genres = repository.getGenres()
+                allVideogames = repository.getVideogames()
+
+                platformNamesMap = platforms.associate { it.id to it.name }
+                genreNamesMap = genres.associate { it.id to it.name }
+
+                val spinnerPlatform = findViewById<Spinner>(R.id.spinnerPlatform)
+                val spinnerGenre = findViewById<Spinner>(R.id.spinnerGenre)
+                setupSpinners(spinnerPlatform, spinnerGenre)
+
+                adapter.submit(allVideogames, genreNamesMap, platformNamesMap)
+            } catch (e: Exception) {
+                // TODO: manejar error (mostrar mensaje)
+            }
+        }
     }
 
     // Refresca el icono del carrito al reanudar la actividad

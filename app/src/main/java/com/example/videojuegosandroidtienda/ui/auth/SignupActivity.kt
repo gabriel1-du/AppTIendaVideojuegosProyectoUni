@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import android.widget.Toast
 import android.content.Intent
 import com.example.videojuegosandroidtienda.data.network.TokenStore
-import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
+import com.example.videojuegosandroidtienda.MainActivity
 import retrofit2.HttpException
 import android.util.Log
 
@@ -39,22 +39,19 @@ class SignupActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
             if (password.length < 8) {
-                Toast.makeText(this@SignupActivity, "La contraseña debe ser mas de 8 caracteres", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@SignupActivity, "La contraseña debe tener mas de 8 caracteres", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             if (!password.any { it.isLetter() }) {
-                Toast.makeText(this@SignupActivity, "La contraseñai debe conetenr un caracter", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@SignupActivity, "La contraseña debe contener al menos un carácter", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             lifecycleScope.launch {
                 try {
                     repository.register(name, email, password)
-                    // No iniciar sesión automáticamente tras crear cuenta
-                    TokenStore.token = null
-                    Toast.makeText(this@SignupActivity, "Cuenta creada. Inicia sesión.", Toast.LENGTH_SHORT).show()
-                    // Ir a pantalla de login y prellenar el email
-                    val intent = Intent(this@SignupActivity, LoginActivity::class.java)
-                    intent.putExtra("prefill_email", email)
+                    // Iniciar sesión automáticamente y redirigir a MainActivity
+                    repository.login(email, password)
+                    val intent = Intent(this@SignupActivity, MainActivity::class.java)
                     startActivity(intent)
                     finish()
                 } catch (e: Exception) {

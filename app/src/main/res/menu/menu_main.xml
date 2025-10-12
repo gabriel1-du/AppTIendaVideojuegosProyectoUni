@@ -13,4 +13,8 @@
         android:id="@+id/action_cart"
         android:title="Carrito"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/action_refresh"
+        android:title="Refrescar"
+        app:showAsAction="ifRoom" />
 </menu>
