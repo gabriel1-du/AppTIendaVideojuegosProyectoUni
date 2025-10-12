@@ -11,7 +11,7 @@ object CartManager {
         items[product.id] = product to (current + quantity)
     }
 
-    // Elimina producto del carrito por id
+    // Elimina producto del carrito por id(En desuso al no tener un boton que haga eso)
     fun remove(productId: String) {
         items.remove(productId)
     }

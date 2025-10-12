@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.videojuegosandroidtienda.MainActivity
 import com.example.videojuegosandroidtienda.R
+import com.example.videojuegosandroidtienda.data.functions.setupBottomNavigation
 import com.example.videojuegosandroidtienda.data.network.TokenStore
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository
 import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
@@ -33,7 +34,8 @@ class ProfileActivity : AppCompatActivity() {
             return
         }
 
-        setupBottomNav()
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        setupBottomNavigation(this, bottomNav, R.id.nav_profile)
 
         val textName = findViewById<TextView>(R.id.textName)
         val textEmail = findViewById<TextView>(R.id.textEmail)
@@ -56,28 +58,6 @@ class ProfileActivity : AppCompatActivity() {
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             })
             finish()
-        }
-    }
-
-    // Configura navegación inferior y marca Perfil como seleccionado
-    private fun setupBottomNav() {
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
-        bottomNav.selectedItemId = R.id.nav_profile
-        bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_search -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
-                    true
-                }
-                R.id.nav_cart -> {
-                    startActivity(Intent(this, com.example.videojuegosandroidtienda.ui.cart.CartActivity::class.java))
-                    finish()
-                    true
-                }
-                R.id.nav_profile -> true
-                else -> false
-            }
         }
     }
 }

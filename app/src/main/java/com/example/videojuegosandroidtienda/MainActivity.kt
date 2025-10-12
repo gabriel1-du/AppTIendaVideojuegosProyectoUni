@@ -1,30 +1,30 @@
 package com.example.videojuegosandroidtienda
 
+import android.content.Intent
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.ArrayAdapter
-import androidx.appcompat.widget.SearchView
+import android.widget.Spinner
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.entities.Genre
 import com.example.videojuegosandroidtienda.data.entities.Platform
 import com.example.videojuegosandroidtienda.data.entities.Videogame
+import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
+import com.example.videojuegosandroidtienda.data.functions.showCustomOkToast
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository
-import com.example.videojuegosandroidtienda.ui.detail.DetailActivity
-import com.example.videojuegosandroidtienda.ui.main.VideogameAdapter
-import com.example.videojuegosandroidtienda.ui.main.SimpleItemSelectedListener
-import com.google.android.material.appbar.MaterialToolbar
-import android.view.MenuItem
-import androidx.core.content.ContextCompat
 import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
-import kotlinx.coroutines.launch
-import android.widget.Spinner
-import android.content.Intent
+import com.example.videojuegosandroidtienda.ui.detail.DetailActivity
+import com.example.videojuegosandroidtienda.ui.main.SimpleItemSelectedListener
+import com.example.videojuegosandroidtienda.ui.main.VideogameAdapter
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private val repository = StoreRepository()
@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.action_refresh -> {
+                    showCustomOkToast(this, "Refrescando...")
                     loadInitialData()
                     true
                 }
@@ -154,7 +155,7 @@ class MainActivity : AppCompatActivity() {
                 val spinnerGenre = findViewById<Spinner>(R.id.spinnerGenre)
                 setupSpinners(spinnerPlatform, spinnerGenre)
             } catch (e: Exception) {
-                // TODO: manejar error (mostrar mensaje)
+                showCustomErrorToast(this@MainActivity, "Error al cargar datos")
             }
         }
     }
@@ -200,5 +201,9 @@ class MainActivity : AppCompatActivity() {
         platformNamesMap = platforms.associate { it.id to it.name }
         genreNamesMap = genres.associate { it.id to it.name }
         adapter.submit(filtered, genreNamesMap, platformNamesMap)
+
+        if (filtered.isEmpty()) { //Si no se encuentra nada con aquellas busquedas
+            showCustomErrorToast(this, "No se encontraron resultados")
+        }
     }
 }

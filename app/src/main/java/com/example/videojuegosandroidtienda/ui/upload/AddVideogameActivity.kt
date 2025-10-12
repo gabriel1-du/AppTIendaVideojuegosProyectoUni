@@ -32,6 +32,8 @@ import android.util.Log
 import androidx.appcompat.app.AlertDialog
 import android.content.ClipboardManager
 import android.content.ClipData
+import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
+import com.example.videojuegosandroidtienda.data.functions.showCustomOkToast
 
 class AddVideogameActivity : AppCompatActivity() {
     companion object {
@@ -90,14 +92,14 @@ class AddVideogameActivity : AppCompatActivity() {
                     genreNames
                 )
             } catch (e: Exception) {
-                showCustomErrorToast("Error al cargar listas: ${e.message}, comunicar con soporte")
+                showCustomErrorToast(this@AddVideogameActivity, "Error al cargar listas: ${e.message}, comunicar con soporte")
             }
         }
 
         buttonUpload.setOnClickListener {
             val token = TokenStore.token
             if (token.isNullOrBlank()) {
-                showCustomErrorToast("Debes iniciar sesión para subir")
+                showCustomErrorToast(this,"Debes iniciar sesión para subir un videojuego")
                 startActivity(Intent(this, com.example.videojuegosandroidtienda.ui.auth.LoginActivity::class.java))
                 return@setOnClickListener
             }
@@ -109,32 +111,32 @@ class AddVideogameActivity : AppCompatActivity() {
             val description = inputDescription.text?.toString()?.trim()
 
             if (title.isBlank()) {
-                showCustomErrorToast("Por favor, ingresa el nombre del videojuego")
+                showCustomErrorToast(this, "Por favor, ingresa el nombre del videojuego")
                 return@setOnClickListener
             }
             if (uri == null) {
-                showCustomErrorToast("Selecciona una portada para el videojuego")
+                showCustomErrorToast(this,"Selecciona una portada para el videojuego")
                 return@setOnClickListener
             }
             if (platformPos !in platforms.indices) {
-                showCustomErrorToast("Selecciona una plataforma")
+                showCustomErrorToast(this,"Selecciona una plataforma")
                 return@setOnClickListener
             }
             if (genrePos !in genres.indices) {
-                showCustomErrorToast("Selecciona un género")
+                showCustomErrorToast(this,"Selecciona un género")
                 return@setOnClickListener
             }
             if (priceText.isBlank()) {
-                showCustomErrorToast("Ingresa el precio")
+                showCustomErrorToast(this,"Ingresa el precio")
                 return@setOnClickListener
             }
             val priceInt = priceText.toIntOrNull()
             if (priceInt == null || priceInt <= 0) {
-                showCustomErrorToast("Precio inválido (usa enteros)")
+                showCustomErrorToast(this,"Precio inválido (usa enteros)")
                 return@setOnClickListener
             }
 
-            lifecycleScope.launch {
+            lifecycleScope.launch { //carga
                 try {
                     val imagePart = buildImagePartFromUri(uri)
                     val platformId = platforms[platformPos].id
@@ -156,7 +158,7 @@ class AddVideogameActivity : AppCompatActivity() {
                         overrideMime = mime
                     )
                     Log.i(TAG, "Subida exitosa del videojuego: title=$title")
-                    showCustomOkToast("Videojuego subido correctamente")
+                    showCustomOkToast(this@AddVideogameActivity, "Videojuego subido exitosamente")
                     finish()
                 } catch (e: Exception) {
                     val msg = when (e) {
@@ -171,50 +173,15 @@ class AddVideogameActivity : AppCompatActivity() {
                             e.message ?: "Error desconocido"
                         }
                     }
-                    showErrorDialog("Error al subir: $msg")
+                    showCustomErrorToast(this@AddVideogameActivity,"Error al subir: $msg")
                 }
             }
         }
     }
 
-    private fun showCustomErrorToast(message: String) { //funcion que ojola el
-        val inflater = layoutInflater
-        val layout = inflater.inflate(R.layout.custom_toast_error, null)
-        val textView = layout.findViewById<TextView>(R.id.toast_text)
-        textView.text = message
-        with(Toast(applicationContext)) {
-            duration = Toast.LENGTH_LONG
-            view = layout
-            show()
-        }
-    }
 
-    private fun showCustomOkToast(message: String) { //Funcion para mostrar que esta funcionando
-        val inflater = layoutInflater
-        val layout = inflater.inflate(R.layout.custom_toast_ok, null)
-        val textView = layout.findViewById<TextView>(R.id.toast_text)
-        textView.text = message
-        with(Toast(applicationContext)) {
-            duration = Toast.LENGTH_LONG
-            view = layout
-            show()
-        }
-    }
 
-    private fun showErrorDialog(message: String) {
-        val dialog = AlertDialog.Builder(this)
-            .setTitle("Error al subir")
-            .setMessage(message)
-            .setPositiveButton("Cerrar", null)
-            .setNeutralButton("Copiar") { _, _ ->
-                val cm = getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                cm.setPrimaryClip(ClipData.newPlainText("Error", message))
-                showCustomOkToast("Error copiado al portapapeles")
-            }
-            .create()
-        dialog.show()
-    }
-
+    
     private fun buildImagePartFromUri(uri: Uri): MultipartBody.Part {
         val contentResolver = applicationContext.contentResolver
         val fileName = queryDisplayName(uri) ?: "cover.jpg"

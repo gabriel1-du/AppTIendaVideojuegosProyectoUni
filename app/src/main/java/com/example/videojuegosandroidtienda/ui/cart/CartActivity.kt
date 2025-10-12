@@ -12,6 +12,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.videojuegosandroidtienda.MainActivity
 import com.example.videojuegosandroidtienda.R
+import com.example.videojuegosandroidtienda.data.functions.setupBottomNavigation
 import com.example.videojuegosandroidtienda.data.network.TokenStore
 import com.example.videojuegosandroidtienda.data.cart.CartManager
 import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
@@ -35,7 +36,8 @@ class CartActivity : AppCompatActivity() {
             return
         }
 
-        setupBottomNav()
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
+        setupBottomNavigation(this, bottomNav, R.id.nav_cart)
 
         val itemsContainer = findViewById<LinearLayout>(R.id.cartItemsContainer)
         val totalText = findViewById<TextView>(R.id.cartTotal)
@@ -112,28 +114,6 @@ class CartActivity : AppCompatActivity() {
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             })
             finish()
-        }
-    }
-
-    // Configura navegación inferior y selección en Carrito
-    private fun setupBottomNav() {
-        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
-        bottomNav.selectedItemId = R.id.nav_cart
-        bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_search -> {
-                    startActivity(Intent(this, MainActivity::class.java))
-                    finish()
-                    true
-                }
-                R.id.nav_cart -> true
-                R.id.nav_profile -> {
-                    startActivity(Intent(this, com.example.videojuegosandroidtienda.ui.profile.ProfileActivity::class.java))
-                    finish()
-                    true
-                }
-                else -> false
-            }
         }
     }
 
