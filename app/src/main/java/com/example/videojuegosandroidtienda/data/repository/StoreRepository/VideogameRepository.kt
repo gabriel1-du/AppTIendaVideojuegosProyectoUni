@@ -6,13 +6,12 @@ import com.example.videojuegosandroidtienda.data.entities.Genre
 import com.example.videojuegosandroidtienda.data.entities.Platform
 import com.example.videojuegosandroidtienda.data.entities.UploadResponse
 import com.example.videojuegosandroidtienda.data.entities.Videogame
-import com.example.videojuegosandroidtienda.data.entities.createClasses.CoverImageRef
-import com.example.videojuegosandroidtienda.data.entities.createClasses.CreateVideogameRequest
+import com.example.videojuegosandroidtienda.data.entities.VideogamePost2
 import com.example.videojuegosandroidtienda.data.network.ApiConfig
 import com.example.videojuegosandroidtienda.data.network.RetrofitProvider
 import okhttp3.MultipartBody
 import retrofit2.HttpException
-import java.util.UUID
+
 
 class VideogameRepository {
 
@@ -47,48 +46,26 @@ class VideogameRepository {
         return uploadClient.uploadFile(imagePart)
     }
 
+    suspend fun uploadImages(imageParts: List<MultipartBody.Part>): List<UploadResponse> {
+        return imageParts.map { uploadClient.uploadFile(it) }
+    }
+
 
     // Crea videojuego enviando JSON con cover_image completo
-    suspend fun createVideogameJson(
-        title: String,
-        platformId: String,
-        genreId: String,
-        price: Int,
-        description: String?,
-        cover: UploadResponse,
-        overrideName: String? = null,
-        overrideMime: String? = null
+    suspend fun createVideogame(
+        videogame: VideogamePost2
     ): Videogame {
-        val req = CreateVideogameRequest(
-            id = UUID.randomUUID().toString(), // Genera UUID único
-            created_at = System.currentTimeMillis(), // Timestamp actual en ms
-            title = title,
-            price = price,
-            description = description ?: "",
-            cover_image = CoverImageRef(
-                path = cover.path,
-                name = cover.name ?: overrideName,
-                mime = cover.mime ?: overrideMime,
-                access = cover.access,
-                type = cover.type,
-                size = cover.size,
-                url = cover.url,
-                meta = cover.meta // Asegura que meta se incluya si existe
-            ),
-            genre_id = genreId,
-            platform_id = platformId
-        )
         // LOG: Imprimir JSON, URL y headers
         val gson = com.google.gson.GsonBuilder().setPrettyPrinting().create()
-        android.util.Log.d("VideogameUpload", "JSON enviado: " + gson.toJson(req))
+        android.util.Log.d("VideogameUpload", "JSON enviado: " + gson.toJson(videogame))
         android.util.Log.d("VideogameUpload", "URL: " + ApiConfig.STORE_BASE_URL + "videogame")
         android.util.Log.d("VideogameUpload", "Token: " + (com.example.videojuegosandroidtienda.data.network.TokenStore.token ?: "(sin token)"))
         try {
-            return storeService.createVideogame(req)
+            return storeService.createVideogame(videogame)
         } catch (e: HttpException) {
             if (e.code() == 404) {
                 // Fallback absoluto al endpoint
-                return storeService.createVideogameAbsolute(req)
+                return storeService.createVideogameAbsolute(videogame)
             }
             throw e
         }

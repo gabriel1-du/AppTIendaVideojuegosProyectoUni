@@ -9,7 +9,7 @@ import retrofit2.http.Part
 interface UploadService {
     @Multipart
     @POST("https://x8ki-letl-twmt.n7.xano.io/api:k6eLeFyi/upload/image")
-    suspend fun uploadFile(
+    suspend  fun uploadFile(
         @Part file: MultipartBody.Part
     ): UploadResponse
 }

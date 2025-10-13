@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.Packaging
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -33,8 +35,13 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    packagingOptions {
-        exclude("META-INF/DEPENDENCIES")
+
+    packaging {
+        resources {
+            excludes.add("META-INF/DEPENDENCIES")
+            excludes.add("META-INF/INDEX.LIST")
+            excludes.add("META-INF/io.netty.versions.properties")
+        }
     }
 }
 
@@ -58,6 +65,7 @@ dependencies {
     // JWT Decode
     implementation("com.auth0:java-jwt:4.4.0")
     implementation("commons-codec:commons-codec:1.15")
+    implementation(libs.firebase.appdistribution.gradle)
     // Network inspector
     debugImplementation(libs.chucker)
     releaseImplementation(libs.chuckerNoOp)

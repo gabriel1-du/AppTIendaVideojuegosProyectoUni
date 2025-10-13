@@ -1,7 +1,5 @@
 package com.example.videojuegosandroidtienda.data.upload
 
-import com.example.videojuegosandroidtienda.data.upload.UploadService
-import com.example.videojuegosandroidtienda.data.upload.UploadFilesService
 import com.example.videojuegosandroidtienda.data.entities.UploadResponse
 import com.example.videojuegosandroidtienda.data.network.ApiConfig
 import com.example.videojuegosandroidtienda.data.network.RetrofitProvider
