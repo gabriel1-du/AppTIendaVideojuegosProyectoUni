@@ -7,7 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.videojuegosandroidtienda.R
-import com.example.videojuegosandroidtienda.data.repository.StoreRepository
+import com.example.videojuegosandroidtienda.data.repository.AuthRepository
 import kotlinx.coroutines.launch
 import android.widget.Toast
 import android.content.Intent
@@ -17,7 +17,7 @@ import android.util.Log
 import android.widget.TextView
 
 class SignupActivity : AppCompatActivity() {
-    private val repository = StoreRepository()
+    private val repository = AuthRepository()
 
     // Registra usuario y redirige según resultado
     override fun onCreate(savedInstanceState: Bundle?) {

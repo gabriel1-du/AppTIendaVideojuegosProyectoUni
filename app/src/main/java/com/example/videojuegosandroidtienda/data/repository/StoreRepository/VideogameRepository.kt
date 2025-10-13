@@ -1,55 +1,32 @@
-package com.example.videojuegosandroidtienda.data.repository
+package com.example.videojuegosandroidtienda.data.repository.StoreRepository
 
-import com.example.videojuegosandroidtienda.data.api.AuthService
+
 import com.example.videojuegosandroidtienda.data.api.StoreService
-// Upload services are encapsulated via UploadClient
-import com.example.videojuegosandroidtienda.data.entities.*
+import com.example.videojuegosandroidtienda.data.entities.Genre
+import com.example.videojuegosandroidtienda.data.entities.Platform
+import com.example.videojuegosandroidtienda.data.entities.UploadResponse
+import com.example.videojuegosandroidtienda.data.entities.Videogame
+import com.example.videojuegosandroidtienda.data.entities.createClasses.CoverImageRef
+import com.example.videojuegosandroidtienda.data.entities.createClasses.CreateVideogameRequest
 import com.example.videojuegosandroidtienda.data.network.ApiConfig
 import com.example.videojuegosandroidtienda.data.network.RetrofitProvider
-import com.example.videojuegosandroidtienda.data.network.TokenStore
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
-import com.example.videojuegosandroidtienda.data.entities.CreateVideogameRequest
-import com.example.videojuegosandroidtienda.data.entities.CoverImageRef
+import java.util.UUID
 
-class StoreRepository {
+class VideogameRepository {
+
     private val storeService: StoreService =
         RetrofitProvider.createService(ApiConfig.STORE_BASE_URL, StoreService::class.java)
-    private val authService: AuthService =
-        RetrofitProvider.createService(ApiConfig.AUTH_BASE_URL, AuthService::class.java)
-    private val uploadClient = com.example.videojuegosandroidtienda.data.upload.UploadClient()
 
-    // Obtiene lista de videojuegos desde el servicio de tienda
+    private val uploadClient = com.example.videojuegosandroidtienda.data.upload.UploadClient()
     suspend fun getVideogames(): List<Videogame> = storeService.listVideogames()
     // Obtiene plataformas disponibles
+
     suspend fun getPlatforms(): List<Platform> = storeService.listPlatforms()
     // Obtiene géneros disponibles
     suspend fun getGenres(): List<Genre> = storeService.listGenres()
-    // Lista carritos remotos (ejemplo/demo)
-    suspend fun getCarts(): List<Cart> = storeService.listCarts()
-    // Obtiene detalle de ítem de carrito por id
-    suspend fun getCartItem(id: String): CartItem = storeService.getCartItem(id)
-    // Obtiene datos del usuario autenticado
-    suspend fun getAuthMe(): User = authService.getAuthMe()
 
-    // Inicia sesión y devuelve token
-    suspend fun login(email: String, password: String): String {
-        val res = authService.login(LoginRequest(email, password))
-        TokenStore.token = res.token
-        return res.token
-    }
-
-    // Registra usuario y devuelve token
-    suspend fun register(name: String, email: String, password: String): String {
-        // Usar explícitamente /auth/signup según endpoints proporcionados
-        val res = authService.signup(SignupRequest(name, email, password))
-        TokenStore.token = res.token
-        return res.token
-    }
-
-    // Filtra videojuegos por texto, plataforma y género
     fun filterVideogames(
         all: List<Videogame>,
         query: String?,
@@ -83,7 +60,7 @@ class StoreRepository {
         overrideMime: String? = null
     ): Videogame {
         val req = CreateVideogameRequest(
-            id = java.util.UUID.randomUUID().toString(), // Genera UUID único
+            id = UUID.randomUUID().toString(), // Genera UUID único
             created_at = System.currentTimeMillis(), // Timestamp actual en ms
             title = title,
             price = price,
@@ -117,5 +94,6 @@ class StoreRepository {
         }
     }
 
-    
+
+
 }

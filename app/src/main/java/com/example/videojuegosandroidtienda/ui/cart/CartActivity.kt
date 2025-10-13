@@ -7,20 +7,29 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import com.example.videojuegosandroidtienda.MainActivity
-import com.example.videojuegosandroidtienda.R
-import com.example.videojuegosandroidtienda.data.functions.setupBottomNavigation
-import com.example.videojuegosandroidtienda.data.network.TokenStore
-import com.example.videojuegosandroidtienda.data.cart.CartManager
-import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import androidx.lifecycle.lifecycleScope
 import coil.imageLoader
 import coil.request.ImageRequest
+import com.example.videojuegosandroidtienda.MainActivity
+import com.example.videojuegosandroidtienda.R
+import com.example.videojuegosandroidtienda.data.cart.CartManager
+import com.example.videojuegosandroidtienda.data.entities.Cart
+import com.example.videojuegosandroidtienda.data.functions.setupBottomNavigation
+import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
+import com.example.videojuegosandroidtienda.data.functions.showCustomOkToast
+import com.example.videojuegosandroidtienda.data.network.TokenStore
+import com.example.videojuegosandroidtienda.data.repository.AuthRepository
+import com.example.videojuegosandroidtienda.data.repository.StoreRepository.CartRepository
+import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import kotlinx.coroutines.launch
 
 class CartActivity : AppCompatActivity() {
+
+    private val cartRepository = CartRepository()
+    private val authRepository = AuthRepository()
 
     // Renderiza el carrito y prepara acciones de compra
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,21 +108,35 @@ class CartActivity : AppCompatActivity() {
         renderCart()
 
         payButton.setOnClickListener {
-            val inflater = layoutInflater
-                        val layout = inflater.inflate(R.layout.custom_toast_error, null)
+            if (CartManager.getItems().isEmpty()) {
+                showCustomErrorToast(this, "No hay productos en el carrito")
+            } else {
+                lifecycleScope.launch {
+                    try {
+                        // Obtenemos el usuario autenticado desde el backend
+                        val user = authRepository.getAuthMe()
+                        val userId = user.id
 
-                        val textView = layout.findViewById<TextView>(R.id.toast_text)
-                        textView.text = "compra exitosamente realizada"
+                        val cart = Cart(
+                            id = "", // El ID se genera en el backend
+                            user_id = userId,
+                            total = CartManager.getTotal(),
+                            created_at = System.currentTimeMillis()
+                        )
+                        cartRepository.postCart(cart)
 
-                        with (Toast(applicationContext)) {
-                            duration = Toast.LENGTH_LONG
-                            view = layout
-                            show()
-                        }
-            startActivity(Intent(this@CartActivity, MainActivity::class.java).apply {
-                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
-            })
-            finish()
+                        CartManager.clear()
+                        showCustomOkToast(this@CartActivity, "Se ha realizado exitosamente la compra")
+
+                        startActivity(Intent(this@CartActivity, MainActivity::class.java).apply {
+                            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+                        })
+                        finish()
+                    } catch (e: Exception) {
+                        showCustomErrorToast(this@CartActivity, "Error al procesar la compra: ${e.message}")
+                    }
+                }
+            }
         }
     }
 

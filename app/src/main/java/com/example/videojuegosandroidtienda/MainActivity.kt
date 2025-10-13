@@ -17,7 +17,8 @@ import com.example.videojuegosandroidtienda.data.entities.Platform
 import com.example.videojuegosandroidtienda.data.entities.Videogame
 import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
 import com.example.videojuegosandroidtienda.data.functions.showCustomOkToast
-import com.example.videojuegosandroidtienda.data.repository.StoreRepository
+import com.example.videojuegosandroidtienda.data.repository.AuthRepository
+import com.example.videojuegosandroidtienda.data.repository.StoreRepository.VideogameRepository
 import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
 import com.example.videojuegosandroidtienda.ui.detail.DetailActivity
 import com.example.videojuegosandroidtienda.ui.main.SimpleItemSelectedListener
@@ -27,7 +28,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
-    private val repository = StoreRepository()
+    private val AuthRepository = AuthRepository() //Repo auth
+
+    private val VideogameRepository = VideogameRepository() //Repo videogame
+
     private val adapter = VideogameAdapter()
 
     private var allVideogames: List<Videogame> = emptyList()
@@ -144,9 +148,9 @@ class MainActivity : AppCompatActivity() {
     private fun loadInitialData() {
         lifecycleScope.launch {
             try {
-                platforms = repository.getPlatforms()
-                genres = repository.getGenres()
-                allVideogames = repository.getVideogames()
+                platforms = VideogameRepository.getPlatforms()
+                genres = VideogameRepository.getGenres()
+                allVideogames = VideogameRepository.getVideogames()
 
                 platformNamesMap = platforms.associate { it.id to it.name }
                 genreNamesMap = genres.associate { it.id to it.name }
@@ -197,7 +201,7 @@ class MainActivity : AppCompatActivity() {
         val platformId = platforms.firstOrNull { it.name == selectedPlatformName }?.id
         val genreId = genres.firstOrNull { it.name == selectedGenreName }?.id
 
-        val filtered = repository.filterVideogames(allVideogames, query, platformId, genreId)
+        val filtered = VideogameRepository.filterVideogames(allVideogames, query, platformId, genreId)
         platformNamesMap = platforms.associate { it.id to it.name }
         genreNamesMap = genres.associate { it.id to it.name }
         adapter.submit(filtered, genreNamesMap, platformNamesMap)

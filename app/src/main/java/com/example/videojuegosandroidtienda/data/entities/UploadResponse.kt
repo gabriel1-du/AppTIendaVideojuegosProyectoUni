@@ -1,5 +1,7 @@
 package com.example.videojuegosandroidtienda.data.entities
 
+import com.example.videojuegosandroidtienda.data.entities.createClasses.ImageMeta
+
 data class UploadResponse(
     val path: String,
     val mime: String?,

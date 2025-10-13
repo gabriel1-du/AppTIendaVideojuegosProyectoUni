@@ -30,11 +30,7 @@ object CartManager {
     }
 
     // Fija cantidad explícita (elimina si es 0)
-    fun setQuantity(productId: String, quantity: Int) {
-        val pair = items[productId] ?: return
-        val q = quantity.coerceAtLeast(0)
-        if (q <= 0) items.remove(productId) else items[productId] = pair.first to q
-    }
+
 
     // Devuelve lista de productos con sus cantidades
     fun getItems(): List<Pair<CartProduct, Int>> = items.values.toList()

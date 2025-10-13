@@ -33,6 +33,9 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+    packagingOptions {
+        exclude("META-INF/DEPENDENCIES")
+    }
 }
 
 dependencies {
@@ -52,6 +55,9 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     // Image loading
     implementation(libs.coil)
+    // JWT Decode
+    implementation("com.auth0:java-jwt:4.4.0")
+    implementation("commons-codec:commons-codec:1.15")
     // Network inspector
     debugImplementation(libs.chucker)
     releaseImplementation(libs.chuckerNoOp)

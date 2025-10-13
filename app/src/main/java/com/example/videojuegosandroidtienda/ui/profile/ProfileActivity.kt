@@ -12,13 +12,13 @@ import com.example.videojuegosandroidtienda.MainActivity
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.functions.setupBottomNavigation
 import com.example.videojuegosandroidtienda.data.network.TokenStore
-import com.example.videojuegosandroidtienda.data.repository.StoreRepository
+import com.example.videojuegosandroidtienda.data.repository.AuthRepository
 import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
 
 class ProfileActivity : AppCompatActivity() {
-    private val repository = StoreRepository()
+    private val repository = AuthRepository()
 
     // Muestra nombre y email del usuario y permite cerrar sesión
     override fun onCreate(savedInstanceState: Bundle?) {

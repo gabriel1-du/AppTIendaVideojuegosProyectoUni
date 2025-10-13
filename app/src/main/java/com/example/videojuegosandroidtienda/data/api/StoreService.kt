@@ -1,13 +1,12 @@
 package com.example.videojuegosandroidtienda.data.api
 
 import com.example.videojuegosandroidtienda.data.entities.*
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Body
 import retrofit2.http.Path
-import com.example.videojuegosandroidtienda.data.entities.CreateVideogameRequest
+import com.example.videojuegosandroidtienda.data.entities.createClasses.CreateVideogameRequest
+import com.example.videojuegosandroidtienda.data.entities.createClasses.cartPost
 
 interface StoreService {
     @GET("videogame")
@@ -22,6 +21,9 @@ interface StoreService {
     @GET("cart")
     suspend fun listCarts(): List<Cart>
 
+    @POST("cart")
+    suspend fun createCart(@Body req: cartPost): Cart
+
     @GET("cart_item/{id}")
     suspend fun getCartItem(@Path("id") id: String): CartItem
 
@@ -35,4 +37,6 @@ interface StoreService {
     suspend fun createVideogameAbsolute(
         @Body req: CreateVideogameRequest
     ): Videogame
+
+
 }

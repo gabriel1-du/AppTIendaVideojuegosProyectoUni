@@ -10,8 +10,6 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.ArrayAdapter
-import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -19,7 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import coil.imageLoader
 import coil.request.ImageRequest
 import com.example.videojuegosandroidtienda.R
-import com.example.videojuegosandroidtienda.data.repository.StoreRepository
+import com.example.videojuegosandroidtienda.data.repository.AuthRepository
 import com.example.videojuegosandroidtienda.data.entities.Platform
 import com.example.videojuegosandroidtienda.data.entities.Genre
 import kotlinx.coroutines.launch
@@ -29,17 +27,18 @@ import okhttp3.RequestBody
 import android.content.Intent
 import com.example.videojuegosandroidtienda.data.network.TokenStore
 import android.util.Log
-import androidx.appcompat.app.AlertDialog
-import android.content.ClipboardManager
-import android.content.ClipData
 import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
 import com.example.videojuegosandroidtienda.data.functions.showCustomOkToast
+import com.example.videojuegosandroidtienda.data.repository.StoreRepository.VideogameRepository
 
 class AddVideogameActivity : AppCompatActivity() {
     companion object {
         private const val TAG = "AddVideogameActivity"
     }
-    private val repository = StoreRepository()
+    private val AuthRepository = AuthRepository() //repo auth
+
+    private val VidegameRepository = VideogameRepository() //repo videogame
+    
     private var selectedImageUri: Uri? = null
     private var platforms: List<Platform> = emptyList()
     private var genres: List<Genre> = emptyList()
@@ -77,8 +76,8 @@ class AddVideogameActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                platforms = repository.getPlatforms()
-                genres = repository.getGenres()
+                platforms = VidegameRepository.getPlatforms()
+                genres = VidegameRepository.getGenres()
                 val platformNames = platforms.map { it.name }
                 val genreNames = genres.map { it.name }
                 spinnerPlatform.adapter = ArrayAdapter( //traer desde la bda
@@ -145,9 +144,9 @@ class AddVideogameActivity : AppCompatActivity() {
                     val mime = contentResolver.getType(uri)
                     val fileName = queryDisplayName(uri) ?: "(desconocido)"
                     Log.d(TAG, "Subiendo videojuego -> title=$title, platform_id=$platformId, genre_id=$genreId, price=$priceInt, descriptionLen=${description?.length ?: 0}, cover_image(name=$fileName, mime=$mime)")
-                    val cover = repository.uploadCoverImage(imagePart)
+                    val cover = VidegameRepository.uploadCoverImage(imagePart)
                     Log.d(TAG, "Upload OK, cover_image.path=${cover.path}, name=${cover.name}, mime=${cover.mime}")
-                    repository.createVideogameJson(
+                    VidegameRepository.createVideogameJson(
                         title = title,
                         platformId = platformId,
                         genreId = genreId,

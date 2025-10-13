@@ -9,7 +9,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.videojuegosandroidtienda.R
-import com.example.videojuegosandroidtienda.data.repository.StoreRepository
+import com.example.videojuegosandroidtienda.data.repository.AuthRepository
 import kotlinx.coroutines.launch
 import android.widget.Toast
 import retrofit2.HttpException
@@ -17,7 +17,7 @@ import android.util.Log
 import com.example.videojuegosandroidtienda.MainActivity
 
 class LoginActivity : AppCompatActivity() {
-    private val repository = StoreRepository()
+    private val repository = AuthRepository()
 
     // Maneja inicio de sesión y navegación según autenticación
     override fun onCreate(savedInstanceState: Bundle?) {
