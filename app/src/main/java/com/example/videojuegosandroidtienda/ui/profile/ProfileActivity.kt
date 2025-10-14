@@ -26,6 +26,9 @@ class ProfileActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_profile)
 
+        // Cargar token persistido, si existe
+        repository.loadPersistedToken()
+
         // Si no hay sesión, enviar a login
         val token = TokenStore.token
         if (token.isNullOrBlank()) {
@@ -52,7 +55,7 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         buttonLogout.setOnClickListener {
-            TokenStore.token = null
+            repository.logout()
             Toast.makeText(this@ProfileActivity, "Sesión cerrada", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this@ProfileActivity, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)

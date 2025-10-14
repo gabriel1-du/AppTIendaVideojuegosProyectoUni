@@ -12,6 +12,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import retrofit2.HttpException
 import com.example.videojuegosandroidtienda.data.entities.Genre
 import com.example.videojuegosandroidtienda.data.entities.Platform
 import com.example.videojuegosandroidtienda.data.entities.Videogame
@@ -39,6 +40,8 @@ class MainActivity : AppCompatActivity() {
     private var genres: List<Genre> = emptyList()
     private var platformNamesMap: Map<String, String> = emptyMap()
     private var genreNamesMap: Map<String, String> = emptyMap()
+    private var lastDataLoadAt: Long = 0
+    private val MIN_REFRESH_INTERVAL_MS = 20_000L
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,8 +82,11 @@ class MainActivity : AppCompatActivity() {
                 else -> false
             }
         }
-        // Ajustar icono de carrito según estado inicial
+        // Cargar token persistido y ajustar iconos según estado inicial
+        AuthRepository.loadPersistedToken()
         updateCartIcon(toolbar)
+        val t0 = com.example.videojuegosandroidtienda.data.network.TokenStore.token
+        toolbar.menu.findItem(R.id.action_login)?.isVisible = t0.isNullOrBlank()
 
         adapter.setOnItemClickListener { vg ->
             val intent = Intent(this@MainActivity, DetailActivity::class.java).apply {
@@ -159,7 +165,11 @@ class MainActivity : AppCompatActivity() {
                 val spinnerGenre = findViewById<Spinner>(R.id.spinnerGenre)
                 setupSpinners(spinnerPlatform, spinnerGenre)
             } catch (e: Exception) {
-                showCustomErrorToast(this@MainActivity, "Error al cargar datos")
+                if (e is HttpException && e.code() == 429) {
+                    showCustomErrorToast(this@MainActivity, "Límite de API alcanzado. Espera ~20s e intenta de nuevo")
+                } else {
+                    showCustomErrorToast(this@MainActivity, "Error al cargar datos")
+                }
             }
         }
     }
@@ -169,7 +179,13 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         updateCartIcon(toolbar)
-        loadInitialData()
+        val t = com.example.videojuegosandroidtienda.data.network.TokenStore.token
+        toolbar.menu.findItem(R.id.action_login)?.isVisible = t.isNullOrBlank()
+        val now = System.currentTimeMillis()
+        if (now - lastDataLoadAt >= 20_000L || allVideogames.isEmpty()) {
+            lastDataLoadAt = now
+            loadInitialData()
+        }
         
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
         bottomNav.selectedItemId = R.id.nav_search
