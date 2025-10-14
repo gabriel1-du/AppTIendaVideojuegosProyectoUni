@@ -11,6 +11,9 @@ interface StoreService {
     @GET("videogame")
     suspend fun listVideogames(): List<Videogame>
 
+    @GET("videogame/{id}")
+    suspend fun getVideogame(@Path("id") id: String): com.example.videojuegosandroidtienda.data.entities.VideogamePost2
+
     @GET("platform")
     suspend fun listPlatforms(): List<Platform>
 

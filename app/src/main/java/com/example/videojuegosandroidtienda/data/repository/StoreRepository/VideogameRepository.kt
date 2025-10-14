@@ -71,6 +71,11 @@ class VideogameRepository {
         }
     }
 
+    // Obtiene un videojuego por id (incluye lista de imágenes adicionales)
+    suspend fun getVideogameById(id: String): VideogamePost2 {
+        return storeService.getVideogame(id)
+    }
+
 
 
 }

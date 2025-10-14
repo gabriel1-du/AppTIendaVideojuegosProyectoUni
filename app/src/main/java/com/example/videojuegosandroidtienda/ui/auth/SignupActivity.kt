@@ -108,7 +108,11 @@ class SignupActivity : AppCompatActivity() {
                         val inflater = layoutInflater
                         val layout = inflater.inflate(R.layout.custom_toast_error, null)
                         val textView = layout.findViewById<TextView>(R.id.toast_text)
-                        textView.text = "$baseMsg (HTTP $code)"
+                        textView.text = if (code == 429) {
+                            "Límite de API alcanzado. Espera ~20s e intenta de nuevo"
+                        } else {
+                            "$baseMsg (HTTP $code)"
+                        }
                         with(Toast(applicationContext)) {
                             duration = Toast.LENGTH_SHORT
                             view = layout

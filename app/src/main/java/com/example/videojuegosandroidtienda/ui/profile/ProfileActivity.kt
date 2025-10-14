@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import retrofit2.HttpException
 import com.example.videojuegosandroidtienda.MainActivity
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.functions.setupBottomNavigation
@@ -50,7 +51,11 @@ class ProfileActivity : AppCompatActivity() {
                 textName.text = "Nombre: ${user.name}"
                 textEmail.text = "Email: ${user.email}"
             } catch (e: Exception) {
-                Toast.makeText(this@ProfileActivity, "Error al cargar usuario", Toast.LENGTH_SHORT).show()
+                if (e is HttpException && e.code() == 429) {
+                    Toast.makeText(this@ProfileActivity, "Límite de API alcanzado. Espera ~20s e intenta de nuevo", Toast.LENGTH_SHORT).show()
+                } else {
+                    Toast.makeText(this@ProfileActivity, "Error al cargar usuario", Toast.LENGTH_SHORT).show()
+                }
             }
         }
 

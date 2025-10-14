@@ -22,8 +22,8 @@ import com.example.videojuegosandroidtienda.data.repository.AuthRepository
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.VideogameRepository
 import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
 import com.example.videojuegosandroidtienda.ui.detail.DetailActivity
-import com.example.videojuegosandroidtienda.ui.main.SimpleItemSelectedListener
-import com.example.videojuegosandroidtienda.ui.main.VideogameAdapter
+import com.example.videojuegosandroidtienda.ui.Adapter_CLickListener.SimpleItemSelectedListener
+import com.example.videojuegosandroidtienda.ui.Adapter_CLickListener.VideogameAdapter
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch

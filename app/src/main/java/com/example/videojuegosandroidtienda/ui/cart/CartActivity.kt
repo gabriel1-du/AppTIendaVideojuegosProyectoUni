@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import retrofit2.HttpException
 import coil.imageLoader
 import coil.request.ImageRequest
 import com.example.videojuegosandroidtienda.MainActivity
@@ -133,7 +134,11 @@ class CartActivity : AppCompatActivity() {
                         })
                         finish()
                     } catch (e: Exception) {
-                        showCustomErrorToast(this@CartActivity, "Error al procesar la compra: ${e.message}")
+                        if (e is HttpException && e.code() == 429) {
+                            showCustomErrorToast(this@CartActivity, "Límite de API alcanzado. Espera ~20s e intenta de nuevo")
+                        } else {
+                            showCustomErrorToast(this@CartActivity, "Error al procesar la compra: ${e.message}")
+                        }
                     }
                 }
             }

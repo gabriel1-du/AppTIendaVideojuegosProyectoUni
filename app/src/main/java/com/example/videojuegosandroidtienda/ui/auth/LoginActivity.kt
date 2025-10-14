@@ -81,6 +81,17 @@ class LoginActivity : AppCompatActivity() {
                                     show()
                                 }
                             }
+                            429 -> {
+                                val inflater = layoutInflater
+                                val layout = inflater.inflate(R.layout.custom_toast_error, null)
+                                val textView = layout.findViewById<TextView>(R.id.toast_text)
+                                textView.text = "Límite de API alcanzado. Espera ~20s e intenta de nuevo"
+                                with(Toast(applicationContext)) {
+                                    duration = Toast.LENGTH_SHORT
+                                    view = layout
+                                    show()
+                                }
+                            }
                             else -> {
                                 val errBody = e.response()?.errorBody()?.string()
                                 Log.e("LoginActivity", "HTTP ${e.code()} ${errBody ?: ""}")
