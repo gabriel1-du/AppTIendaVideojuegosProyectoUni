@@ -2,6 +2,7 @@ package com.example.videojuegosandroidtienda
 
 import android.content.Intent
 import android.os.Bundle
+import android.service.autofill.UserData
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.Spinner
@@ -15,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import retrofit2.HttpException
 import com.example.videojuegosandroidtienda.data.entities.Genre
 import com.example.videojuegosandroidtienda.data.entities.Platform
+import com.example.videojuegosandroidtienda.data.entities.User
 import com.example.videojuegosandroidtienda.data.entities.Videogame
 import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
 import com.example.videojuegosandroidtienda.data.functions.showCustomOkToast
@@ -24,6 +26,7 @@ import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
 import com.example.videojuegosandroidtienda.ui.detail.DetailActivity
 import com.example.videojuegosandroidtienda.ui.Adapter_CLickListener.SimpleItemSelectedListener
 import com.example.videojuegosandroidtienda.ui.Adapter_CLickListener.VideogameAdapter
+import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
@@ -33,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
     private val VideogameRepository = VideogameRepository() //Repo videogame
 
-    private val adapter = VideogameAdapter()
+    private val adapter = VideogameAdapter() //Adaptador para las tajetas
 
     private var allVideogames: List<Videogame> = emptyList()
     private var platforms: List<Platform> = emptyList()
@@ -41,7 +44,13 @@ class MainActivity : AppCompatActivity() {
     private var platformNamesMap: Map<String, String> = emptyMap()
     private var genreNamesMap: Map<String, String> = emptyMap()
     private var lastDataLoadAt: Long = 0
-    private val MIN_REFRESH_INTERVAL_MS = 20_000L
+
+    // Repositorio y usuario autenticado
+    private val userRepository = UserRepository()
+    private var currentUser: User? = null
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +69,9 @@ class MainActivity : AppCompatActivity() {
                 R.id.action_login -> {
                     startActivity(Intent(this, LoginActivity::class.java))
                     true
-                }
+
+
+                  }
                 R.id.action_upload_videogame -> {
                     startActivity(Intent(this, com.example.videojuegosandroidtienda.ui.upload.AddVideogameActivity::class.java))
                     true
@@ -87,6 +98,8 @@ class MainActivity : AppCompatActivity() {
         updateCartIcon(toolbar)
         val t0 = com.example.videojuegosandroidtienda.data.network.TokenStore.token
         toolbar.menu.findItem(R.id.action_login)?.isVisible = t0.isNullOrBlank()
+        // Actualizar visibilidad de opción de subir videojuego según rol
+        updateAdminUploadVisibility(toolbar)
 
         adapter.setOnItemClickListener { vg ->
             val intent = Intent(this@MainActivity, DetailActivity::class.java).apply {
@@ -181,6 +194,8 @@ class MainActivity : AppCompatActivity() {
         updateCartIcon(toolbar)
         val t = com.example.videojuegosandroidtienda.data.network.TokenStore.token
         toolbar.menu.findItem(R.id.action_login)?.isVisible = t.isNullOrBlank()
+        // Actualizar visibilidad de opción de subir videojuego según rol
+        updateAdminUploadVisibility(toolbar)
         val now = System.currentTimeMillis()
         if (now - lastDataLoadAt >= 20_000L || allVideogames.isEmpty()) {
             lastDataLoadAt = now
@@ -198,6 +213,28 @@ class MainActivity : AppCompatActivity() {
         toolbar.navigationIcon = null
         val menuItem = toolbar.menu.findItem(R.id.action_cart)
         menuItem?.isVisible = !t.isNullOrBlank()
+    }
+
+    // Actualiza visibilidad de "subir videojuego" según si el usuario es admin
+    private fun updateAdminUploadVisibility(toolbar: MaterialToolbar) {
+        lifecycleScope.launch {
+            try {
+                val token = com.example.videojuegosandroidtienda.data.network.TokenStore.token
+                val uploadItem = toolbar.menu.findItem(R.id.action_upload_videogame)
+                if (token.isNullOrBlank()) {
+                    uploadItem?.isVisible = false
+                    currentUser = null
+                } else {
+                    // Obtener usuario autenticado y luego sus datos por ID
+                    val authUser = AuthRepository.getAuthMe()
+                    val fetchedUser = userRepository.getUser(authUser.id)
+                    currentUser = fetchedUser
+                    uploadItem?.isVisible = fetchedUser.admin
+                }
+            } catch (_: Exception) {
+                toolbar.menu.findItem(R.id.action_upload_videogame)?.isVisible = false
+            }
+        }
     }
 
     // Inicializa los spinners de plataforma y género
