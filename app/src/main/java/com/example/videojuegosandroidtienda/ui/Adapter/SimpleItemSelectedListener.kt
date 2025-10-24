@@ -1,4 +1,4 @@
-package com.example.videojuegosandroidtienda.ui.Adapter_CLickListener
+package com.example.videojuegosandroidtienda.ui.Adapter
 
 import android.view.View
 import android.widget.AdapterView

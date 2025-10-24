@@ -18,7 +18,7 @@ import com.example.videojuegosandroidtienda.data.entities.CartProduct
 import com.example.videojuegosandroidtienda.data.cart.CartManager
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.VideogameRepository
 import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
-import com.example.videojuegosandroidtienda.ui.Adapter_CLickListener.ImageUrlAdapter
+import com.example.videojuegosandroidtienda.ui.Adapter.ImageUrlAdapter
 import retrofit2.HttpException
 
 class DetailActivity : AppCompatActivity() {

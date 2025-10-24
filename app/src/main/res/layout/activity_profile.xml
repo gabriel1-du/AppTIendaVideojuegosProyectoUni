@@ -45,7 +45,13 @@
             android:text="Cerrar sesión"
             android:layout_marginTop="16dp" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/buttonIraDashboard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ir a vista administrador" />
+
+        </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"

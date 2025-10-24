@@ -44,6 +44,10 @@ class ProfileActivity : AppCompatActivity() {
         val textName = findViewById<TextView>(R.id.textName)
         val textEmail = findViewById<TextView>(R.id.textEmail)
         val buttonLogout = findViewById<Button>(R.id.buttonLogout)
+        val buttonDashboard = findViewById<Button>(R.id.buttonIraDashboard)
+        buttonDashboard.setOnClickListener {
+            startActivity(Intent(this@ProfileActivity, com.example.videojuegosandroidtienda.ui.adminUi.VistaAdminDashboard::class.java))
+        }
 
         lifecycleScope.launch {
             try {

@@ -2,7 +2,6 @@ package com.example.videojuegosandroidtienda
 
 import android.content.Intent
 import android.os.Bundle
-import android.service.autofill.UserData
 import android.view.MenuItem
 import android.widget.ArrayAdapter
 import android.widget.Spinner
@@ -24,8 +23,8 @@ import com.example.videojuegosandroidtienda.data.repository.AuthRepository
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.VideogameRepository
 import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
 import com.example.videojuegosandroidtienda.ui.detail.DetailActivity
-import com.example.videojuegosandroidtienda.ui.Adapter_CLickListener.SimpleItemSelectedListener
-import com.example.videojuegosandroidtienda.ui.Adapter_CLickListener.VideogameAdapter
+import com.example.videojuegosandroidtienda.ui.Adapter.SimpleItemSelectedListener
+import com.example.videojuegosandroidtienda.ui.Adapter.VideogameAdapter
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
