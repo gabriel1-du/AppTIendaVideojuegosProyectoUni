@@ -27,7 +27,11 @@ class VistaAdminDashboard : AppCompatActivity() {
         }
 
         val recycler = findViewById<RecyclerView>(R.id.recyclerView)
-        val adapter = AdminCartAdapter(emptyList())
+        val adapter = AdminCartAdapter(emptyList()) { cart ->
+            val intent = android.content.Intent(this, com.example.videojuegosandroidtienda.ui.adminUi.CartDetailActivity::class.java)
+            intent.putExtra("cart_id", cart.id)
+            startActivity(intent)
+        }
         recycler.layoutManager = LinearLayoutManager(this)
         recycler.adapter = adapter
 
