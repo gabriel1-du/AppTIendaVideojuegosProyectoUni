@@ -10,11 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.lifecycle.lifecycleScope
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.CartRepository
+import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
 import com.example.videojuegosandroidtienda.ui.Adapter.AdminCartAdapter
+import com.example.videojuegosandroidtienda.ui.Adapter.AdminUserAdapter
 import kotlinx.coroutines.launch
 
 class VistaAdminDashboard : AppCompatActivity() {
     private val cartRepository = CartRepository()
+    private val userRepository = UserRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,18 +30,54 @@ class VistaAdminDashboard : AppCompatActivity() {
         }
 
         val recycler = findViewById<RecyclerView>(R.id.recyclerView)
-        val adapter = AdminCartAdapter(emptyList()) { cart ->
+        val cartAdapter = AdminCartAdapter(emptyList()) { cart ->
             val intent = android.content.Intent(this, com.example.videojuegosandroidtienda.ui.adminUi.CartDetailActivity::class.java)
             intent.putExtra("cart_id", cart.id)
             startActivity(intent)
         }
+        val userAdapter = AdminUserAdapter(emptyList()) { user ->
+            val intent = android.content.Intent(this, com.example.videojuegosandroidtienda.ui.adminUi.UserDetailActivity::class.java)
+            intent.putExtra("user_id", user.id)
+            startActivity(intent)
+        }
+
         recycler.layoutManager = LinearLayoutManager(this)
-        recycler.adapter = adapter
+        recycler.adapter = cartAdapter
+
+        val header = findViewById<android.widget.TextView>(R.id.textDashboardHeader)
+        val buttonUsuarios = findViewById<android.widget.Button>(R.id.buttonUsuariosDashboard)
+        val buttonCompras = findViewById<android.widget.Button>(R.id.buttonCompras)
+
+        buttonUsuarios.setOnClickListener {
+            header.text = "Lista de usuarios"
+            recycler.adapter = userAdapter
+            lifecycleScope.launch {
+                try {
+                    val users = userRepository.listUsers()
+                    userAdapter.submit(users)
+                } catch (_: Exception) {
+                    // Silenciar errores en la vista admin por ahora
+                }
+            }
+        }
+
+        buttonCompras.setOnClickListener {
+            header.text = "Lista de carritos"
+            recycler.adapter = cartAdapter
+            lifecycleScope.launch {
+                try {
+                    val carts = cartRepository.getCarts()
+                    cartAdapter.submit(carts)
+                } catch (_: Exception) {
+                    // Silenciar errores en la vista admin por ahora
+                }
+            }
+        }
 
         lifecycleScope.launch {
             try {
                 val carts = cartRepository.getCarts()
-                adapter.submit(carts)
+                cartAdapter.submit(carts)
             } catch (_: Exception) {
                 // Silenciar errores en la vista admin por ahora
             }
