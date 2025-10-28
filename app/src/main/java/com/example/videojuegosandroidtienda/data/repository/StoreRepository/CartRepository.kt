@@ -30,4 +30,17 @@ class CartRepository {
         )
     )
 
+    suspend fun updateCartApproval(cartId: String, approved: Boolean): com.example.videojuegosandroidtienda.data.api.CartResponse {
+        val current = cartService.getCartById(cartId)
+        val req = com.example.videojuegosandroidtienda.data.api.CartUpdateRequest(
+            id = current.id,
+            created_at = current.created_at,
+            total = current.total,
+            user_id = current.user_id,
+            aprobado = approved,
+            videogames_id = current.videogames_id
+        )
+        return cartService.patchCart(cartId, req)
+    }
+
 }

@@ -7,12 +7,14 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.videojuegosandroidtienda.R
 import android.widget.TextView
+import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
+import com.example.videojuegosandroidtienda.data.functions.showCustomOkToast
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.CartRepository
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.VideogameRepository
 import com.example.videojuegosandroidtienda.ui.Adapter.VideogameAdapter
@@ -50,8 +52,11 @@ class CartDetailActivity : AppCompatActivity() {
         recyclerViewVideogames.adapter = videogameAdapter
         recyclerViewVideogames.layoutManager = LinearLayoutManager(this)
 
+        val buttonApruebo = findViewById<Button>(R.id.buttonApruebo)
+        val buttonRechazo = findViewById<Button>(R.id.buttonRechazo)
+
         // Obtener cart_id del intent y cargar datos
-        val cartId = intent.getStringExtra("cart_id")
+        val cartId = intent.getStringExtra("cart_id")?.trim()
         if (cartId.isNullOrBlank()) {
             showCustomErrorToast(this, "No se pudo obtener el ID del carrito")
             finish()
@@ -80,7 +85,8 @@ class CartDetailActivity : AppCompatActivity() {
 
                 // Cargar videojuegos y filtrar por IDs del carrito
                 val allVideogames = videogameRepository.getVideogames()
-                val selected = allVideogames.filter { vg -> cart.videogames_id.contains(vg.id) }
+                val ids = cart.videogames_id ?: emptyList()
+                val selected = allVideogames.filter { vg -> ids.contains(vg.id) }
                 videogameAdapter.submit(selected, genreNames, platformNames)
             } catch (e: HttpException) {
                 if (e.code() == 429) {
@@ -90,6 +96,42 @@ class CartDetailActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 showCustomErrorToast(this@CartDetailActivity, "Error al cargar carrito: ${e.message}")
+            }
+        }
+
+        buttonApruebo.setOnClickListener {
+            lifecycleScope.launch {
+                try {
+                    val updated = cartRepository.updateCartApproval(cartId, true)
+                    textViewEstado.text = "Estado: ${if (updated.aprobado) "Aprobado" else "Pendiente"}"
+                    showCustomOkToast(this@CartDetailActivity, "Carrito aprobado correctamente")
+                } catch (e: HttpException) {
+                    if (e.code() == 429) {
+                        showCustomErrorToast(this@CartDetailActivity, "Límite de API alcanzado. Espera ~20s e intenta de nuevo")
+                    } else {
+                        showCustomErrorToast(this@CartDetailActivity, "Error HTTP ${e.code()}")
+                    }
+                } catch (e: Exception) {
+                    showCustomErrorToast(this@CartDetailActivity, "Error al aprobar: ${e.message}")
+                }
+            }
+        }
+
+        buttonRechazo.setOnClickListener {
+            lifecycleScope.launch {
+                try {
+                    val updated = cartRepository.updateCartApproval(cartId, false)
+                    textViewEstado.text = "Estado: ${if (updated.aprobado) "Aprobado" else "Pendiente"}"
+                    showCustomOkToast(this@CartDetailActivity, "Carrito marcado como pendiente/rechazado")
+                } catch (e: HttpException) {
+                    if (e.code() == 429) {
+                        showCustomErrorToast(this@CartDetailActivity, "Límite de API alcanzado. Espera ~20s e intenta de nuevo")
+                    } else {
+                        showCustomErrorToast(this@CartDetailActivity, "Error HTTP ${e.code()}")
+                    }
+                } catch (e: Exception) {
+                    showCustomErrorToast(this@CartDetailActivity, "Error al rechazar: ${e.message}")
+                }
             }
         }
     }
