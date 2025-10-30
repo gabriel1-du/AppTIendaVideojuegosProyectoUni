@@ -14,6 +14,7 @@ import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.functions.setupBottomNavigation
 import com.example.videojuegosandroidtienda.data.network.TokenStore
 import com.example.videojuegosandroidtienda.data.repository.AuthRepository
+import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
 import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
@@ -51,9 +52,17 @@ class ProfileActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val user = repository.getAuthMe()
-                textName.text = "Nombre: ${user.name}"
-                textEmail.text = "Email: ${user.email}"
+                val authUser = repository.getAuthMe()
+                val fetchedUser = UserRepository().getUser(authUser.id)
+                if (fetchedUser.bloqueo) {
+                    repository.logout()
+                    Toast.makeText(this@ProfileActivity, "Usuario bloqueado", Toast.LENGTH_SHORT).show()
+                    startActivity(Intent(this@ProfileActivity, LoginActivity::class.java))
+                    finish()
+                    return@launch
+                }
+                textName.text = "Nombre: ${fetchedUser.name}"
+                textEmail.text = "Email: ${fetchedUser.email}"
             } catch (e: Exception) {
                 if (e is HttpException && e.code() == 429) {
                     Toast.makeText(this@ProfileActivity, "Límite de API alcanzado. Espera ~20s e intenta de nuevo", Toast.LENGTH_SHORT).show()

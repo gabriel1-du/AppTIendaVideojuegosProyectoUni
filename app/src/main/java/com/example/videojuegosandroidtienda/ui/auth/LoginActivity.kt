@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.repository.AuthRepository
+import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
 import kotlinx.coroutines.launch
 import android.widget.Toast
 import retrofit2.HttpException
@@ -53,6 +54,24 @@ class LoginActivity : AppCompatActivity() {
             lifecycleScope.launch { //ok
                 try {
                     repository.login(email, password)
+                    // Verificar si el usuario está bloqueado usando GET completo del usuario
+                    val authUser = repository.getAuthMe()
+                    val fullUser = UserRepository().getUser(authUser.id)
+                    if (fullUser.bloqueo) {
+                        // Cerrar sesión inmediatamente y mostrar error
+                        repository.logout()
+                        val inflaterErr = layoutInflater
+                        val layoutErr = inflaterErr.inflate(R.layout.custom_toast_error, null)
+                        val textViewErr = layoutErr.findViewById<TextView>(R.id.toast_text)
+                        textViewErr.text = "Usuario bloqueado"
+                        with(Toast(applicationContext)) {
+                            duration = Toast.LENGTH_SHORT
+                            view = layoutErr
+                            show()
+                        }
+                        return@launch
+                    }
+
                     val inflater = layoutInflater
                     val layout = inflater.inflate(R.layout.custom_toast_ok, null)
                     val textView = layout.findViewById<TextView>(R.id.toast_text)

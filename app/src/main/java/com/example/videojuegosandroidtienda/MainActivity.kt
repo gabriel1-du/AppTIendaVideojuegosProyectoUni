@@ -195,12 +195,31 @@ class MainActivity : AppCompatActivity() {
         toolbar.menu.findItem(R.id.action_login)?.isVisible = t.isNullOrBlank()
         // Actualizar visibilidad de opción de subir videojuego según rol
         updateAdminUploadVisibility(toolbar)
+        // Si hay sesión, verificar si el usuario está bloqueado (GET completo) y cerrar sesión automáticamente
+        lifecycleScope.launch {
+            try {
+                val token = com.example.videojuegosandroidtienda.data.network.TokenStore.token
+                if (!token.isNullOrBlank()) {
+                    val me = AuthRepository.getAuthMe()
+                    val fetched = userRepository.getUser(me.id)
+                    if (fetched.bloqueo) {
+                        AuthRepository.logout()
+                        showCustomErrorToast(this@MainActivity, "Usuario bloqueado")
+                        startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                        finish()
+                        return@launch
+                    }
+                }
+            } catch (_: Exception) {
+                // Ignorar errores transitorios
+            }
+        }
         val now = System.currentTimeMillis()
         if (now - lastDataLoadAt >= 20_000L || allVideogames.isEmpty()) {
             lastDataLoadAt = now
             loadInitialData()
         }
-        
+
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNav)
         bottomNav.selectedItemId = R.id.nav_search
     }
