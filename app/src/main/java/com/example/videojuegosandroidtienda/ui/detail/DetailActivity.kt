@@ -6,6 +6,8 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import coil.imageLoader
+import android.util.Log
+import com.example.videojuegosandroidtienda.data.network.ApiConfig
 import coil.request.ImageRequest
 import com.example.videojuegosandroidtienda.R
 import android.widget.Button
@@ -36,9 +38,11 @@ class DetailActivity : AppCompatActivity() {
         val price = findViewById<TextView>(R.id.detailPrice)
         val description = findViewById<TextView>(R.id.detailDescription)
         val buttonAdd = findViewById<Button>(R.id.buttonAddToCart)
+        val buttonEdit = findViewById<Button>(R.id.buttonEditVideogame)
+        val buttonDelete = findViewById<Button>(R.id.buttonDeleteVideogame)
 
         val imageUrl = intent.getStringExtra(EXTRA_IMAGE_URL)
-        val id = intent.getStringExtra(EXTRA_ID).orEmpty()
+        val id = intent.getStringExtra(EXTRA_ID).orEmpty().trim()
         val titleText = intent.getStringExtra(EXTRA_TITLE).orEmpty()
         val genreText = intent.getStringExtra(EXTRA_GENRE_NAME).orEmpty()
         val platformText = intent.getStringExtra(EXTRA_PLATFORM_NAME).orEmpty()
@@ -97,6 +101,58 @@ class DetailActivity : AppCompatActivity() {
             }
         }
 
+        val isAdminMode = intent.getBooleanExtra("extra_admin_mode", false)
+        if (isAdminMode) {
+            buttonAdd.visibility = android.view.View.GONE
+            buttonEdit.visibility = android.view.View.VISIBLE
+            buttonDelete.visibility = android.view.View.VISIBLE
+
+            buttonEdit.setOnClickListener {
+                val editIntent = android.content.Intent(this@DetailActivity, com.example.videojuegosandroidtienda.ui.adminUi.VideogameEditActivity::class.java)
+                editIntent.putExtra("videogame_id", id)
+                editIntent.putExtra("title", titleText)
+                editIntent.putExtra("price", priceValue.toInt())
+                editIntent.putExtra("description", descText)
+                // Preferir IDs crudos si se pasaron en el intent
+                editIntent.putExtra("genre_id", intent.getStringExtra(EXTRA_GENRE_ID) ?: "")
+                editIntent.putExtra("platform_id", intent.getStringExtra(EXTRA_PLATFORM_ID) ?: "")
+                startActivity(editIntent)
+            }
+
+            buttonDelete.setOnClickListener {
+                val repo = VideogameRepository()
+                val deleteId = id.trim()
+                if (deleteId.isBlank()) {
+                    showCustomErrorToast(this@DetailActivity, "ID de videojuego inválido")
+                    return@setOnClickListener
+                }
+                Log.d("VideogameDelete", "Deleting id=" + deleteId + ", URL=" + ApiConfig.STORE_BASE_URL + "videogame/" + deleteId)
+                lifecycleScope.launch {
+                    try {
+                        repo.deleteVideogame(deleteId)
+                        val inflater = layoutInflater
+                        val layout = inflater.inflate(R.layout.custom_toast_ok, null)
+                        val textView = layout.findViewById<TextView>(R.id.toast_text)
+                        textView.text = "Videojuego eliminado"
+                        with(Toast(applicationContext)) {
+                            duration = Toast.LENGTH_SHORT
+                            view = layout
+                            show()
+                        }
+                        finish()
+                    } catch (e: HttpException) {
+                        if (e.code() == 429) {
+                            showCustomErrorToast(this@DetailActivity, "Límite de API, intenta en unos segundos")
+                        } else {
+                            showCustomErrorToast(this@DetailActivity, "Error al eliminar: ${e.message()}")
+                        }
+                    } catch (e: Exception) {
+                        showCustomErrorToast(this@DetailActivity, "Error al eliminar: ${e.message}")
+                    }
+                }
+            }
+        }
+
         buttonAdd.setOnClickListener {
             val product = CartProduct(
                 id = id,
@@ -127,6 +183,9 @@ class DetailActivity : AppCompatActivity() {
         const val EXTRA_TITLE = "extra_title"
         const val EXTRA_GENRE_NAME = "extra_genre_name"
         const val EXTRA_PLATFORM_NAME = "extra_platform_name"
+        // IDs crudos para permitir edición sin ambigüedad
+        const val EXTRA_GENRE_ID = "extra_genre_id"
+        const val EXTRA_PLATFORM_ID = "extra_platform_id"
         const val EXTRA_PRICE = "extra_price"
         const val EXTRA_DESCRIPTION = "extra_description"
     }

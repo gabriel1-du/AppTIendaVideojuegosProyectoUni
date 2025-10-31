@@ -103,8 +103,8 @@ class AddVideogameActivity : AppCompatActivity() {
                     val additionalImagesResponse = videogameRepository.uploadImages(additionalImageParts)
 
                     val videogame = VideogamePost2(
-                        id = UUID.randomUUID().toString(),
-                        created_at = System.currentTimeMillis().toString(),
+                        id = null, // dejar que el backend genere el ID
+                        created_at = null, // dejar que el backend genere el timestamp
                         title = title,
                         price = price,
                         description = description,

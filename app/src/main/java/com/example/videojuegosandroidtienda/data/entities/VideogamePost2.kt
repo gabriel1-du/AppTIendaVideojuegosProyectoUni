@@ -3,8 +3,8 @@ package com.example.videojuegosandroidtienda.data.entities
 // Se elimina la clase ImagePath que era la fuente de los errores.
 
 data class VideogamePost2(
-    val id: String,
-    val created_at: String,
+    val id: String?,
+    val created_at: String?,
     val title: String,
     val price: Int,
     val description: String,

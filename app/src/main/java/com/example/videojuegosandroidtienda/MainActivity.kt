@@ -107,6 +107,9 @@ class MainActivity : AppCompatActivity() {
                 putExtra(DetailActivity.EXTRA_TITLE, vg.title)
                 putExtra(DetailActivity.EXTRA_GENRE_NAME, genreNamesMap[vg.genre_id] ?: "-")
                 putExtra(DetailActivity.EXTRA_PLATFORM_NAME, platformNamesMap[vg.platform_id] ?: "-")
+                // Pasar también IDs crudos para edición
+                putExtra(DetailActivity.EXTRA_GENRE_ID, vg.genre_id)
+                putExtra(DetailActivity.EXTRA_PLATFORM_ID, vg.platform_id)
                 putExtra(DetailActivity.EXTRA_PRICE, vg.price)
                 putExtra(DetailActivity.EXTRA_DESCRIPTION, vg.description ?: "")
             }

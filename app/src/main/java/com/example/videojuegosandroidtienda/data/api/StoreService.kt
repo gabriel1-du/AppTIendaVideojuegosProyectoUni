@@ -2,10 +2,13 @@ package com.example.videojuegosandroidtienda.data.api
 
 import com.example.videojuegosandroidtienda.data.entities.*
 import com.example.videojuegosandroidtienda.data.entities.createClasses.cartPost
+import com.example.videojuegosandroidtienda.data.entities.createClasses.VideogameUpdateRequest
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Body
 import retrofit2.http.Path
+import retrofit2.http.DELETE
+import retrofit2.http.PATCH
 
 interface StoreService {
     @GET("videogame")
@@ -39,6 +42,17 @@ interface StoreService {
     suspend fun createVideogameAbsolute(
         @Body req: VideogamePost2
     ): Videogame
+
+    @PATCH("videogame/{id}")
+    suspend fun updateVideogame(
+        @Path("id") id: String,
+        @Body req: VideogameUpdateRequest
+    ): Videogame
+
+    @DELETE("videogame/{id}")
+    suspend fun deleteVideogame(
+        @Path("id") id: String
+    ): Any?
 
 
 }

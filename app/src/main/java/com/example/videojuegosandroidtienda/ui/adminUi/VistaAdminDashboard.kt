@@ -11,13 +11,16 @@ import androidx.lifecycle.lifecycleScope
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.CartRepository
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
+import com.example.videojuegosandroidtienda.data.repository.StoreRepository.VideogameRepository
 import com.example.videojuegosandroidtienda.ui.Adapter.AdminCartAdapter
 import com.example.videojuegosandroidtienda.ui.Adapter.AdminUserAdapter
+import com.example.videojuegosandroidtienda.ui.Adapter.AdminVideogameAdapter
 import kotlinx.coroutines.launch
 
 class VistaAdminDashboard : AppCompatActivity() {
     private val cartRepository = CartRepository()
     private val userRepository = UserRepository()
+    private val videogameRepository = VideogameRepository()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,10 +50,13 @@ class VistaAdminDashboard : AppCompatActivity() {
         val header = findViewById<android.widget.TextView>(R.id.textDashboardHeader)
         val buttonUsuarios = findViewById<android.widget.Button>(R.id.buttonUsuariosDashboard)
         val buttonCompras = findViewById<android.widget.Button>(R.id.buttonCompras)
+        val buttonVideogames = findViewById<android.widget.Button>(R.id.buttonVideogames)
+        val buttonCrearUsuario = findViewById<android.widget.Button>(R.id.buttonCrearUsuario)
 
         buttonUsuarios.setOnClickListener {
             header.text = "Lista de usuarios"
             recycler.adapter = userAdapter
+            buttonCrearUsuario.visibility = android.view.View.VISIBLE
             lifecycleScope.launch {
                 try {
                     val users = userRepository.listUsers()
@@ -64,6 +70,7 @@ class VistaAdminDashboard : AppCompatActivity() {
         buttonCompras.setOnClickListener {
             header.text = "Lista de carritos"
             recycler.adapter = cartAdapter
+            buttonCrearUsuario.visibility = android.view.View.GONE
             lifecycleScope.launch {
                 try {
                     val carts = cartRepository.getCarts()
@@ -74,13 +81,47 @@ class VistaAdminDashboard : AppCompatActivity() {
             }
         }
 
+        val vgAdapter = AdminVideogameAdapter(emptyList()) { vg ->
+            val intent = android.content.Intent(this, com.example.videojuegosandroidtienda.ui.detail.DetailActivity::class.java)
+            intent.putExtra(com.example.videojuegosandroidtienda.ui.detail.DetailActivity.EXTRA_ID, vg.id)
+            intent.putExtra(com.example.videojuegosandroidtienda.ui.detail.DetailActivity.EXTRA_IMAGE_URL, vg.cover_image?.url)
+            intent.putExtra(com.example.videojuegosandroidtienda.ui.detail.DetailActivity.EXTRA_TITLE, vg.title)
+            // Pasar IDs crudos para que la pantalla de edición los reciba correctamente
+            intent.putExtra(com.example.videojuegosandroidtienda.ui.detail.DetailActivity.EXTRA_GENRE_ID, vg.genre_id)
+            intent.putExtra(com.example.videojuegosandroidtienda.ui.detail.DetailActivity.EXTRA_PLATFORM_ID, vg.platform_id)
+            intent.putExtra(com.example.videojuegosandroidtienda.ui.detail.DetailActivity.EXTRA_PRICE, vg.price)
+            intent.putExtra(com.example.videojuegosandroidtienda.ui.detail.DetailActivity.EXTRA_DESCRIPTION, vg.description ?: "")
+            intent.putExtra("extra_admin_mode", true)
+            startActivity(intent)
+        }
+
+        buttonVideogames.setOnClickListener {
+            header.text = "Lista de videojuegos"
+            recycler.adapter = vgAdapter
+            buttonCrearUsuario.visibility = android.view.View.GONE
+            lifecycleScope.launch {
+                try {
+                    val vgs = videogameRepository.getVideogames()
+                    vgAdapter.submit(vgs)
+                } catch (_: Exception) {
+                    // Silenciar errores en la vista admin por ahora
+                }
+            }
+        }
+
         lifecycleScope.launch {
             try {
                 val carts = cartRepository.getCarts()
                 cartAdapter.submit(carts)
+                buttonCrearUsuario.visibility = android.view.View.GONE
             } catch (_: Exception) {
                 // Silenciar errores en la vista admin por ahora
             }
+        }
+
+        buttonCrearUsuario.setOnClickListener {
+            val intent = android.content.Intent(this@VistaAdminDashboard, com.example.videojuegosandroidtienda.ui.adminUi.UserCreateActivity::class.java)
+            startActivity(intent)
         }
     }
 }
