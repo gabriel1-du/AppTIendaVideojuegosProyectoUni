@@ -12,6 +12,7 @@
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,13 +23,13 @@
         android:id="@+id/buttonCompras"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="60dp"
         android:text="Compras"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.088"
+        app:layout_constraintEnd_toStartOf="@+id/buttonUsuariosDashboard"
+        app:layout_constraintHorizontal_chainStyle="packed"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintHorizontal_bias="0.5" />
 
     <TextView
         android:id="@+id/textDashboardHeader"
@@ -39,38 +40,50 @@
         android:textStyle="bold"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="24dp"
         app:layout_constraintTop_toBottomOf="@id/buttonCompras"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:gravity="center_horizontal"/>
 
     <Button
         android:id="@+id/buttonUsuariosDashboard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:text="Usuarios"
-        app:layout_constraintBottom_toTopOf="@+id/textDashboardHeader"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.484"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonCompras"
+        app:layout_constraintEnd_toStartOf="@+id/buttonVideogames"
         app:layout_constraintStart_toEndOf="@+id/buttonCompras"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/buttonCompras" />
 
     <Button
         android:id="@+id/buttonVideogames"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Videojuegos"
-        app:layout_constraintBottom_toTopOf="@+id/textDashboardHeader"
-        app:layout_constraintStart_toEndOf="@+id/buttonUsuariosDashboard"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="@+id/buttonUsuariosDashboard"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="12dp" />
+        app:layout_constraintStart_toEndOf="@+id/buttonUsuariosDashboard"
+        app:layout_constraintTop_toTopOf="@+id/buttonUsuariosDashboard" />
 
     <Button
         android:id="@+id/buttonCrearUsuario"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Crear usuario"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/textDashboardHeader"
+        app:layout_constraintStart_toStartOf="parent"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/buttonCrearVideogame"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Crear videojuegos"
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         app:layout_constraintTop_toBottomOf="@id/textDashboardHeader"

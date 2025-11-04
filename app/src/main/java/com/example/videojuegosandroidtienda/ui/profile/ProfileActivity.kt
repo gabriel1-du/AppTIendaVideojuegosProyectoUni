@@ -47,7 +47,7 @@ class ProfileActivity : AppCompatActivity() {
         val buttonLogout = findViewById<Button>(R.id.buttonLogout)
         val buttonDashboard = findViewById<Button>(R.id.buttonIraDashboard)
         buttonDashboard.setOnClickListener {
-            startActivity(Intent(this@ProfileActivity, com.example.videojuegosandroidtienda.ui.adminUi.VistaAdminDashboard::class.java))
+            startActivity(Intent(this@ProfileActivity, com.example.videojuegosandroidtienda.ui.adminUi.AdminCenterActivity::class.java))
         }
 
         lifecycleScope.launch {

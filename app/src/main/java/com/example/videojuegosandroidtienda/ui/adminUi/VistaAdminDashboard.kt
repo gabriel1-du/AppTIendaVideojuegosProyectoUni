@@ -52,11 +52,13 @@ class VistaAdminDashboard : AppCompatActivity() {
         val buttonCompras = findViewById<android.widget.Button>(R.id.buttonCompras)
         val buttonVideogames = findViewById<android.widget.Button>(R.id.buttonVideogames)
         val buttonCrearUsuario = findViewById<android.widget.Button>(R.id.buttonCrearUsuario)
+        val buttonCrearVideogame = findViewById<android.widget.Button>(R.id.buttonCrearVideogame)
 
         buttonUsuarios.setOnClickListener {
             header.text = "Lista de usuarios"
             recycler.adapter = userAdapter
             buttonCrearUsuario.visibility = android.view.View.VISIBLE
+            buttonCrearVideogame.visibility = android.view.View.GONE
             lifecycleScope.launch {
                 try {
                     val users = userRepository.listUsers()
@@ -71,6 +73,7 @@ class VistaAdminDashboard : AppCompatActivity() {
             header.text = "Lista de carritos"
             recycler.adapter = cartAdapter
             buttonCrearUsuario.visibility = android.view.View.GONE
+            buttonCrearVideogame.visibility = android.view.View.GONE
             lifecycleScope.launch {
                 try {
                     val carts = cartRepository.getCarts()
@@ -99,6 +102,7 @@ class VistaAdminDashboard : AppCompatActivity() {
             header.text = "Lista de videojuegos"
             recycler.adapter = vgAdapter
             buttonCrearUsuario.visibility = android.view.View.GONE
+            buttonCrearVideogame.visibility = android.view.View.VISIBLE
             lifecycleScope.launch {
                 try {
                     val vgs = videogameRepository.getVideogames()
@@ -114,6 +118,7 @@ class VistaAdminDashboard : AppCompatActivity() {
                 val carts = cartRepository.getCarts()
                 cartAdapter.submit(carts)
                 buttonCrearUsuario.visibility = android.view.View.GONE
+                buttonCrearVideogame.visibility = android.view.View.GONE
             } catch (_: Exception) {
                 // Silenciar errores en la vista admin por ahora
             }
@@ -121,6 +126,11 @@ class VistaAdminDashboard : AppCompatActivity() {
 
         buttonCrearUsuario.setOnClickListener {
             val intent = android.content.Intent(this@VistaAdminDashboard, com.example.videojuegosandroidtienda.ui.adminUi.UserCreateActivity::class.java)
+            startActivity(intent)
+        }
+
+        buttonCrearVideogame.setOnClickListener {
+            val intent = android.content.Intent(this@VistaAdminDashboard, com.example.videojuegosandroidtienda.ui.upload.AddVideogameActivity::class.java)
             startActivity(intent)
         }
     }

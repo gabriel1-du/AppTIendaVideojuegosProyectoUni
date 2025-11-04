@@ -33,6 +33,18 @@
             android:name=".ui.adminUi.VistaAdminDashboard"
             android:exported="false" />
         <activity
+            android:name=".ui.adminUi.AdminCenterActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.adminUi.ActivitiyUserAdminDashboard"
+            android:exported="false" />
+        <activity
+            android:name=".ui.adminUi.ActivityVideogameAdminDashboard"
+            android:exported="false" />
+        <activity
+            android:name=".ui.adminUi.ActivityOrdersAdminDashboard"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
