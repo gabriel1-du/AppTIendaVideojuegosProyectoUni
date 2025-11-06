@@ -13,7 +13,7 @@ import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.entities.Cart
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.CartRepository
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
-import com.example.videojuegosandroidtienda.ui.Adapter.AdminCartAdapter
+import com.example.videojuegosandroidtienda.ui.adapter.AdminCartAdapter
 import kotlinx.coroutines.launch
 
 class ActivityOrdersAdminDashboard : AppCompatActivity() {

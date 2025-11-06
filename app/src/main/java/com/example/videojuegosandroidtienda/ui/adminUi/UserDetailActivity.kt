@@ -37,20 +37,27 @@ class UserDetailActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val user = userRepository.getUser(userId)
-                textId.text = "id: ${user.id}"
-                textCreated.text = "creado: ${user.created_at ?: ""}"
-                textName.text = "nombre: ${user.name}"
-                textEmail.text = "email: ${user.email}"
-                textAdmin.text = "admin: ${if (user.admin) "true" else "false"}"
+                textId.text = getString(R.string.user_id_format, user.id)
+                textCreated.text = getString(R.string.user_created_format, user.created_at ?: "")
+                textName.text = getString(R.string.user_name_format, user.name)
+                textEmail.text = getString(R.string.user_email_format, user.email)
+                textAdmin.text = getString(
+                    R.string.user_admin_format,
+                    getString(if (user.admin) R.string.boolean_true else R.string.boolean_false)
+                )
                 switchBloqueo.isChecked = user.bloqueo
             } catch (e: HttpException) {
                 if (e.code() == 429) {
-                    showCustomErrorToast(this@UserDetailActivity, "Has alcanzado el límite de la API. Intenta nuevamente en unos segundos.")
+                    showCustomErrorToast(this@UserDetailActivity, getString(R.string.api_limit_error_retry))
                 } else {
-                    showCustomErrorToast(this@UserDetailActivity, "No se pudo cargar el usuario (HTTP ${e.code()})")
+                    showCustomErrorToast(
+                        this@UserDetailActivity,
+                        getString(R.string.http_error_format, getString(R.string.user_load_error), e.code())
+                    )
                 }
             } catch (e: Exception) {
-                showCustomErrorToast(this@UserDetailActivity, "No se pudo cargar el usuario")
+                val msg = e.message?.let { " (${it})" } ?: ""
+                showCustomErrorToast(this@UserDetailActivity, getString(R.string.user_load_error) + msg)
             }
         }
 
@@ -58,15 +65,19 @@ class UserDetailActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 try {
                     userRepository.patchUser(userId, mapOf("bloqueo" to switchBloqueo.isChecked))
-                    showCustomOkToast(this@UserDetailActivity, "Estado de bloqueo actualizado")
+                    showCustomOkToast(this@UserDetailActivity, getString(R.string.block_status_updated))
                 } catch (e: HttpException) {
                     if (e.code() == 429) {
-                        showCustomErrorToast(this@UserDetailActivity, "Límite de API alcanzado. Intenta nuevamente en unos segundos.")
+                        showCustomErrorToast(this@UserDetailActivity, getString(R.string.api_limit_error_retry))
                     } else {
-                        showCustomErrorToast(this@UserDetailActivity, "No se pudo actualizar (HTTP ${e.code()})")
+                        showCustomErrorToast(
+                            this@UserDetailActivity,
+                            getString(R.string.http_error_format, getString(R.string.update_error_base), e.code())
+                        )
                     }
-                } catch (_: Exception) {
-                    showCustomErrorToast(this@UserDetailActivity, "No se pudo actualizar el bloqueo")
+                } catch (e: Exception) {
+                    val msg = e.message?.let { " (${it})" } ?: ""
+                    showCustomErrorToast(this@UserDetailActivity, getString(R.string.user_block_update_error) + msg)
                 }
             }
         }
@@ -75,16 +86,20 @@ class UserDetailActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 try {
                     userRepository.deleteUser(userId)
-                    showCustomOkToast(this@UserDetailActivity, "Se ha eliminado exitosamente el usuario")
+                    showCustomOkToast(this@UserDetailActivity, getString(R.string.user_deleted_success))
                     finish()
                 } catch (e: HttpException) {
                     if (e.code() == 429) {
-                        showCustomErrorToast(this@UserDetailActivity, "Límite de API alcanzado. Intenta nuevamente en unos segundos.")
+                        showCustomErrorToast(this@UserDetailActivity, getString(R.string.api_limit_error_retry))
                     } else {
-                        showCustomErrorToast(this@UserDetailActivity, "No se pudo eliminar (HTTP ${e.code()})")
+                        showCustomErrorToast(
+                            this@UserDetailActivity,
+                            getString(R.string.http_error_format, getString(R.string.delete_error_base), e.code())
+                        )
                     }
-                } catch (_: Exception) {
-                    showCustomErrorToast(this@UserDetailActivity, "No se pudo eliminar el usuario")
+                } catch (e: Exception) {
+                    val msg = e.message?.let { " (${it})" } ?: ""
+                    showCustomErrorToast(this@UserDetailActivity, getString(R.string.user_delete_error) + msg)
                 }
             }
         }

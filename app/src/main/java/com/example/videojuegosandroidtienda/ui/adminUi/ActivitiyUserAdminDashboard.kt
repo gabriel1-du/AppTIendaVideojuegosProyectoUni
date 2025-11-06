@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.entities.User
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
-import com.example.videojuegosandroidtienda.ui.Adapter.AdminUserAdapter
+import com.example.videojuegosandroidtienda.ui.adapter.AdminUserAdapter
 import kotlinx.coroutines.launch
 
 class ActivitiyUserAdminDashboard : AppCompatActivity() {

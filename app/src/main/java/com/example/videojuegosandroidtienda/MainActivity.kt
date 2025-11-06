@@ -23,8 +23,8 @@ import com.example.videojuegosandroidtienda.data.repository.AuthRepository
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.VideogameRepository
 import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
 import com.example.videojuegosandroidtienda.ui.detail.DetailActivity
-import com.example.videojuegosandroidtienda.ui.Adapter.SimpleItemSelectedListener
-import com.example.videojuegosandroidtienda.ui.Adapter.VideogameAdapter
+import com.example.videojuegosandroidtienda.ui.adapter.SimpleItemSelectedListener
+import com.example.videojuegosandroidtienda.ui.adapter.VideogameAdapter
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView

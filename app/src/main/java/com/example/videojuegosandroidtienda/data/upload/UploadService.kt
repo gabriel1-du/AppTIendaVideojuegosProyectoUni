@@ -6,7 +6,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 
-interface UploadService {
+interface UploadService { //Archivo para subir imagenes
     @Multipart
     @POST("https://x8ki-letl-twmt.n7.xano.io/api:k6eLeFyi/upload/image")
     suspend  fun uploadFile(

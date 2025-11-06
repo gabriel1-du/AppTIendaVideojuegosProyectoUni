@@ -17,7 +17,7 @@ import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
 import com.example.videojuegosandroidtienda.data.functions.showCustomOkToast
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.CartRepository
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.VideogameRepository
-import com.example.videojuegosandroidtienda.ui.Adapter.VideogameAdapter
+import com.example.videojuegosandroidtienda.ui.adapter.VideogameAdapter
 import java.text.DateFormat
 import java.util.Date
 
@@ -58,7 +58,7 @@ class CartDetailActivity : AppCompatActivity() {
         // Obtener cart_id del intent y cargar datos
         val cartId = intent.getStringExtra("cart_id")?.trim()
         if (cartId.isNullOrBlank()) {
-            showCustomErrorToast(this, "No se pudo obtener el ID del carrito")
+            showCustomErrorToast(this, getString(R.string.cart_id_missing_error))
             finish()
             return
         }
@@ -68,14 +68,17 @@ class CartDetailActivity : AppCompatActivity() {
                 val cart = cartRepository.getCartById(cartId)
 
                 // Mostrar datos del carrito con etiquetas descriptivas
-                textViewIdCarrito.text = "Id del carrito: ${cart.id}"
+                textViewIdCarrito.text = getString(R.string.cart_id_format, cart.id)
                 val formattedDate = try {
                     DateFormat.getDateTimeInstance().format(Date(cart.created_at))
                 } catch (_: Exception) { cart.created_at.toString() }
-                textViewFechaCarrito.text = "Fecha de creación: ${formattedDate}"
-                textViewTotalCarrito.text = "Total del carrito: ${cart.total}"
-                textViewUserId.text = "Id del usuario: ${cart.user_id}"
-                textViewEstado.text = "Estado: ${if (cart.aprobado) "Aprobado" else "Pendiente"}"
+                textViewFechaCarrito.text = getString(R.string.cart_created_format, formattedDate)
+                textViewTotalCarrito.text = getString(R.string.cart_total_format, cart.total)
+                textViewUserId.text = getString(R.string.cart_user_id_format, cart.user_id)
+                textViewEstado.text = getString(
+                    R.string.cart_status_format,
+                    getString(if (cart.aprobado) R.string.status_approved else R.string.status_pending)
+                )
 
                 // Cargar listas auxiliares para nombres
                 val platforms = videogameRepository.getPlatforms()
@@ -90,12 +93,16 @@ class CartDetailActivity : AppCompatActivity() {
                 videogameAdapter.submit(selected, genreNames, platformNames)
             } catch (e: HttpException) {
                 if (e.code() == 429) {
-                    showCustomErrorToast(this@CartDetailActivity, "Límite de API alcanzado. Espera ~20s e intenta de nuevo")
+                    showCustomErrorToast(this@CartDetailActivity, getString(R.string.api_limit_error_retry))
                 } else {
-                    showCustomErrorToast(this@CartDetailActivity, "Error HTTP ${e.code()}")
+                    showCustomErrorToast(
+                        this@CartDetailActivity,
+                        getString(R.string.http_error_format, getString(R.string.cart_load_error), e.code())
+                    )
                 }
             } catch (e: Exception) {
-                showCustomErrorToast(this@CartDetailActivity, "Error al cargar carrito: ${e.message}")
+                val msg = e.message?.let { " (${it})" } ?: ""
+                showCustomErrorToast(this@CartDetailActivity, getString(R.string.cart_load_error) + msg)
             }
         }
 
@@ -103,16 +110,23 @@ class CartDetailActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 try {
                     val updated = cartRepository.updateCartApproval(cartId, true)
-                    textViewEstado.text = "Estado: ${if (updated.aprobado) "Aprobado" else "Pendiente"}"
-                    showCustomOkToast(this@CartDetailActivity, "Carrito aprobado correctamente")
+                    textViewEstado.text = getString(
+                        R.string.cart_status_format,
+                        getString(if (updated.aprobado) R.string.status_approved else R.string.status_pending)
+                    )
+                    showCustomOkToast(this@CartDetailActivity, getString(R.string.cart_approved_success))
                 } catch (e: HttpException) {
                     if (e.code() == 429) {
-                        showCustomErrorToast(this@CartDetailActivity, "Límite de API alcanzado. Espera ~20s e intenta de nuevo")
+                        showCustomErrorToast(this@CartDetailActivity, getString(R.string.api_limit_error_retry))
                     } else {
-                        showCustomErrorToast(this@CartDetailActivity, "Error HTTP ${e.code()}")
+                        showCustomErrorToast(
+                            this@CartDetailActivity,
+                            getString(R.string.http_error_format, getString(R.string.approve_error_base), e.code())
+                        )
                     }
                 } catch (e: Exception) {
-                    showCustomErrorToast(this@CartDetailActivity, "Error al aprobar: ${e.message}")
+                    val msg = e.message?.let { " (${it})" } ?: ""
+                    showCustomErrorToast(this@CartDetailActivity, getString(R.string.approve_error_base) + msg)
                 }
             }
         }
@@ -121,16 +135,23 @@ class CartDetailActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 try {
                     val updated = cartRepository.updateCartApproval(cartId, false)
-                    textViewEstado.text = "Estado: ${if (updated.aprobado) "Aprobado" else "Pendiente"}"
-                    showCustomOkToast(this@CartDetailActivity, "Carrito marcado como pendiente/rechazado")
+                    textViewEstado.text = getString(
+                        R.string.cart_status_format,
+                        getString(if (updated.aprobado) R.string.status_approved else R.string.status_pending)
+                    )
+                    showCustomOkToast(this@CartDetailActivity, getString(R.string.cart_marked_pending_success))
                 } catch (e: HttpException) {
                     if (e.code() == 429) {
-                        showCustomErrorToast(this@CartDetailActivity, "Límite de API alcanzado. Espera ~20s e intenta de nuevo")
+                        showCustomErrorToast(this@CartDetailActivity, getString(R.string.api_limit_error_retry))
                     } else {
-                        showCustomErrorToast(this@CartDetailActivity, "Error HTTP ${e.code()}")
+                        showCustomErrorToast(
+                            this@CartDetailActivity,
+                            getString(R.string.http_error_format, getString(R.string.reject_error_base), e.code())
+                        )
                     }
                 } catch (e: Exception) {
-                    showCustomErrorToast(this@CartDetailActivity, "Error al rechazar: ${e.message}")
+                    val msg = e.message?.let { " (${it})" } ?: ""
+                    showCustomErrorToast(this@CartDetailActivity, getString(R.string.reject_error_base) + msg)
                 }
             }
         }

@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.entities.Videogame
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.VideogameRepository
-import com.example.videojuegosandroidtienda.ui.Adapter.AdminVideogameAdapter
+import com.example.videojuegosandroidtienda.ui.adapter.AdminVideogameAdapter
 import kotlinx.coroutines.launch
 
 class ActivityVideogameAdminDashboard : AppCompatActivity() {

@@ -12,9 +12,9 @@ import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.CartRepository
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.VideogameRepository
-import com.example.videojuegosandroidtienda.ui.Adapter.AdminCartAdapter
-import com.example.videojuegosandroidtienda.ui.Adapter.AdminUserAdapter
-import com.example.videojuegosandroidtienda.ui.Adapter.AdminVideogameAdapter
+import com.example.videojuegosandroidtienda.ui.adapter.AdminCartAdapter
+import com.example.videojuegosandroidtienda.ui.adapter.AdminUserAdapter
+import com.example.videojuegosandroidtienda.ui.adapter.AdminVideogameAdapter
 import kotlinx.coroutines.launch
 
 class VistaAdminDashboard : AppCompatActivity() {
@@ -55,7 +55,7 @@ class VistaAdminDashboard : AppCompatActivity() {
         val buttonCrearVideogame = findViewById<android.widget.Button>(R.id.buttonCrearVideogame)
 
         buttonUsuarios.setOnClickListener {
-            header.text = "Lista de usuarios"
+            header.text = getString(R.string.users_list)
             recycler.adapter = userAdapter
             buttonCrearUsuario.visibility = android.view.View.VISIBLE
             buttonCrearVideogame.visibility = android.view.View.GONE
@@ -70,7 +70,7 @@ class VistaAdminDashboard : AppCompatActivity() {
         }
 
         buttonCompras.setOnClickListener {
-            header.text = "Lista de carritos"
+            header.text = getString(R.string.carts_list)
             recycler.adapter = cartAdapter
             buttonCrearUsuario.visibility = android.view.View.GONE
             buttonCrearVideogame.visibility = android.view.View.GONE
@@ -99,7 +99,7 @@ class VistaAdminDashboard : AppCompatActivity() {
         }
 
         buttonVideogames.setOnClickListener {
-            header.text = "Lista de videojuegos"
+            header.text = getString(R.string.videogames_list)
             recycler.adapter = vgAdapter
             buttonCrearUsuario.visibility = android.view.View.GONE
             buttonCrearVideogame.visibility = android.view.View.VISIBLE

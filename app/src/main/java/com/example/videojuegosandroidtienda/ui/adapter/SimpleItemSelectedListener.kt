@@ -1,4 +1,4 @@
-package com.example.videojuegosandroidtienda.ui.Adapter
+package com.example.videojuegosandroidtienda.ui.adapter
 
 import android.view.View
 import android.widget.AdapterView
