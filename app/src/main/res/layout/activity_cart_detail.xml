@@ -25,35 +25,35 @@
             android:id="@+id/textViewIdCarrito"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="ID del carrito:"/>
+        android:text="@string/cart_id_label"/>
 
         <TextView
             android:id="@+id/textViewFechaCarrito"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Fecha de creación:"/>
+        android:text="@string/cart_created_label"/>
 
         <TextView
             android:id="@+id/textViewTotalCArrito"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Total del carrito:"/>
+        android:text="@string/cart_total_label"/>
 
         <TextView
             android:id="@+id/textViewUserId"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="ID del usuario:"/>
+        android:text="@string/cart_user_id_label"/>
 
         <TextView
             android:id="@+id/textViewEstado"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Estado:"/>
+        android:text="@string/cart_status_label"/>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
@@ -87,14 +87,14 @@
             android:id="@+id/buttonRechazo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Rechazar compra"/>
+        android:text="@string/reject_purchase"/>
 
         <Button
             android:id="@+id/buttonApruebo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
-            android:text="Aprobar compra"/>
+        android:text="@string/approve_purchase"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

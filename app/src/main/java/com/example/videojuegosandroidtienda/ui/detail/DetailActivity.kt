@@ -11,7 +11,9 @@ import com.example.videojuegosandroidtienda.data.network.ApiConfig
 import coil.request.ImageRequest
 import com.example.videojuegosandroidtienda.R
 import android.widget.Button
-import android.widget.Toast
+import android.content.Intent
+import com.example.videojuegosandroidtienda.ui.adminUi.VideogameEditActivity
+import com.example.videojuegosandroidtienda.data.functions.showCustomOkToast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.lifecycle.lifecycleScope
@@ -56,22 +58,33 @@ class DetailActivity : AppCompatActivity() {
                 .target(image)
                 .build()
             image.context.imageLoader.enqueue(request)
+            // Hacer la portada principal clicable para verla en pantalla completa
+            image.setOnClickListener {
+                val fullIntent = Intent(this@DetailActivity, FullImageActivity::class.java)
+                fullIntent.putExtra(FullImageActivity.EXTRA_IMAGE_URL, imageUrl)
+                startActivity(fullIntent)
+            }
         } else {
             image.setImageResource(android.R.color.darker_gray)
+            image.setOnClickListener(null)
         }
 
         title.text = titleText
-        genre.text = "Género: $genreText"
-        platform.text = "Plataforma: $platformText"
-        price.text = "Precio: $priceValue"
-        description.text = "Descripción: $descText"
+        genre.text = getString(R.string.detail_genre_format, genreText)
+        platform.text = getString(R.string.detail_platform_format, platformText)
+        price.text = getString(R.string.detail_price_format, priceValue)
+        description.text = getString(R.string.detail_description_format, descText)
 
         // Configurar galería horizontal si hay imágenes adicionales disponibles
         val urls = extraImages?.filter { !it.isNullOrBlank() } ?: emptyList()
         if (urls.isNotEmpty()) {
             imagesRecycler.visibility = android.view.View.VISIBLE
             imagesRecycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-            val imgAdapter = ImageUrlAdapter()
+            val imgAdapter = ImageUrlAdapter(onImageClick = { clickedUrl ->
+                val fullIntent = Intent(this@DetailActivity, FullImageActivity::class.java)
+                fullIntent.putExtra(FullImageActivity.EXTRA_IMAGE_URL, clickedUrl)
+                startActivity(fullIntent)
+            })
             imagesRecycler.adapter = imgAdapter
             imgAdapter.submit(urls)
         } else {
@@ -86,7 +99,11 @@ class DetailActivity : AppCompatActivity() {
                         if (fetchedUrls.isNotEmpty()) {
                             imagesRecycler.visibility = android.view.View.VISIBLE
                             imagesRecycler.layoutManager = LinearLayoutManager(this@DetailActivity, LinearLayoutManager.HORIZONTAL, false)
-                            val imgAdapter = ImageUrlAdapter()
+                            val imgAdapter = ImageUrlAdapter(onImageClick = { clickedUrl ->
+                                val fullIntent = Intent(this@DetailActivity, FullImageActivity::class.java)
+                                fullIntent.putExtra(FullImageActivity.EXTRA_IMAGE_URL, clickedUrl)
+                                startActivity(fullIntent)
+                            })
                             imagesRecycler.adapter = imgAdapter
                             imgAdapter.submit(fetchedUrls)
                         }
@@ -108,7 +125,7 @@ class DetailActivity : AppCompatActivity() {
             buttonDelete.visibility = android.view.View.VISIBLE
 
             buttonEdit.setOnClickListener {
-                val editIntent = android.content.Intent(this@DetailActivity, com.example.videojuegosandroidtienda.ui.adminUi.VideogameEditActivity::class.java)
+                val editIntent = Intent(this@DetailActivity, VideogameEditActivity::class.java)
                 editIntent.putExtra("videogame_id", id)
                 editIntent.putExtra("title", titleText)
                 editIntent.putExtra("price", priceValue.toInt())
@@ -130,15 +147,7 @@ class DetailActivity : AppCompatActivity() {
                 lifecycleScope.launch {
                     try {
                         repo.deleteVideogame(deleteId)
-                        val inflater = layoutInflater
-                        val layout = inflater.inflate(R.layout.custom_toast_ok, null)
-                        val textView = layout.findViewById<TextView>(R.id.toast_text)
-                        textView.text = "Videojuego eliminado"
-                        with(Toast(applicationContext)) {
-                            duration = Toast.LENGTH_SHORT
-                            view = layout
-                            show()
-                        }
+                        showCustomOkToast(this@DetailActivity, getString(R.string.videogame_deleted))
                         finish()
                     } catch (e: HttpException) {
                         if (e.code() == 429) {
@@ -161,17 +170,7 @@ class DetailActivity : AppCompatActivity() {
                 imageUrl = imageUrl
             )
             CartManager.add(product, 1)
-            val inflater = layoutInflater
-            val layout = inflater.inflate(R.layout.custom_toast_error, null)
-
-            val textView = layout.findViewById<TextView>(R.id.toast_text)
-            textView.text = "Este producto se agregó al carrito"
-
-            with (Toast(applicationContext)) {
-                duration = Toast.LENGTH_SHORT
-                view = layout
-                show()
-            }
+            showCustomOkToast(this@DetailActivity, getString(R.string.product_added_to_cart))
         }
     }
 

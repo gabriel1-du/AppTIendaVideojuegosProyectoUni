@@ -10,7 +10,8 @@ import coil.request.ImageRequest
 import com.example.videojuegosandroidtienda.R
 
 class ImageUrlAdapter(
-    private var urls: List<String> = emptyList()
+    private var urls: List<String> = emptyList(),
+    private val onImageClick: ((String) -> Unit)? = null
 ) : RecyclerView.Adapter<ImageUrlAdapter.VH>() {
 
     fun submit(newUrls: List<String>) {
@@ -34,6 +35,12 @@ class ImageUrlAdapter(
             holder.image.context.imageLoader.enqueue(req)
         } else {
             holder.image.setImageResource(android.R.color.darker_gray)
+        }
+
+        holder.itemView.setOnClickListener {
+            if (!url.isNullOrBlank()) {
+                onImageClick?.invoke(url)
+            }
         }
     }
 

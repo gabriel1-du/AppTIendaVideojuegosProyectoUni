@@ -24,7 +24,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/toolbar"
-        app:queryHint="Buscar por nombre del videojuego"/>
+        app:queryHint="@string/search_videogame_query_hint"/>
 
 
     <LinearLayout
@@ -45,7 +45,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Plataforma"
+        android:text="@string/label_platform"
                 android:textColor="@color/textPrimary"/>
             <Spinner
                 android:id="@+id/spinnerPlatform"
@@ -62,7 +62,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Género"
+        android:text="@string/label_genre"
                 android:textColor="@color/textPrimary"/>
             <Spinner
                 android:id="@+id/spinnerGenre"

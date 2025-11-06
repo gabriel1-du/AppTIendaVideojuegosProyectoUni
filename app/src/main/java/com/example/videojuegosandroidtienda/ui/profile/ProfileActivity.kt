@@ -4,7 +4,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
+import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
+import com.example.videojuegosandroidtienda.data.functions.showCustomOkToast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -56,25 +57,25 @@ class ProfileActivity : AppCompatActivity() {
                 val fetchedUser = UserRepository().getUser(authUser.id)
                 if (fetchedUser.bloqueo) {
                     repository.logout()
-                    Toast.makeText(this@ProfileActivity, "Usuario bloqueado", Toast.LENGTH_SHORT).show()
+                    showCustomErrorToast(this@ProfileActivity, getString(R.string.user_blocked))
                     startActivity(Intent(this@ProfileActivity, LoginActivity::class.java))
                     finish()
                     return@launch
                 }
-                textName.text = "Nombre: ${fetchedUser.name}"
-                textEmail.text = "Email: ${fetchedUser.email}"
+                textName.text = getString(R.string.profile_name_format, fetchedUser.name)
+                textEmail.text = getString(R.string.profile_email_format, fetchedUser.email)
             } catch (e: Exception) {
                 if (e is HttpException && e.code() == 429) {
-                    Toast.makeText(this@ProfileActivity, "Límite de API alcanzado. Espera ~20s e intenta de nuevo", Toast.LENGTH_SHORT).show()
+                    showCustomErrorToast(this@ProfileActivity, getString(R.string.api_limit_error_retry))
                 } else {
-                    Toast.makeText(this@ProfileActivity, "Error al cargar usuario", Toast.LENGTH_SHORT).show()
+                    showCustomErrorToast(this@ProfileActivity, getString(R.string.profile_load_error))
                 }
             }
         }
 
         buttonLogout.setOnClickListener {
             repository.logout()
-            Toast.makeText(this@ProfileActivity, "Sesión cerrada", Toast.LENGTH_SHORT).show()
+            showCustomOkToast(this@ProfileActivity, getString(R.string.logout_success))
             startActivity(Intent(this@ProfileActivity, MainActivity::class.java).apply {
                 addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             })

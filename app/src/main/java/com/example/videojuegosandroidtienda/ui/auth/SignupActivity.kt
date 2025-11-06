@@ -9,12 +9,13 @@ import androidx.lifecycle.lifecycleScope
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.repository.AuthRepository
 import kotlinx.coroutines.launch
-import android.widget.Toast
+import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
 import android.content.Intent
 import com.example.videojuegosandroidtienda.MainActivity
 import retrofit2.HttpException
 import android.util.Log
 import android.widget.TextView
+import android.widget.Toast
 
 class SignupActivity : AppCompatActivity() {
     private val repository = AuthRepository()
@@ -35,51 +36,19 @@ class SignupActivity : AppCompatActivity() {
             val email = inputEmail.text.toString()
             val password = inputPassword.text.toString()
             if (name.isBlank() || email.isBlank() || password.isBlank()) {
-                val inflater = layoutInflater
-                val layout = inflater.inflate(R.layout.custom_toast_error, null)
-                val textView = layout.findViewById<TextView>(R.id.toast_text)
-                textView.text = "Completa nombre, email y contraseña"
-                with(Toast(applicationContext)) {
-                    duration = Toast.LENGTH_SHORT
-                    view = layout
-                    show()
-                }
+                showCustomErrorToast(this@SignupActivity, getString(R.string.signup_fields_required))
                 return@setOnClickListener
             }
             if (password.length < 8) { //error
-                val inflater = layoutInflater
-                val layout = inflater.inflate(R.layout.custom_toast_error, null)
-                val textView = layout.findViewById<TextView>(R.id.toast_text)
-                textView.text = "La contraseña debe tener mas de 8 caracteres"
-                with(Toast(applicationContext)) {
-                    duration = Toast.LENGTH_SHORT
-                    view = layout
-                    show()
-                }
+                showCustomErrorToast(this@SignupActivity, getString(R.string.password_length_error))
                 return@setOnClickListener
             }
             if (!password.any { it.isLetter() }) {
-                val inflater = layoutInflater
-                val layout = inflater.inflate(R.layout.custom_toast_error, null)
-                val textView = layout.findViewById<TextView>(R.id.toast_text)
-                textView.text = "La contraseña debe contener al menos un carácter"
-                with(Toast(applicationContext)) {
-                    duration = Toast.LENGTH_SHORT
-                    view = layout
-                    show()
-                }
+                showCustomErrorToast(this@SignupActivity, getString(R.string.password_letter_error))
                 return@setOnClickListener
             }
             if (!password.any { !it.isLetterOrDigit() }) {
-                val inflater = layoutInflater
-                val layout = inflater.inflate(R.layout.custom_toast_error, null)
-                val textView = layout.findViewById<TextView>(R.id.toast_text)
-                textView.text = "La contraseña debe contener al menos un carácter especial"
-                with(Toast(applicationContext)) {
-                    duration = Toast.LENGTH_SHORT
-                    view = layout
-                    show()
-                }
+                showCustomErrorToast(this@SignupActivity, getString(R.string.password_special_char_error))
                 return@setOnClickListener
             }
             lifecycleScope.launch {
@@ -108,27 +77,15 @@ class SignupActivity : AppCompatActivity() {
                         val inflater = layoutInflater
                         val layout = inflater.inflate(R.layout.custom_toast_error, null)
                         val textView = layout.findViewById<TextView>(R.id.toast_text)
-                        textView.text = if (code == 429) {
-                            "Límite de API alcanzado. Espera ~20s e intenta de nuevo"
+                        val message = if (code == 429) {
+                            getString(R.string.api_limit_error_retry)
                         } else {
-                            "$baseMsg (HTTP $code)"
+                            getString(R.string.http_error_format, baseMsg, code)
                         }
-                        with(Toast(applicationContext)) {
-                            duration = Toast.LENGTH_SHORT
-                            view = layout
-                            show()
-                        }
+                        showCustomErrorToast(this@SignupActivity, message)
                     } else {
                         Log.e("SignupActivity", e.localizedMessage ?: baseMsg)
-                        val inflater = layoutInflater
-                        val layout = inflater.inflate(R.layout.custom_toast_error, null)
-                        val textView = layout.findViewById<TextView>(R.id.toast_text)
-                        textView.text = baseMsg
-                        with(Toast(applicationContext)) {
-                            duration = Toast.LENGTH_SHORT
-                            view = layout
-                            show()
-                        }
+                        showCustomErrorToast(this@SignupActivity, baseMsg)
                     }
                 }
             }

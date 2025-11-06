@@ -57,6 +57,9 @@
             android:name=".ui.detail.DetailActivity"
             android:exported="false" />
         <activity
+            android:name=".ui.detail.FullImageActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="false" />
         <activity

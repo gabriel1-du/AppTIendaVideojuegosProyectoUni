@@ -12,9 +12,11 @@ import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.repository.AuthRepository
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
 import kotlinx.coroutines.launch
-import android.widget.Toast
+import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
+import com.example.videojuegosandroidtienda.data.functions.showCustomOkToast
 import retrofit2.HttpException
 import android.util.Log
+import android.widget.Toast
 import com.example.videojuegosandroidtienda.MainActivity
 
 class LoginActivity : AppCompatActivity() {
@@ -60,82 +62,34 @@ class LoginActivity : AppCompatActivity() {
                     if (fullUser.bloqueo) {
                         // Cerrar sesión inmediatamente y mostrar error
                         repository.logout()
-                        val inflaterErr = layoutInflater
-                        val layoutErr = inflaterErr.inflate(R.layout.custom_toast_error, null)
-                        val textViewErr = layoutErr.findViewById<TextView>(R.id.toast_text)
-                        textViewErr.text = "Usuario bloqueado"
-                        with(Toast(applicationContext)) {
-                            duration = Toast.LENGTH_SHORT
-                            view = layoutErr
-                            show()
-                        }
+                        showCustomErrorToast(this@LoginActivity, getString(R.string.user_blocked))
                         return@launch
                     }
 
-                    val inflater = layoutInflater
-                    val layout = inflater.inflate(R.layout.custom_toast_ok, null)
-                    val textView = layout.findViewById<TextView>(R.id.toast_text)
-                    textView.text = "Login exitoso"
-                    with(Toast(applicationContext)) {
-                        duration = Toast.LENGTH_SHORT
-                        view = layout
-                        show()
-                    }
+                    showCustomOkToast(this@LoginActivity, getString(R.string.login_success))
                     // Redirigir a MainActivity
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
                     startActivity(intent)
                     finish()
                 } catch (e: Exception) {
-                    val baseMsg = "Error al iniciar sesión"
+                    val baseMsg = getString(R.string.login_error_base)
                     if (e is HttpException) {
                         when (e.code()) {
                             403 -> { //error
-                                val inflater = layoutInflater
-                                val layout = inflater.inflate(R.layout.custom_toast_error, null)
-                                val textView = layout.findViewById<TextView>(R.id.toast_text)
-                                textView.text = "Correo o contraseña incorrectos"
-                                with(Toast(applicationContext)) {
-                                    duration = Toast.LENGTH_SHORT
-                                    view = layout
-                                    show()
-                                }
+                                showCustomErrorToast(this@LoginActivity, getString(R.string.login_invalid_credentials))
                             }
                             429 -> {
-                                val inflater = layoutInflater
-                                val layout = inflater.inflate(R.layout.custom_toast_error, null)
-                                val textView = layout.findViewById<TextView>(R.id.toast_text)
-                                textView.text = "Límite de API alcanzado. Espera ~20s e intenta de nuevo"
-                                with(Toast(applicationContext)) {
-                                    duration = Toast.LENGTH_SHORT
-                                    view = layout
-                                    show()
-                                }
+                                showCustomErrorToast(this@LoginActivity, getString(R.string.api_limit_error_retry))
                             }
                             else -> {
                                 val errBody = e.response()?.errorBody()?.string()
                                 Log.e("LoginActivity", "HTTP ${e.code()} ${errBody ?: ""}")
-                                val inflater = layoutInflater
-                                val layout = inflater.inflate(R.layout.custom_toast_error, null)
-                                val textView = layout.findViewById<TextView>(R.id.toast_text)
-                                textView.text = "$baseMsg (HTTP ${e.code()})"
-                                with(Toast(applicationContext)) {
-                                    duration = Toast.LENGTH_SHORT
-                                    view = layout
-                                    show()
-                                }
+                                showCustomErrorToast(this@LoginActivity, getString(R.string.http_error_format, baseMsg, e.code()))
                             }
                         }
                     } else {
                         Log.e("LoginActivity", e.localizedMessage ?: baseMsg)
-                        val inflater = layoutInflater
-                        val layout = inflater.inflate(R.layout.custom_toast_error, null)
-                        val textView = layout.findViewById<TextView>(R.id.toast_text)
-                        textView.text = baseMsg
-                        with(Toast(applicationContext)) {
-                            duration = Toast.LENGTH_SHORT
-                            view = layout
-                            show()
-                        }
+                        showCustomErrorToast(this@LoginActivity, baseMsg)
                     }
                 }
             }
