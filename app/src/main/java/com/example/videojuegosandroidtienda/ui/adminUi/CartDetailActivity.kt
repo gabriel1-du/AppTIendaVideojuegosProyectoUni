@@ -10,6 +10,7 @@ import android.widget.TextView
 import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -29,8 +30,8 @@ class CartDetailActivity : AppCompatActivity() {
     private lateinit var textViewEstado: TextView
     private lateinit var recyclerViewVideogames: RecyclerView
 
-    private val cartRepository = CartRepository()
-    private val videogameRepository = VideogameRepository()
+    private val cartViewModel: com.example.videojuegosandroidtienda.data.viewmodel.CartViewModel by viewModels()
+    private val videogameViewModel: com.example.videojuegosandroidtienda.data.viewmodel.VideogameViewModel by viewModels()
     private lateinit var videogameAdapter: VideogameAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,7 +66,7 @@ class CartDetailActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val cart = cartRepository.getCartById(cartId)
+                val cart = cartViewModel.getCart(cartId)
 
                 // Mostrar datos del carrito con etiquetas descriptivas
                 textViewIdCarrito.text = getString(R.string.cart_id_format, cart.id)
@@ -87,7 +88,7 @@ class CartDetailActivity : AppCompatActivity() {
                 val genreNames = genres.associate { it.id to it.name }
 
                 // Cargar videojuegos y filtrar por IDs del carrito
-                val allVideogames = videogameRepository.getVideogames()
+                val allVideogames = videogameViewModel.getVideogames()
                 val ids = cart.videogames_id ?: emptyList()
                 val selected = allVideogames.filter { vg -> ids.contains(vg.id) }
                 videogameAdapter.submit(selected, genreNames, platformNames)
@@ -109,7 +110,7 @@ class CartDetailActivity : AppCompatActivity() {
         buttonApruebo.setOnClickListener {
             lifecycleScope.launch {
                 try {
-                    val updated = cartRepository.updateCartApproval(cartId, true)
+                    val updated = cartViewModel.updateCartApproval(cartId, true)
                     textViewEstado.text = getString(
                         R.string.cart_status_format,
                         getString(if (updated.aprobado) R.string.status_approved else R.string.status_pending)
@@ -134,7 +135,7 @@ class CartDetailActivity : AppCompatActivity() {
         buttonRechazo.setOnClickListener {
             lifecycleScope.launch {
                 try {
-                    val updated = cartRepository.updateCartApproval(cartId, false)
+                    val updated = cartViewModel.updateCartApproval(cartId, false)
                     textViewEstado.text = getString(
                         R.string.cart_status_format,
                         getString(if (updated.aprobado) R.string.status_approved else R.string.status_pending)

@@ -5,16 +5,17 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
+import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.entities.User
-import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
+import com.example.videojuegosandroidtienda.data.viewmodel.UserViewModel
 import com.example.videojuegosandroidtienda.ui.adapter.AdminUserAdapter
 import kotlinx.coroutines.launch
 
 class ActivitiyUserAdminDashboard : AppCompatActivity() {
-    private val repository = UserRepository()
+    private val userViewModel: UserViewModel by viewModels()
     private var allUsers: List<User> = emptyList()
     private lateinit var adapter: AdminUserAdapter
 
@@ -38,7 +39,7 @@ class ActivitiyUserAdminDashboard : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                allUsers = repository.listUsers()
+                allUsers = userViewModel.listUsers()
                 render()
             } catch (_: Exception) {
             }

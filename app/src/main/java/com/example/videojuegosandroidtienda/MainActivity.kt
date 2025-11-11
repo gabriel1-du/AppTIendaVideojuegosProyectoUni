@@ -11,6 +11,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.lifecycleScope
+import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import retrofit2.HttpException
 import com.example.videojuegosandroidtienda.data.entities.Genre
@@ -21,6 +22,8 @@ import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
 import com.example.videojuegosandroidtienda.data.functions.showCustomOkToast
 import com.example.videojuegosandroidtienda.data.repository.AuthRepository
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.VideogameRepository
+import com.example.videojuegosandroidtienda.data.viewmodel.UserViewModel
+import com.example.videojuegosandroidtienda.data.viewmodel.VideogameViewModel
 import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
 import com.example.videojuegosandroidtienda.ui.detail.DetailActivity
 import com.example.videojuegosandroidtienda.ui.adapter.SimpleItemSelectedListener
@@ -34,6 +37,7 @@ class MainActivity : AppCompatActivity() {
     private val AuthRepository = AuthRepository() //Repo auth
 
     private val VideogameRepository = VideogameRepository() //Repo videogame
+    private val videogameViewModel: VideogameViewModel by viewModels()
 
     private val adapter = VideogameAdapter() //Adaptador para las tajetas
 
@@ -44,8 +48,8 @@ class MainActivity : AppCompatActivity() {
     private var genreNamesMap: Map<String, String> = emptyMap()
     private var lastDataLoadAt: Long = 0
 
-    // Repositorio y usuario autenticado
-    private val userRepository = UserRepository()
+    // ViewModel y usuario autenticado
+    private val userViewModel: UserViewModel by viewModels()
     private var currentUser: User? = null
 
 
@@ -171,7 +175,7 @@ class MainActivity : AppCompatActivity() {
             try {
                 platforms = VideogameRepository.getPlatforms()
                 genres = VideogameRepository.getGenres()
-                allVideogames = VideogameRepository.getVideogames()
+                allVideogames = videogameViewModel.getVideogames()
 
                 platformNamesMap = platforms.associate { it.id to it.name }
                 genreNamesMap = genres.associate { it.id to it.name }
@@ -204,7 +208,7 @@ class MainActivity : AppCompatActivity() {
                 val token = com.example.videojuegosandroidtienda.data.network.TokenStore.token
                 if (!token.isNullOrBlank()) {
                     val me = AuthRepository.getAuthMe()
-                    val fetched = userRepository.getUser(me.id)
+                    val fetched = userViewModel.getUser(me.id)
                     if (fetched.bloqueo) {
                         AuthRepository.logout()
                         showCustomErrorToast(this@MainActivity, "Usuario bloqueado")
@@ -248,7 +252,7 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     // Obtener usuario autenticado y luego sus datos por ID
                     val authUser = AuthRepository.getAuthMe()
-                    val fetchedUser = userRepository.getUser(authUser.id)
+                    val fetchedUser = userViewModel.getUser(authUser.id)
                     currentUser = fetchedUser
                     uploadItem?.isVisible = fetchedUser.admin
                 }

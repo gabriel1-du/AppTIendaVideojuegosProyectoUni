@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.example.videojuegosandroidtienda.R
@@ -15,7 +16,7 @@ import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
 class UserDetailActivity : AppCompatActivity() {
-    private val userRepository = UserRepository()
+    private val userViewModel: com.example.videojuegosandroidtienda.data.viewmodel.UserViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,7 +37,7 @@ class UserDetailActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val user = userRepository.getUser(userId)
+                val user = userViewModel.getUser(userId)
                 textId.text = getString(R.string.user_id_format, user.id)
                 textCreated.text = getString(R.string.user_created_format, user.created_at ?: "")
                 textName.text = getString(R.string.user_name_format, user.name)
@@ -64,15 +65,16 @@ class UserDetailActivity : AppCompatActivity() {
         buttonActualizarBloqueo.setOnClickListener {
             lifecycleScope.launch {
                 try {
-                    userRepository.patchUser(userId, mapOf("bloqueo" to switchBloqueo.isChecked))
+                    val updated = userViewModel.patchUserBlock(userId, switchBloqueo.isChecked)
                     showCustomOkToast(this@UserDetailActivity, getString(R.string.block_status_updated))
+                    switchBloqueo.isChecked = updated.bloqueo
                 } catch (e: HttpException) {
                     if (e.code() == 429) {
                         showCustomErrorToast(this@UserDetailActivity, getString(R.string.api_limit_error_retry))
                     } else {
                         showCustomErrorToast(
                             this@UserDetailActivity,
-                            getString(R.string.http_error_format, getString(R.string.update_error_base), e.code())
+                            getString(R.string.http_error_format, getString(R.string.user_block_update_base), e.code())
                         )
                     }
                 } catch (e: Exception) {
@@ -85,7 +87,7 @@ class UserDetailActivity : AppCompatActivity() {
         buttonEliminar.setOnClickListener {
             lifecycleScope.launch {
                 try {
-                    userRepository.deleteUser(userId)
+                    userViewModel.deleteUser(userId)
                     showCustomOkToast(this@UserDetailActivity, getString(R.string.user_deleted_success))
                     finish()
                 } catch (e: HttpException) {

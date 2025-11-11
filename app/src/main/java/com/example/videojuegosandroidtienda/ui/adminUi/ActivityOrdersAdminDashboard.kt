@@ -7,18 +7,19 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
+import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.entities.Cart
-import com.example.videojuegosandroidtienda.data.repository.StoreRepository.CartRepository
-import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
+import com.example.videojuegosandroidtienda.data.viewmodel.CartViewModel
+import com.example.videojuegosandroidtienda.data.viewmodel.UserViewModel
 import com.example.videojuegosandroidtienda.ui.adapter.AdminCartAdapter
 import kotlinx.coroutines.launch
 
 class ActivityOrdersAdminDashboard : AppCompatActivity() {
-    private val cartRepository = CartRepository()
-    private val userRepository = UserRepository()
+    private val cartViewModel: CartViewModel by viewModels()
+    private val userViewModel: UserViewModel by viewModels()
     private lateinit var adapter: AdminCartAdapter
     private var all: List<Cart> = emptyList()
     private var userNames: Map<String, String> = emptyMap()
@@ -43,9 +44,9 @@ class ActivityOrdersAdminDashboard : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val carts = cartRepository.getCarts()
+                val carts = cartViewModel.listCarts()
                 all = carts
-                val users = userRepository.listUsers()
+                val users = userViewModel.listUsers()
                 userNames = users.associate { it.id to it.name }
 
                 val items = listOf("Todos", "Aprobados", "Pendientes")

@@ -7,16 +7,19 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
+import androidx.activity.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.entities.Videogame
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.VideogameRepository
+import com.example.videojuegosandroidtienda.data.viewmodel.VideogameViewModel
 import com.example.videojuegosandroidtienda.ui.adapter.AdminVideogameAdapter
 import kotlinx.coroutines.launch
 
 class ActivityVideogameAdminDashboard : AppCompatActivity() {
     private val repository = VideogameRepository()
+    private val videogameViewModel: VideogameViewModel by viewModels()
     private var all: List<Videogame> = emptyList()
     private lateinit var adapter: AdminVideogameAdapter
 
@@ -50,7 +53,7 @@ class ActivityVideogameAdminDashboard : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                all = repository.getVideogames()
+                all = videogameViewModel.getVideogames()
                 val platforms = repository.getPlatforms()
                 val genres = repository.getGenres()
 

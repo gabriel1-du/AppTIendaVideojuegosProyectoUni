@@ -9,19 +9,21 @@ import com.example.videojuegosandroidtienda.data.functions.showCustomOkToast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import androidx.activity.viewModels
 import retrofit2.HttpException
 import com.example.videojuegosandroidtienda.MainActivity
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.functions.setupBottomNavigation
 import com.example.videojuegosandroidtienda.data.network.TokenStore
 import com.example.videojuegosandroidtienda.data.repository.AuthRepository
-import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
+import com.example.videojuegosandroidtienda.data.viewmodel.UserViewModel
 import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import kotlinx.coroutines.launch
 
 class ProfileActivity : AppCompatActivity() {
     private val repository = AuthRepository()
+    private val userViewModel: UserViewModel by viewModels()
 
     // Muestra nombre y email del usuario y permite cerrar sesión
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,7 +56,7 @@ class ProfileActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val authUser = repository.getAuthMe()
-                val fetchedUser = UserRepository().getUser(authUser.id)
+                val fetchedUser = userViewModel.getUser(authUser.id)
                 if (fetchedUser.bloqueo) {
                     repository.logout()
                     showCustomErrorToast(this@ProfileActivity, getString(R.string.user_blocked))
