@@ -26,11 +26,9 @@ import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import java.util.UUID
 
 class AddVideogameActivity : AppCompatActivity() {
     companion object {
-        private const val TAG = "AddVideogameActivity"
         private const val MAX_ADDITIONAL_IMAGES = 4
     }
 
@@ -51,8 +49,6 @@ class AddVideogameActivity : AppCompatActivity() {
         setContentView(R.layout.activity_add_videogame)
 
         val inputTitle = findViewById<EditText>(R.id.inputTitle)
-        imagePreview = findViewById<ImageView>(R.id.imagePreview)
-        additionalImagesPreviewContainer = findViewById<LinearLayout>(R.id.additionalImagesPreviewContainer)
         val spinnerPlatform = findViewById<Spinner>(R.id.spinnerPlatform)
         val spinnerGenre = findViewById<Spinner>(R.id.spinnerGenre)
         val inputPrice = findViewById<EditText>(R.id.inputPrice)
@@ -103,8 +99,8 @@ class AddVideogameActivity : AppCompatActivity() {
                     val additionalImagesResponse = videogameRepository.uploadImages(additionalImageParts)
 
                     val videogame = VideogamePost2(
-                        id = UUID.randomUUID().toString(),
-                        created_at = System.currentTimeMillis().toString(),
+                        id = null, // dejar que el backend genere el ID
+                        created_at = null, // dejar que el backend genere el timestamp
                         title = title,
                         price = price,
                         description = description,

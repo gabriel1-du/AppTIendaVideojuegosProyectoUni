@@ -5,5 +5,7 @@ data class User(
     val created_at: String?,
     val name: String,
     val email: String,
-    val admin: Boolean
+    val password: String?,
+    val admin: Boolean,
+    val bloqueo: Boolean
 )

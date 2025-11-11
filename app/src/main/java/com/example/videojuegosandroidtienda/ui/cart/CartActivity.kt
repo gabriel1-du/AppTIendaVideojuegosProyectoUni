@@ -118,13 +118,18 @@ class CartActivity : AppCompatActivity() {
                         val user = authRepository.getAuthMe()
                         val userId = user.id
 
+                        // Construimos lista de IDs de los videojuegos en el carrito
+                        val videogamesIds = CartManager.getItems()
+                            .map { it.first.id }
+                            .distinct() // Evitar duplicados si hay múltiples cantidades del mismo producto
+
                         val cart = Cart(
                             id = "", // El ID se genera en el backend
                             user_id = userId,
                             total = CartManager.getTotal(),
                             created_at = System.currentTimeMillis()
                         )
-                        cartRepository.postCart(cart)
+                        cartRepository.postCart(cart, videogamesIds)
 
                         CartManager.clear()
                         showCustomOkToast(this@CartActivity, "Se ha realizado exitosamente la compra")

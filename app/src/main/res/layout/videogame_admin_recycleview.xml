@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/border_black"
+    android:padding="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/TextViewVideogameId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textPrimary"
+            android:layout_margin="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="id: 142bfa08-5c70-4981-a99a-1a03aeb45855" />
+
+        <TextView
+            android:id="@+id/TextViewVideogameTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textSecondary"
+            android:layout_margin="8dp"
+            app:layout_constraintTop_toBottomOf="@id/TextViewVideogameId"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="title: Halo Infinite" />
+
+        <TextView
+            android:id="@+id/TextViewVideogamePrice"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textSecondary"
+            android:layout_margin="8dp"
+            app:layout_constraintTop_toBottomOf="@id/TextViewVideogameTitle"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="price: 59" />
+
+        <TextView
+            android:id="@+id/TextViewVideogamePlatformId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textSecondary"
+            android:layout_margin="8dp"
+            app:layout_constraintTop_toBottomOf="@id/TextViewVideogamePrice"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="platform_id: 8b221..." />
+
+        <TextView
+            android:id="@+id/TextViewVideogameGenreId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/textSecondary"
+            android:layout_margin="8dp"
+            app:layout_constraintTop_toBottomOf="@id/TextViewVideogamePlatformId"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="genre_id: f22aa..." />
+
+        <Button
+            android:id="@+id/buttonVerMas"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+        android:text="@string/see_more"
+            android:layout_margin="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

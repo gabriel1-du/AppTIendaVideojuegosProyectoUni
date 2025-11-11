@@ -1,5 +1,6 @@
 package com.example.videojuegosandroidtienda.ui.auth
 
+import android.app.Dialog
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
@@ -9,21 +10,24 @@ import androidx.lifecycle.lifecycleScope
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.repository.AuthRepository
 import kotlinx.coroutines.launch
-import android.widget.Toast
+import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
 import android.content.Intent
+import android.graphics.Color
+import android.os.Handler
+import android.os.Looper
 import com.example.videojuegosandroidtienda.MainActivity
 import retrofit2.HttpException
 import android.util.Log
 import android.widget.TextView
+import androidx.core.graphics.drawable.toDrawable
 
 class SignupActivity : AppCompatActivity() {
     private val repository = AuthRepository()
-
     // Registra usuario y redirige según resultado
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_signup)
+       setContentView(R.layout.activity_signup)
 
         val inputName = findViewById<EditText>(R.id.inputName)
         val inputEmail = findViewById<EditText>(R.id.inputEmail)
@@ -35,51 +39,19 @@ class SignupActivity : AppCompatActivity() {
             val email = inputEmail.text.toString()
             val password = inputPassword.text.toString()
             if (name.isBlank() || email.isBlank() || password.isBlank()) {
-                val inflater = layoutInflater
-                val layout = inflater.inflate(R.layout.custom_toast_error, null)
-                val textView = layout.findViewById<TextView>(R.id.toast_text)
-                textView.text = "Completa nombre, email y contraseña"
-                with(Toast(applicationContext)) {
-                    duration = Toast.LENGTH_SHORT
-                    view = layout
-                    show()
-                }
+                showCustomErrorToast(this@SignupActivity, getString(R.string.signup_fields_required))
                 return@setOnClickListener
             }
             if (password.length < 8) { //error
-                val inflater = layoutInflater
-                val layout = inflater.inflate(R.layout.custom_toast_error, null)
-                val textView = layout.findViewById<TextView>(R.id.toast_text)
-                textView.text = "La contraseña debe tener mas de 8 caracteres"
-                with(Toast(applicationContext)) {
-                    duration = Toast.LENGTH_SHORT
-                    view = layout
-                    show()
-                }
+                showCustomErrorToast(this@SignupActivity, getString(R.string.password_length_error))
                 return@setOnClickListener
             }
             if (!password.any { it.isLetter() }) {
-                val inflater = layoutInflater
-                val layout = inflater.inflate(R.layout.custom_toast_error, null)
-                val textView = layout.findViewById<TextView>(R.id.toast_text)
-                textView.text = "La contraseña debe contener al menos un carácter"
-                with(Toast(applicationContext)) {
-                    duration = Toast.LENGTH_SHORT
-                    view = layout
-                    show()
-                }
+                showCustomErrorToast(this@SignupActivity, getString(R.string.password_letter_error))
                 return@setOnClickListener
             }
             if (!password.any { !it.isLetterOrDigit() }) {
-                val inflater = layoutInflater
-                val layout = inflater.inflate(R.layout.custom_toast_error, null)
-                val textView = layout.findViewById<TextView>(R.id.toast_text)
-                textView.text = "La contraseña debe contener al menos un carácter especial"
-                with(Toast(applicationContext)) {
-                    duration = Toast.LENGTH_SHORT
-                    view = layout
-                    show()
-                }
+                showCustomErrorToast(this@SignupActivity, getString(R.string.password_special_char_error))
                 return@setOnClickListener
             }
             lifecycleScope.launch {
@@ -87,48 +59,43 @@ class SignupActivity : AppCompatActivity() {
                     repository.register(name, email, password)
                     // Iniciar sesión automáticamente y redirigir a MainActivity
                     repository.login(email, password)
-                    val inflater = layoutInflater
-                    val layout = inflater.inflate(R.layout.custom_toast_ok, null)
-                    val textView = layout.findViewById<TextView>(R.id.toast_text)
-                    textView.text = "Registro exitoso"
-                    with(Toast(applicationContext)) {
-                        duration = Toast.LENGTH_SHORT
-                        view = layout
-                        show()
-                    }
-                    val intent = Intent(this@SignupActivity, MainActivity::class.java)
-                    startActivity(intent)
-                    finish()
+
+                    // 1. Crear y configurar el Dialog
+                    val dialog = Dialog(this@SignupActivity)
+                    dialog.setContentView(R.layout.custom_toast_ok) // Reutilizamos tu layout
+                    dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable()) // Para esquinas redondeadas si las tienes
+
+                    val textView = dialog.findViewById<TextView>(R.id.toast_text)
+                    textView.text = getString(R.string.signup_succes) // Asegúrate que se llame 'signup_success' en strings.xml si lo cambiaste
+
+                    dialog.setCancelable(false) // El usuario no puede cerrarlo
+                    dialog.show()
+
+                    // 2. Usar un Handler para cerrar el diálogo y navegar después de un tiempo
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        if (dialog.isShowing) {
+                            dialog.dismiss()
+                        }
+                        // Navegar a MainActivity
+                        val intent = Intent(this@SignupActivity, MainActivity::class.java)
+                        startActivity(intent)
+                        finish() // Cierra SignupActivity
+                    }, 2000)
                 } catch (e: Exception) {
                     val baseMsg = "Error al crear cuenta (Comunicar con soporte)"
                     if (e is HttpException) {
                         val code = e.code()
                         val errBody = e.response()?.errorBody()?.string()
                         Log.e("SignupActivity", "HTTP $code ${errBody ?: ""}")
-                        val inflater = layoutInflater
-                        val layout = inflater.inflate(R.layout.custom_toast_error, null)
-                        val textView = layout.findViewById<TextView>(R.id.toast_text)
-                        textView.text = if (code == 429) {
-                            "Límite de API alcanzado. Espera ~20s e intenta de nuevo"
+                        val message = if (code == 429) {
+                            getString(R.string.api_limit_error_retry)
                         } else {
-                            "$baseMsg (HTTP $code)"
+                            getString(R.string.http_error_format, baseMsg, code)
                         }
-                        with(Toast(applicationContext)) {
-                            duration = Toast.LENGTH_SHORT
-                            view = layout
-                            show()
-                        }
+                        showCustomErrorToast(this@SignupActivity, message)
                     } else {
                         Log.e("SignupActivity", e.localizedMessage ?: baseMsg)
-                        val inflater = layoutInflater
-                        val layout = inflater.inflate(R.layout.custom_toast_error, null)
-                        val textView = layout.findViewById<TextView>(R.id.toast_text)
-                        textView.text = baseMsg
-                        with(Toast(applicationContext)) {
-                            duration = Toast.LENGTH_SHORT
-                            view = layout
-                            show()
-                        }
+                        showCustomErrorToast(this@SignupActivity, baseMsg)
                     }
                 }
             }

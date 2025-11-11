@@ -19,14 +19,14 @@
             android:layout_height="wrap_content"
             android:textStyle="bold"
             android:textColor="@color/textPrimary"
-            android:text="Carrito" />
+            android:text="@string/cart_title" />
 
         <TextView
             android:id="@+id/textCartItemPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/textSecondary"
-            android:text="Precio" />
+            android:text="@string/price" />
 
     </LinearLayout>
 

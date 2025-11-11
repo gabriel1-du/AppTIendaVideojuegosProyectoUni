@@ -7,10 +7,10 @@
     android:gravity="center_vertical"
     android:background="@color/backgroundDark">
 
-        <TextView
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Iniciar sesión"
+        android:text="@string/login_title"
         android:textColor="@color/textPrimary"
         android:textSize="20sp"
         android:textStyle="bold" />
@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="Email"
+        android:hint="@string/label_email"
         android:padding="16dp"
         android:inputType="textEmailAddress"
         android:textColor="@color/textPrimary"
@@ -32,7 +32,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:hint="Contraseña"
+        android:hint="@string/label_password"
         android:inputType="textPassword"
         android:textColor="@color/textPrimary"
         android:textColorHint="@color/textSecondary" />
@@ -42,14 +42,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:text="Entrar" />
+        android:text="@string/login" />
 
         <TextView
         android:id="@+id/linkSignup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:text="Crear cuenta"
+        android:text="@string/create_account"
         android:textColor="@color/textSecondary" />
 
     </LinearLayout>

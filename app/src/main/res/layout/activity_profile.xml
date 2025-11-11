@@ -16,7 +16,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Perfil"
+        android:text="@string/profile_title"
             android:textStyle="bold"
             android:textSize="18sp"
             android:textColor="@color/textPrimary"
@@ -42,10 +42,16 @@
             android:id="@+id/buttonLogout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Cerrar sesión"
+        android:text="@string/logout"
             android:layout_marginTop="16dp" />
 
-    </LinearLayout>
+            <Button
+                android:id="@+id/buttonIraDashboard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+        android:text="@string/go_to_admin" />
+
+        </LinearLayout>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"

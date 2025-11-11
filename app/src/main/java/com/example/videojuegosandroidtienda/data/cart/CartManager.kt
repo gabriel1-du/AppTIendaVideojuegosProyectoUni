@@ -11,10 +11,6 @@ object CartManager {
         items[product.id] = product to (current + quantity)
     }
 
-    // Elimina producto del carrito por id(En desuso al no tener un boton que haga eso)
-    fun remove(productId: String) {
-        items.remove(productId)
-    }
 
     // Incrementa cantidad del producto
     fun increase(productId: String) {
@@ -37,9 +33,6 @@ object CartManager {
 
     // Calcula el total del carrito
     fun getTotal(): Double = items.values.sumOf { it.first.price * it.second }
-
-    // Indica si el carrito está vacío
-    fun isEmpty(): Boolean = items.isEmpty()
 
     // Limpia completamente el carrito
     fun clear() { items.clear() }

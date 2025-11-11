@@ -7,6 +7,7 @@ import com.example.videojuegosandroidtienda.data.entities.Platform
 import com.example.videojuegosandroidtienda.data.entities.UploadResponse
 import com.example.videojuegosandroidtienda.data.entities.Videogame
 import com.example.videojuegosandroidtienda.data.entities.VideogamePost2
+import com.example.videojuegosandroidtienda.data.entities.createClasses.VideogameUpdateRequest
 import com.example.videojuegosandroidtienda.data.network.ApiConfig
 import com.example.videojuegosandroidtienda.data.network.RetrofitProvider
 import okhttp3.MultipartBody
@@ -74,6 +75,28 @@ class VideogameRepository {
     // Obtiene un videojuego por id (incluye lista de imágenes adicionales)
     suspend fun getVideogameById(id: String): VideogamePost2 {
         return storeService.getVideogame(id)
+    }
+
+    suspend fun updateVideogame(
+        id: String,
+        title: String?,
+        price: Int?,
+        description: String?,
+        genreId: String?,
+        platformId: String?
+    ): Videogame {
+        val req = VideogameUpdateRequest(
+            title = title,
+            price = price,
+            description = description,
+            genre_id = genreId,
+            platform_id = platformId
+        )
+        return storeService.updateVideogame(id, req)
+    }
+
+    suspend fun deleteVideogame(id: String) {
+        storeService.deleteVideogame(id)
     }
 
 

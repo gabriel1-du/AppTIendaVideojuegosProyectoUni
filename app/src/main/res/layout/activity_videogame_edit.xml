@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundDark"
+    tools:context=".ui.adminUi.VideogameEditActivity">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/edit_videogame_title"
+                android:textColor="@color/textPrimary"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:layout_marginBottom="12dp" />
+
+            <EditText
+                android:id="@+id/editTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+        android:hint="@string/hint_title"
+                android:inputType="text"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/editPrice"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+        android:hint="@string/hint_price_integer"
+                android:inputType="number"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/editDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+        android:hint="@string/hint_description"
+                android:inputType="textMultiLine"
+                android:minLines="3"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/editGenreId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+        android:hint="@string/hint_genre_id"
+                android:inputType="text"
+                android:layout_marginBottom="8dp" />
+
+            <EditText
+                android:id="@+id/editPlatformId"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+        android:hint="@string/hint_platform_id"
+                android:inputType="text"
+                android:layout_marginBottom="16dp" />
+
+            <Button
+                android:id="@+id/buttonGuardar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+        android:text="@string/save"
+                android:backgroundTint="@android:color/black"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -89,8 +89,28 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
             android:backgroundTint="@android:color/black"
-            android:text="Agregar al carrito"
+        android:text="@string/add_to_cart"
             android:textColor="@android:color/white" />
+
+        <Button
+            android:id="@+id/buttonEditVideogame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+        android:text="@string/edit"
+            android:backgroundTint="@android:color/black"
+            android:textColor="@android:color/white"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/buttonDeleteVideogame"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+        android:text="@string/delete"
+            android:backgroundTint="@android:color/holo_red_dark"
+            android:textColor="@android:color/white"
+            android:visibility="gone" />
 
     </LinearLayout>
 
