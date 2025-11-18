@@ -66,12 +66,6 @@
             android:name=".ui.auth.SignupActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.cart.CartActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.profile.ProfileActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.upload.AddVideogameActivity"
             android:exported="false" />
     </application>
