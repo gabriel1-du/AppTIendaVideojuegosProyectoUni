@@ -16,6 +16,7 @@ import com.example.videojuegosandroidtienda.data.repository.AuthRepository
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
 import com.example.videojuegosandroidtienda.databinding.ActivityMainBinding
 import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
+import com.example.videojuegosandroidtienda.ui.auth.SignUpFragment
 import com.example.videojuegosandroidtienda.ui.fragments.CartFragment
 import com.example.videojuegosandroidtienda.ui.fragments.HomeFragment
 import com.example.videojuegosandroidtienda.ui.fragments.ProfileFragment
@@ -30,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     private val homeFragment = HomeFragment()
     private val cartFragment = CartFragment()
     private val profileFragment = ProfileFragment()
+    private val signUpFragment = SignUpFragment() // Nuevo fragmento
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +52,14 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.nav_search -> setCurrentFragment(homeFragment)
                 R.id.nav_cart -> setCurrentFragment(cartFragment)
-                R.id.nav_profile -> setCurrentFragment(profileFragment)
+                R.id.nav_profile -> {
+                    val token = com.example.videojuegosandroidtienda.data.network.TokenStore.token
+                    if (token.isNullOrBlank()) {
+                        setCurrentFragment(signUpFragment)
+                    } else {
+                        setCurrentFragment(profileFragment)
+                    }
+                }
             }
             true
         }

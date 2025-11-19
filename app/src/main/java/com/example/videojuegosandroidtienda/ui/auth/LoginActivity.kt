@@ -99,7 +99,7 @@ class LoginActivity : AppCompatActivity() {
         }
 
         linkSignup.setOnClickListener {
-            startActivity(Intent(this, SignupActivity::class.java))
+            startActivity(Intent(this, SignUpFragment::class.java))
         }
     }
 }
