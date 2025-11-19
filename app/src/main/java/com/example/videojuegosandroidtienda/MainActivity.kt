@@ -126,7 +126,7 @@ class MainActivity : AppCompatActivity() {
         val isLoggedIn = !token.isNullOrBlank()
 
         binding.toolbar.menu.findItem(R.id.action_login)?.isVisible = !isLoggedIn
-        binding.toolbar.menu.findItem(R.id.action_cart)?.isVisible = isLoggedIn
+        binding.toolbar.menu.findItem(R.id.action_cart)?.isVisible = true
 
         // Update visibility of "upload videogame" based on user role
         lifecycleScope.launch {

@@ -1,84 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp"
-    android:layout_marginVertical="6dp"
-    android:elevation="2dp"
-    android:background="@drawable/cart_item_border">
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp">
 
-    <ImageView
-        android:id="@+id/imageProduct"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
-        android:layout_marginEnd="8dp"
-        android:scaleType="centerCrop"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:src="@tools:sample/backgrounds/scenic" />
-
-    <TextView
-        android:id="@+id/textTitle"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:ellipsize="end"
-        android:maxLines="2"
-        android:text="@string/product_title_placeholder"
-        android:textColor="@color/textPrimary"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/imageProduct"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/textPrice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="@string/product_price_placeholder"
-        android:textColor="@color/textSecondary"
-        android:textSize="14sp"
-        android:layout_marginTop="2dp"
-        app:layout_constraintStart_toEndOf="@+id/imageProduct"
-        app:layout_constraintTop_toBottomOf="@+id/textTitle"/>
+        <ImageView
+            android:id="@+id/imageProduct"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:src="@tools:sample/backgrounds/scenic" />
 
-    <Button
-        android:id="@+id/buttonPlus"
-        android:layout_width="66dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/plus"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <TextView
+            android:id="@+id/textTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            app:layout_constraintStart_toEndOf="@+id/imageProduct"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Product Title" />
 
-    <TextView
-        android:id="@+id/textQuantity"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="8dp"
-        android:layout_marginEnd="12dp"
-        android:text="@string/quantity_default"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="@+id/buttonPlus"
-        app:layout_constraintEnd_toStartOf="@+id/buttonPlus"
-        app:layout_constraintTop_toTopOf="@+id/buttonPlus"
-        app:layout_constraintVertical_bias="0.714" />
+        <TextView
+            android:id="@+id/textPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textColor="?attr/colorPrimary"
+            app:layout_constraintStart_toStartOf="@+id/textTitle"
+            app:layout_constraintTop_toBottomOf="@+id/textTitle"
+            tools:text="$19.99" />
 
-    <Button
-        android:id="@+id/buttonMinus"
-        android:layout_width="63dp"
-        android:layout_height="48dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/minus"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/buttonPlus"
-        app:layout_constraintEnd_toStartOf="@+id/textQuantity"
-        app:layout_constraintTop_toTopOf="@+id/buttonPlus"
-        app:layout_constraintVertical_bias="1.0" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonPlus"
+            style="@style/Widget.Material3.Button.IconButton.Outlined"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:icon="@drawable/ic_baseline_add_24"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/textQuantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:text="@string/quantity_default"
+            android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+            app:layout_constraintTop_toTopOf="@id/buttonPlus"
+            app:layout_constraintBottom_toBottomOf="@id/buttonPlus"
+            app:layout_constraintEnd_toStartOf="@id/buttonPlus" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonMinus"
+            style="@style/Widget.Material3.Button.IconButton.Outlined"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            app:icon="@drawable/ic_baseline_remove_24"
+            app:layout_constraintTop_toTopOf="@id/buttonPlus"
+            app:layout_constraintBottom_toBottomOf="@id/buttonPlus"
+            app:layout_constraintEnd_toStartOf="@+id/textQuantity" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>

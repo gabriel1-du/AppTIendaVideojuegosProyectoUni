@@ -43,19 +43,18 @@ class CartFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val token = TokenStore.token
-        if (token.isNullOrBlank()) {
-            startActivity(Intent(requireContext(), LoginActivity::class.java))
-            activity?.finish()
-            return
-        }
-
         renderCart()
 
         binding.buttonPay.setOnClickListener {
             if (CartManager.getItems().isEmpty()) {
                 showCustomErrorToast(requireContext(), "No hay productos en el carrito")
             } else {
+                val token = TokenStore.token
+                if (token.isNullOrBlank()) {
+                    showCustomErrorToast(requireContext(), "Debes iniciar sesión para pagar")
+                    startActivity(Intent(requireContext(), LoginActivity::class.java))
+                    return@setOnClickListener
+                }
                 viewLifecycleOwner.lifecycleScope.launch {
                     try {
                         val user = authRepository.getAuthMe()
