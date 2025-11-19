@@ -1,141 +1,171 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/backgroundDark"
-    android:fillViewport="true">
+    android:fitsSystemWindows="true">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_horizontal"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
-        <ImageView
-            android:id="@+id/detailImage"
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/toolbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="350dp"
+            android:fitsSystemWindows="true"
+            app:contentScrim="?attr/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:toolbarId="@+id/toolbar">
+
+            <ImageView
+                android:id="@+id/detailImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                android:scaleType="centerCrop"
+                app:layout_collapseMode="parallax" />
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:adjustViewBounds="true"
-            android:maxHeight="332dp"
-            android:scaleType="fitCenter" />
+            android:orientation="vertical"
+            android:padding="16dp">
 
-        <!-- Galería horizontal de imágenes adicionales del videojuego -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerDetailImages"
-            android:layout_width="match_parent"
-            android:layout_height="120dp"
-            android:layout_marginBottom="16dp"
-            android:overScrollMode="never"
-            android:visibility="visible"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            android:orientation="horizontal" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerDetailImages"
+                android:layout_width="match_parent"
+                android:layout_height="120dp"
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal"
+                android:overScrollMode="never"
+                android:visibility="visible"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            app:cardUseCompatPadding="true"
-            app:cardCornerRadius="16dp"
-            app:cardBackgroundColor="@color/cardLight">
-
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:layout_marginBottom="16dp"
+                app:cardBackgroundColor="@color/cardLight"
+                app:cardCornerRadius="16dp"
+                app:cardUseCompatPadding="true">
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/detailTitle"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:gravity="center"
-                    android:maxLines="2"
-                    android:ellipsize="end"
-                    android:textColor="@color/textPrimary"
-                    android:textStyle="bold"
-                    android:textSize="20sp"
-                    android:textAlignment="center"
-                    android:text="" />
+                    android:orientation="vertical"
+                    android:padding="16dp">
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/detailGenre"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center"
-                    android:textColor="@color/textSecondary"
-                    android:textAlignment="center" />
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/detailTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:ellipsize="end"
+                        android:gravity="center"
+                        android:maxLines="2"
+                        android:text=""
+                        android:textAlignment="center"
+                        android:textColor="@color/textPrimary"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/detailPlatform"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:gravity="center"
-                    android:textColor="@color/textSecondary"
-                    android:textAlignment="center" />
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/detailGenre"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:textAlignment="center"
+                        android:textColor="@color/textSecondary" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/detailPrice"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center"
-                    android:textColor="@color/textSecondary"
-                    android:textAlignment="center" />
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/detailPlatform"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:gravity="center"
+                        android:textAlignment="center"
+                        android:textColor="@color/textSecondary" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/detailStock"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center"
-                    android:textColor="@color/textSecondary"
-                    android:textAlignment="center" />
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/detailPrice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:textAlignment="center"
+                        android:textColor="@color/textSecondary" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/detailDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:gravity="center"
-                    android:textColor="@color/textSecondary"
-                    android:textAlignment="center" />
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/detailStock"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:gravity="center"
+                        android:textAlignment="center"
+                        android:textColor="@color/textSecondary" />
 
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/detailDescription"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:gravity="center"
+                        android:textAlignment="center"
+                        android:textColor="@color/textSecondary" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonAddToCart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/add_to_cart"
-            android:textAllCaps="false" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonEditVideogame"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/edit"
-            android:textAllCaps="false"
-            android:visibility="gone" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonAddToCart"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/add_to_cart"
+                android:textAllCaps="false" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonDeleteVideogame"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="@string/delete"
-            android:textAllCaps="false"
-            android:visibility="gone"
-            app:backgroundTint="@android:color/holo_red_dark" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonEditVideogame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/edit"
+                android:textAllCaps="false"
+                android:visibility="gone" />
 
-    </LinearLayout>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonDeleteVideogame"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/delete"
+                android:textAllCaps="false"
+                android:visibility="gone"
+                app:backgroundTint="@android:color/holo_red_dark" />
 
-</androidx.core.widget.NestedScrollView>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
