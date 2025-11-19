@@ -1,9 +1,12 @@
 package com.example.videojuegosandroidtienda.ui.adminUi
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -13,27 +16,34 @@ import com.example.videojuegosandroidtienda.data.repository.StoreRepository.User
 import com.example.videojuegosandroidtienda.ui.adapter.AdminUserAdapter
 import kotlinx.coroutines.launch
 
-class ActivitiyUserAdminDashboard : AppCompatActivity() {
+class UserAdminDashboardFragment : Fragment() {
     private val repository = UserRepository()
     private var allUsers: List<User> = emptyList()
     private lateinit var adapter: AdminUserAdapter
+    private lateinit var searchView: SearchView
+    private lateinit var switchOrder: android.widget.Switch
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_user_admin_dashboard)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_user_admin_dashboard, container, false)
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        val search = findViewById<SearchView>(R.id.searchUsers)
-        val switchOrder = findViewById<android.widget.Switch>(R.id.switchOrder)
-        val recycler = findViewById<RecyclerView>(R.id.recyclerUsers)
+        searchView = view.findViewById(R.id.searchUsers)
+        switchOrder = view.findViewById(R.id.switchOrder)
+        val recycler = view.findViewById<RecyclerView>(R.id.recyclerUsers)
 
         adapter = AdminUserAdapter(emptyList()) { user ->
-            val intent = android.content.Intent(this, UserDetailActivity::class.java)
+            val intent = Intent(requireContext(), UserDetailActivity::class.java)
             intent.putExtra("user_id", user.id)
             startActivity(intent)
         }
-        recycler.layoutManager = LinearLayoutManager(this)
+        recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
 
         lifecycleScope.launch {
@@ -44,12 +54,13 @@ class ActivitiyUserAdminDashboard : AppCompatActivity() {
             }
         }
 
-        search.queryHint = "Buscar usuario por nombre"
-        search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+        searchView.queryHint = "Buscar usuario por nombre"
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 render()
                 return true
             }
+
             override fun onQueryTextChange(newText: String?): Boolean {
                 render()
                 return true
@@ -60,15 +71,11 @@ class ActivitiyUserAdminDashboard : AppCompatActivity() {
     }
 
     private fun render() {
-        val search = findViewById<SearchView>(R.id.searchUsers)
-        val switchOrder = findViewById<android.widget.Switch>(R.id.switchOrder)
-        val q = search.query?.toString()?.trim()?.lowercase().orEmpty()
+        val q = searchView.query?.toString()?.trim()?.lowercase().orEmpty()
         var list = if (q.isEmpty()) allUsers else allUsers.filter { it.name.lowercase().contains(q) }
         list = if (switchOrder.isChecked) {
-            // checked: más nuevo → más viejo
             list.sortedByDescending { it.created_at?.toLongOrNull() ?: Long.MIN_VALUE }
         } else {
-            // unchecked: más viejo → más nuevo
             list.sortedBy { it.created_at?.toLongOrNull() ?: Long.MAX_VALUE }
         }
         adapter.submit(list)

@@ -15,6 +15,7 @@ import com.example.videojuegosandroidtienda.data.network.TokenStore
 import com.example.videojuegosandroidtienda.data.repository.AuthRepository
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
 import com.example.videojuegosandroidtienda.databinding.FragmentProfileBinding
+import com.example.videojuegosandroidtienda.ui.adminUi.AdminDashboardActivity
 import com.example.videojuegosandroidtienda.ui.auth.LoginFragment
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -47,7 +48,7 @@ class ProfileFragment : Fragment() {
         }
 
         binding.buttonIraDashboard.setOnClickListener {
-            startActivity(Intent(requireContext(), com.example.videojuegosandroidtienda.ui.adminUi.AdminCenterActivity::class.java))
+            startActivity(Intent(requireContext(), AdminDashboardActivity::class.java))
         }
 
         viewLifecycleOwner.lifecycleScope.launch {

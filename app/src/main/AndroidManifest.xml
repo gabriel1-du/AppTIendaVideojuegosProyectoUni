@@ -15,6 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.VideojuegosAndroidTIenda">
         <activity
+            android:name=".ui.adminUi.AdminDashboardActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.adminUi.CartDetailActivity"
             android:exported="false" />
         <activity
@@ -33,18 +36,6 @@
             android:name=".ui.adminUi.VistaAdminDashboard"
             android:exported="false" />
         <activity
-            android:name=".ui.adminUi.AdminCenterActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.adminUi.ActivitiyUserAdminDashboard"
-            android:exported="false" />
-        <activity
-            android:name=".ui.adminUi.ActivityVideogameAdminDashboard"
-            android:exported="false" />
-        <activity
-            android:name=".ui.adminUi.ActivityOrdersAdminDashboard"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
@@ -58,12 +49,6 @@
             android:exported="false" />
         <activity
             android:name=".ui.detail.FullImageActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.auth.LoginActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.auth.SignupActivity"
             android:exported="false" />
         <activity
             android:name=".ui.upload.AddVideogameActivity"
