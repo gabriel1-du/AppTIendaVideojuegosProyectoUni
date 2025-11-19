@@ -63,7 +63,7 @@ class VideogameAdapter(
     override fun getItemCount(): Int = items.size
 
     class VH(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val imageCover: ImageView = itemView.findViewById(R.id.imageCover)
+        val imageCover: ImageView = itemView.findViewById(R.id.imageView)
         val textTitle: TextView = itemView.findViewById(R.id.textTitle)
         val textGenre: TextView = itemView.findViewById(R.id.textGenre)
         val textPlatform: TextView = itemView.findViewById(R.id.textPlatform)

@@ -2,12 +2,12 @@ package com.example.videojuegosandroidtienda.ui.fragments
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.Spinner
-import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,7 +18,6 @@ import com.example.videojuegosandroidtienda.data.entities.Videogame
 import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.VideogameRepository
 import com.example.videojuegosandroidtienda.databinding.FragmentHomeBinding
-import com.example.videojuegosandroidtienda.ui.adapter.SimpleItemSelectedListener
 import com.example.videojuegosandroidtienda.ui.adapter.VideogameAdapter
 import com.example.videojuegosandroidtienda.ui.detail.DetailActivity
 import kotlinx.coroutines.launch
@@ -69,24 +68,19 @@ class HomeFragment : Fragment() {
             startActivity(intent)
         }
 
-        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                applyFilters(binding.searchView.query.toString(), binding.spinnerPlatform, binding.spinnerGenre)
-                return true
+        // Setup Material Search
+        binding.searchView.setupWithSearchBar(binding.searchBar)
+        binding.searchView.editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                applyFilters()
             }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                applyFilters(newText, binding.spinnerPlatform, binding.spinnerGenre)
-                return true
-            }
+            override fun afterTextChanged(s: Editable?) {}
         })
 
-        binding.spinnerPlatform.onItemSelectedListener = SimpleItemSelectedListener {
-            applyFilters(binding.searchView.query.toString(), binding.spinnerPlatform, binding.spinnerGenre)
-        }
-        binding.spinnerGenre.onItemSelectedListener = SimpleItemSelectedListener {
-            applyFilters(binding.searchView.query.toString(), binding.spinnerPlatform, binding.spinnerGenre)
-        }
+        // Setup Material Dropdown Menus
+        binding.spinnerPlatform.setOnItemClickListener { _, _, _, _ -> applyFilters() }
+        binding.spinnerGenre.setOnItemClickListener { _, _, _, _ -> applyFilters() }
 
         loadInitialData()
     }
@@ -101,10 +95,10 @@ class HomeFragment : Fragment() {
                 platformNamesMap = platforms.associate { it.id to it.name }
                 genreNamesMap = genres.associate { it.id to it.name }
 
-                setupSpinners(binding.spinnerPlatform, binding.spinnerGenre)
+                setupSpinners()
 
                 // Apply initial filters after data is loaded
-                applyFilters(null, binding.spinnerPlatform, binding.spinnerGenre)
+                applyFilters()
 
             } catch (e: Exception) {
                 if (e is HttpException && e.code() == 429) {
@@ -116,20 +110,32 @@ class HomeFragment : Fragment() {
         }
     }
 
-    private fun setupSpinners(spPlatform: Spinner, spGenre: Spinner) {
+    private fun setupSpinners() {
         val platformNames = listOf("Todas") + platforms.map { it.name }
         val genreNames = listOf("Todos") + genres.map { it.name }
 
-        spPlatform.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, platformNames)
-        spGenre.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, genreNames)
+        val platformAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, platformNames)
+        val genreAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_dropdown_item_1line, genreNames)
+
+        binding.spinnerPlatform.setAdapter(platformAdapter)
+        binding.spinnerGenre.setAdapter(genreAdapter)
+
+        // Set default values
+        if (binding.spinnerPlatform.text.isEmpty()) {
+            binding.spinnerPlatform.setText(platformNames.first(), false)
+        }
+        if (binding.spinnerGenre.text.isEmpty()) {
+            binding.spinnerGenre.setText(genreNames.first(), false)
+        }
     }
 
-    private fun applyFilters(query: String?, spPlatform: Spinner?, spGenre: Spinner?) {
-        val selectedPlatformName = spPlatform?.selectedItem?.toString()
-        val selectedGenreName = spGenre?.selectedItem?.toString()
+    private fun applyFilters() {
+        val query = binding.searchView.text.toString()
+        val selectedPlatformName = binding.spinnerPlatform.text.toString()
+        val selectedGenreName = binding.spinnerGenre.text.toString()
 
-        val platformId = platforms.firstOrNull { it.name == selectedPlatformName }?.id
-        val genreId = genres.firstOrNull { it.name == selectedGenreName }?.id
+        val platformId = if (selectedPlatformName == "Todas") null else platforms.firstOrNull { it.name == selectedPlatformName }?.id
+        val genreId = if (selectedGenreName == "Todos") null else genres.firstOrNull { it.name == selectedGenreName }?.id
 
         val filtered = videogameRepository.filterVideogames(allVideogames, query, platformId, genreId)
         platformNamesMap = platforms.associate { it.id to it.name }
@@ -137,7 +143,8 @@ class HomeFragment : Fragment() {
         adapter.submit(filtered, genreNamesMap, platformNamesMap)
 
         if (filtered.isEmpty()) {
-            if (query != null || (platformId != null || genreId != null)) {
+            // Only show toast if a filter has been actively applied
+            if (query.isNotBlank() || selectedPlatformName != "Todas" || selectedGenreName != "Todos") {
                 showCustomErrorToast(requireContext(), "No se encontraron resultados")
             }
         }
