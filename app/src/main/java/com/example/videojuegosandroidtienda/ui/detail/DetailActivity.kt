@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import com.example.videojuegosandroidtienda.data.entities.CartProduct
 import com.example.videojuegosandroidtienda.data.cart.CartManager
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.VideogameRepository
@@ -109,7 +110,26 @@ class DetailActivity : AppCompatActivity() {
                         }
                     } catch (e: HttpException) {
                         if (e.code() == 429) {
-                            showCustomErrorToast(this@DetailActivity, "Has alcanzado el límite de la API. Intenta nuevamente en unos segundos.")
+                            showCustomErrorToast(this@DetailActivity, getString(R.string.api_limit_error_retry))
+                            lifecycleScope.launch {
+                                delay(20000)
+                                try {
+                                    val vg2 = repo.getVideogameById(id)
+                                    val urls2 = vg2.images.mapNotNull { it.url }.filter { it.isNotBlank() }
+                                    if (urls2.isNotEmpty()) {
+                                        imagesRecycler.visibility = android.view.View.VISIBLE
+                                        imagesRecycler.layoutManager = LinearLayoutManager(this@DetailActivity, LinearLayoutManager.HORIZONTAL, false)
+                                        val imgAdapter2 = ImageUrlAdapter(onImageClick = { clickedUrl ->
+                                            val fullIntent = Intent(this@DetailActivity, FullImageActivity::class.java)
+                                            fullIntent.putExtra(FullImageActivity.EXTRA_IMAGE_URL, clickedUrl)
+                                            startActivity(fullIntent)
+                                        })
+                                        imagesRecycler.adapter = imgAdapter2
+                                        imgAdapter2.submit(urls2)
+                                    }
+                                } catch (_: Exception) {
+                                }
+                            }
                         }
                     } catch (_: Exception) {
                         // Silenciar otros errores para no afectar la UX del detalle
