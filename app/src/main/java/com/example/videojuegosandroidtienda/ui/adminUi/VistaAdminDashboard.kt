@@ -105,8 +105,12 @@ class VistaAdminDashboard : AppCompatActivity() {
             buttonCrearVideogame.visibility = android.view.View.VISIBLE
             lifecycleScope.launch {
                 try {
+                    val platforms = videogameRepository.getPlatforms()
+                    val genres = videogameRepository.getGenres()
+                    val platformNamesMap = platforms.associate { it.id to it.name }
+                    val genreNamesMap = genres.associate { it.id to it.name }
                     val vgs = videogameRepository.getVideogames()
-                    vgAdapter.submit(vgs)
+                    vgAdapter.submit(vgs, genreNamesMap, platformNamesMap)
                 } catch (_: Exception) {
                     // Silenciar errores en la vista admin por ahora
                 }

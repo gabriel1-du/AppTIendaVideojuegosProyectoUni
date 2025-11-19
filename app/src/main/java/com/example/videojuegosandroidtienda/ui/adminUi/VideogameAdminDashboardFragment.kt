@@ -28,6 +28,8 @@ class VideogameAdminDashboardFragment : Fragment() {
     private lateinit var searchView: SearchView
     private lateinit var spinnerPlatform: android.widget.Spinner
     private lateinit var spinnerGenre: android.widget.Spinner
+    private var platformNamesMap: Map<String, String> = emptyMap()
+    private var genreNamesMap: Map<String, String> = emptyMap()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -65,6 +67,9 @@ class VideogameAdminDashboardFragment : Fragment() {
                 all = repository.getVideogames()
                 val platforms = repository.getPlatforms()
                 val genres = repository.getGenres()
+
+                platformNamesMap = platforms.associate { it.id to it.name }
+                genreNamesMap = genres.associate { it.id to it.name }
 
                 val platformItems = listOf("Todas") + platforms.map { it.name }
                 val genreItems = listOf("Todos") + genres.map { it.name }
@@ -108,6 +113,6 @@ class VideogameAdminDashboardFragment : Fragment() {
     private fun render() {
         val q = searchView.query?.toString()?.trim()
         val list = repository.filterVideogames(all, q, platformId, genreId)
-        adapter.submit(list)
+        adapter.submit(list, platformNamesMap, genreNamesMap)
     }
 }
