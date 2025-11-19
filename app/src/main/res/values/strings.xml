@@ -127,6 +127,7 @@
     <string name="hint_description_optional">Descripción (opcional)</string>
     <string name="signup_succes">Registro exitoso</string>
     <string name="login_fill_credentials">Completa email y contraseña</string>
+    <string name="already_have_account">¿Ya tienes una cuenta? Inicia sesión</string>
 
 
 </resources>
