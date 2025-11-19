@@ -15,7 +15,7 @@ import com.example.videojuegosandroidtienda.data.functions.showCustomOkToast
 import com.example.videojuegosandroidtienda.data.repository.AuthRepository
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
 import com.example.videojuegosandroidtienda.databinding.ActivityMainBinding
-import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
+import com.example.videojuegosandroidtienda.ui.auth.LoginFragment
 import com.example.videojuegosandroidtienda.ui.auth.SignUpFragment
 import com.example.videojuegosandroidtienda.ui.fragments.CartFragment
 import com.example.videojuegosandroidtienda.ui.fragments.HomeFragment
@@ -31,7 +31,7 @@ class MainActivity : AppCompatActivity() {
     private val homeFragment = HomeFragment()
     private val cartFragment = CartFragment()
     private val profileFragment = ProfileFragment()
-    private val signUpFragment = SignUpFragment() // Nuevo fragmento
+    private val loginFragment = LoginFragment() // Nuevo fragmento de Login
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_profile -> {
                     val token = com.example.videojuegosandroidtienda.data.network.TokenStore.token
                     if (token.isNullOrBlank()) {
-                        setCurrentFragment(signUpFragment)
+                        setCurrentFragment(loginFragment) // Mostrar Login si no hay sesión
                     } else {
                         setCurrentFragment(profileFragment)
                     }
@@ -67,10 +67,6 @@ class MainActivity : AppCompatActivity() {
         // Listener de clics del menú de la toolbar
         binding.toolbar.setOnMenuItemClickListener { item: MenuItem ->
             when (item.itemId) {
-                R.id.action_login -> {
-                    startActivity(Intent(this, LoginActivity::class.java))
-                    true
-                }
                 R.id.action_upload_videogame -> {
                     startActivity(Intent(this, com.example.videojuegosandroidtienda.ui.upload.AddVideogameActivity::class.java))
                     true
@@ -119,8 +115,8 @@ class MainActivity : AppCompatActivity() {
                     if (fetched.bloqueo) {
                         authRepository.logout()
                         showCustomErrorToast(this@MainActivity, "Usuario bloqueado")
-                        startActivity(Intent(this@MainActivity, LoginActivity::class.java))
-                        finish()
+                        setCurrentFragment(loginFragment) // Mostrar login si está bloqueado
+                        updateUiBasedOnAuthState() // Actualizar la UI
                         return@launch
                     }
                 }
@@ -134,7 +130,7 @@ class MainActivity : AppCompatActivity() {
         val token = com.example.videojuegosandroidtienda.data.network.TokenStore.token
         val isLoggedIn = !token.isNullOrBlank()
 
-        binding.toolbar.menu.findItem(R.id.action_login)?.isVisible = !isLoggedIn
+        binding.toolbar.menu.findItem(R.id.action_login)?.isVisible = false // Ocultar siempre el botón de login
         binding.toolbar.menu.findItem(R.id.action_cart)?.isVisible = true
 
         // Update visibility of "upload videogame" based on user role

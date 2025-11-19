@@ -15,7 +15,7 @@ import com.example.videojuegosandroidtienda.data.network.TokenStore
 import com.example.videojuegosandroidtienda.data.repository.AuthRepository
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
 import com.example.videojuegosandroidtienda.databinding.FragmentProfileBinding
-import com.example.videojuegosandroidtienda.ui.auth.LoginActivity
+import com.example.videojuegosandroidtienda.ui.auth.LoginFragment
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
@@ -41,7 +41,7 @@ class ProfileFragment : Fragment() {
 
         val token = TokenStore.token
         if (token.isNullOrBlank()) {
-            startActivity(Intent(requireContext(), LoginActivity::class.java))
+            startActivity(Intent(requireContext(), LoginFragment::class.java))
             activity?.finish()
             return
         }
@@ -57,7 +57,7 @@ class ProfileFragment : Fragment() {
                 if (fetchedUser.bloqueo) {
                     repository.logout()
                     showCustomErrorToast(requireContext(), getString(R.string.user_blocked))
-                    startActivity(Intent(requireContext(), LoginActivity::class.java))
+                    startActivity(Intent(requireContext(), LoginFragment::class.java))
                     activity?.finish()
                     return@launch
                 }
