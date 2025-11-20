@@ -7,6 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.entities.Cart
+import com.google.android.material.button.MaterialButton
 
 class AdminCartAdapter(
     private var items: List<Cart>,
@@ -37,7 +38,7 @@ class AdminCartAdapter(
         holder.textViewUserName.text = "Usuario: ${name}"
         holder.textViewTotalCart.text = "Total: ${item.total}"
         holder.textViewCheckStatus.text = "Estado: ${if (item.aprobado == true) "Aprobado" else "Pendiente"}"
-        val buttonVerMas = holder.itemView.findViewById<android.widget.Button>(R.id.buttonVerMas)
+        val buttonVerMas = holder.itemView.findViewById<MaterialButton>(R.id.buttonVerMas)
         buttonVerMas.setOnClickListener { onVerMasClick(item) }
     }
 

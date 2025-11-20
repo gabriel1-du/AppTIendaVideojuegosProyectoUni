@@ -56,21 +56,35 @@
                 android:minLines="3"
                 android:layout_marginBottom="8dp" />
 
-            <EditText
-                android:id="@+id/editGenreId"
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-        android:hint="@string/hint_genre_id"
-                android:inputType="text"
-                android:layout_marginBottom="8dp" />
+                android:layout_marginBottom="8dp"
+                app:hintEnabled="true"
+                android:hint="@string/hint_genre">
 
-            <EditText
-                android:id="@+id/editPlatformId"
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/spinnerGenreEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-        android:hint="@string/hint_platform_id"
-                android:inputType="text"
-                android:layout_marginBottom="16dp" />
+                android:layout_marginBottom="16dp"
+                app:hintEnabled="true"
+                android:hint="@string/hint_platform">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/spinnerPlatformEdit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
 
             <Button
                 android:id="@+id/buttonGuardar"

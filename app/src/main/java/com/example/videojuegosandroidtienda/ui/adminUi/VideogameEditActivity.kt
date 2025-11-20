@@ -1,8 +1,10 @@
 package com.example.videojuegosandroidtienda.ui.adminUi
 
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -15,6 +17,8 @@ import retrofit2.HttpException
 
 class VideogameEditActivity : AppCompatActivity() {
     private val repo = VideogameRepository()
+    private var platforms: List<com.example.videojuegosandroidtienda.data.entities.Platform> = emptyList()
+    private var genres: List<com.example.videojuegosandroidtienda.data.entities.Genre> = emptyList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,8 +29,8 @@ class VideogameEditActivity : AppCompatActivity() {
         val editTitle = findViewById<EditText>(R.id.editTitle)
         val editPrice = findViewById<EditText>(R.id.editPrice)
         val editDescription = findViewById<EditText>(R.id.editDescription)
-        val editGenreId = findViewById<EditText>(R.id.editGenreId)
-        val editPlatformId = findViewById<EditText>(R.id.editPlatformId)
+        val spinnerGenre = findViewById<MaterialAutoCompleteTextView>(R.id.spinnerGenreEdit)
+        val spinnerPlatform = findViewById<MaterialAutoCompleteTextView>(R.id.spinnerPlatformEdit)
         val buttonGuardar = findViewById<Button>(R.id.buttonGuardar)
 
         // Prefill con extras si vienen
@@ -34,15 +38,51 @@ class VideogameEditActivity : AppCompatActivity() {
         val priceExtra = intent.getIntExtra("price", 0)
         if (priceExtra != 0) editPrice.setText(priceExtra.toString())
         editDescription.setText(intent.getStringExtra("description") ?: "")
-        editGenreId.setText(intent.getStringExtra("genre_id") ?: "")
-        editPlatformId.setText(intent.getStringExtra("platform_id") ?: "")
+        val preselectGenreId = intent.getStringExtra("genre_id")
+        val preselectPlatformId = intent.getStringExtra("platform_id")
+
+        lifecycleScope.launch {
+            try {
+                genres = repo.getGenres()
+                platforms = repo.getPlatforms()
+
+                val genreNames = genres.map { it.name }
+                val platformNames = platforms.map { it.name }
+
+                val genreAdapter = ArrayAdapter(this@VideogameEditActivity, android.R.layout.simple_dropdown_item_1line, genreNames)
+                val platformAdapter = ArrayAdapter(this@VideogameEditActivity, android.R.layout.simple_dropdown_item_1line, platformNames)
+
+                spinnerGenre.setAdapter(genreAdapter)
+                spinnerPlatform.setAdapter(platformAdapter)
+
+                // Preselección basada en IDs recibidos en el intent
+                preselectGenreId?.let { id ->
+                    val name = genres.firstOrNull { it.id == id }?.name
+                    if (name != null) spinnerGenre.setText(name, false)
+                }
+                preselectPlatformId?.let { id ->
+                    val name = platforms.firstOrNull { it.id == id }?.name
+                    if (name != null) spinnerPlatform.setText(name, false)
+                }
+            } catch (e: HttpException) {
+                if (e.code() == 429) {
+                    showCustomErrorToast(this@VideogameEditActivity, "Límite de API, intenta en unos segundos")
+                } else {
+                    showCustomErrorToast(this@VideogameEditActivity, "Error al cargar listas: ${e.message()}")
+                }
+            } catch (e: Exception) {
+                showCustomErrorToast(this@VideogameEditActivity, "Error al cargar listas: ${e.message}")
+            }
+        }
 
         buttonGuardar.setOnClickListener {
             val title = editTitle.text.toString().trim()
             val priceText = editPrice.text.toString().trim()
             val description = editDescription.text.toString().trim().ifEmpty { null }
-            val genreId = editGenreId.text.toString().trim().ifEmpty { null }
-            val platformId = editPlatformId.text.toString().trim().ifEmpty { null }
+            val selectedGenreName = spinnerGenre.text?.toString()?.trim().orEmpty()
+            val selectedPlatformName = spinnerPlatform.text?.toString()?.trim().orEmpty()
+            val genreId = genres.firstOrNull { it.name == selectedGenreName }?.id
+            val platformId = platforms.firstOrNull { it.name == selectedPlatformName }?.id
 
             if (title.isEmpty()) {
                 showCustomErrorToast(this, "El título es obligatorio")
