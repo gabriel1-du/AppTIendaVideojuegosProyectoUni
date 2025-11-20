@@ -2,8 +2,8 @@ package com.example.videojuegosandroidtienda.ui.adminUi
 
 import android.os.Bundle
 import android.widget.ArrayAdapter
-import android.widget.Button
-import android.widget.EditText
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -26,12 +26,12 @@ class VideogameEditActivity : AppCompatActivity() {
         setContentView(R.layout.activity_videogame_edit)
 
         val videogameId = intent.getStringExtra("videogame_id").orEmpty()
-        val editTitle = findViewById<EditText>(R.id.editTitle)
-        val editPrice = findViewById<EditText>(R.id.editPrice)
-        val editDescription = findViewById<EditText>(R.id.editDescription)
+        val editTitle = findViewById<TextInputEditText>(R.id.editTitle)
+        val editPrice = findViewById<TextInputEditText>(R.id.editPrice)
+        val editDescription = findViewById<TextInputEditText>(R.id.editDescription)
         val spinnerGenre = findViewById<MaterialAutoCompleteTextView>(R.id.spinnerGenreEdit)
         val spinnerPlatform = findViewById<MaterialAutoCompleteTextView>(R.id.spinnerPlatformEdit)
-        val buttonGuardar = findViewById<Button>(R.id.buttonGuardar)
+        val buttonGuardar = findViewById<MaterialButton>(R.id.buttonGuardar)
 
         // Prefill con extras si vienen
         editTitle.setText(intent.getStringExtra("title") ?: "")

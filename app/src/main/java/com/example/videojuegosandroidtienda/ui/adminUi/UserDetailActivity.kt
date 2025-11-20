@@ -2,7 +2,6 @@ package com.example.videojuegosandroidtienda.ui.adminUi
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +10,8 @@ import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
 import com.example.videojuegosandroidtienda.data.functions.showCustomOkToast
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.materialswitch.MaterialSwitch
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
@@ -27,10 +28,11 @@ class UserDetailActivity : AppCompatActivity() {
         val textName = findViewById<TextView>(R.id.textUserName)
         val textEmail = findViewById<TextView>(R.id.textUserEmail)
         val textAdmin = findViewById<TextView>(R.id.textUserAdmin)
-        val switchBloqueo = findViewById<android.widget.Switch>(R.id.switchUserBloqueo)
-        val buttonActualizarBloqueo = findViewById<Button>(R.id.buttonActualizarBloqueo)
-        val buttonEliminar = findViewById<Button>(R.id.buttonEliminar)
-        val buttonEditar = findViewById<Button>(R.id.buttonEditar)
+        val switchBloqueo = findViewById<MaterialSwitch>(R.id.switchUserBloqueo)
+        val switchAdmin = findViewById<MaterialSwitch>(R.id.switchUserAdmin)
+        val buttonActualizarBloqueo = findViewById<MaterialButton>(R.id.buttonActualizarBloqueo)
+        val buttonEliminar = findViewById<MaterialButton>(R.id.buttonEliminar)
+        val buttonEditar = findViewById<MaterialButton>(R.id.buttonEditar)
 
         val userId = intent.getStringExtra("user_id")?.trim().orEmpty()
 
@@ -45,6 +47,7 @@ class UserDetailActivity : AppCompatActivity() {
                     R.string.user_admin_format,
                     getString(if (user.admin) R.string.boolean_true else R.string.boolean_false)
                 )
+                switchAdmin.isChecked = user.admin
                 switchBloqueo.isChecked = user.bloqueo
             } catch (e: HttpException) {
                 if (e.code() == 429) {

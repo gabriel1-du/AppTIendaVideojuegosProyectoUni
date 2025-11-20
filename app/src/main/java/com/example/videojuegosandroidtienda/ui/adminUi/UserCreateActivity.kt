@@ -1,9 +1,7 @@
 package com.example.videojuegosandroidtienda.ui.adminUi
 
 import android.os.Bundle
-import android.widget.Button
 import android.widget.EditText
-import android.widget.Switch
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -12,6 +10,8 @@ import com.example.videojuegosandroidtienda.data.entities.User
 import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
 import com.example.videojuegosandroidtienda.data.functions.showCustomOkToast
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.materialswitch.MaterialSwitch
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
@@ -26,8 +26,8 @@ class UserCreateActivity : AppCompatActivity() {
         val editName = findViewById<EditText>(R.id.editName)
         val editEmail = findViewById<EditText>(R.id.editEmail)
         val editPassword = findViewById<EditText>(R.id.editPassword)
-        val switchAdmin = findViewById<Switch>(R.id.switchAdmin)
-        val buttonCrear = findViewById<Button>(R.id.buttonCrearUsuarioConfirm)
+        val switchAdmin = findViewById<MaterialSwitch>(R.id.switchAdmin)
+        val buttonCrear = findViewById<MaterialButton>(R.id.buttonCrearUsuarioConfirm)
 
         buttonCrear.setOnClickListener {
             val name = editName.text?.toString()?.trim().orEmpty()

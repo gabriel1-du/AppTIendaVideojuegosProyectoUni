@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.videojuegosandroidtienda.ui.adminUi.UserCreateActivity
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.entities.User
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
@@ -41,6 +42,7 @@ class UserAdminDashboardFragment : Fragment() {
         searchView = view.findViewById(R.id.searchUsers)
         switchOrder = view.findViewById(R.id.switchOrder)
         val recycler = view.findViewById<RecyclerView>(R.id.recyclerUsers)
+        val buttonCrearUsuario = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.buttonCrearUsuario)
 
         adapter = AdminUserAdapter(emptyList()) { user ->
             val intent = Intent(requireContext(), UserDetailActivity::class.java)
@@ -49,6 +51,11 @@ class UserAdminDashboardFragment : Fragment() {
         }
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
+
+        buttonCrearUsuario.setOnClickListener {
+            val intent = Intent(requireContext(), UserCreateActivity::class.java)
+            startActivity(intent)
+        }
 
         // Evitar carga inmediata para reducir ráfagas de red al crear múltiples fragments.
         // Cargaremos en onResume cuando esté visible.

@@ -96,6 +96,7 @@
     <string name="cart_created_format">Fecha de creación: %1$s</string>
     <string name="cart_total_format">Total del carrito: %1$d</string>
     <string name="cart_user_id_format">ID del usuario: %1$s</string>
+    <string name="cart_user_name_format">Usuario: %1$s</string>
     <string name="cart_status_format">Estado: %1$s</string>
     <string name="status_approved">Aprobado</string>
     <string name="status_pending">Pendiente</string>

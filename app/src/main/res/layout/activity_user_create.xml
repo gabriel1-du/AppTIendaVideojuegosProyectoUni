@@ -18,74 +18,81 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <TextView
-            android:id="@+id/labelName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-        android:text="@string/label_name"
-            android:textColor="@color/textPrimary"
-            android:layout_marginTop="16dp" />
-
-        <EditText
-            android:id="@+id/editName"
+        <!-- Card con esquinas redondeadas para contener los campos -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:layout_marginTop="8dp"
-            tools:text="gatobacan" />
+            android:layout_marginTop="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
 
-        <TextView
-            android:id="@+id/labelEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-        android:text="@string/label_email"
-            android:textColor="@color/textPrimary"
-            android:layout_marginTop="12dp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-        <EditText
-            android:id="@+id/editEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textEmailAddress"
-            android:layout_marginTop="8dp"
-            tools:text="gato@gmail.com" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/label_name">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPersonName"
+                        tools:text="gatobacan" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/labelPassword"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-        android:text="@string/label_password"
-            android:textColor="@color/textPrimary"
-            android:layout_marginTop="12dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="@string/label_email">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textEmailAddress"
+                        tools:text="gato@gmail.com" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-        <EditText
-            android:id="@+id/editPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textPassword"
-            android:layout_marginTop="8dp" />
+                <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:hint="@string/label_password">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editPassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="textPassword" />
+                </com.google.android.material.textfield.TextInputLayout>
 
-        <TextView
-            android:id="@+id/labelAdmin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-        android:text="@string/label_admin"
-            android:textColor="@color/textPrimary"
-            android:layout_marginTop="12dp" />
+                <!-- Switch Admin con estilo Material -->
+                <com.google.android.material.materialswitch.MaterialSwitch
+                    android:id="@+id/switchAdmin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="@string/label_admin"
+                    tools:checked="true" />
 
-        <Switch
-            android:id="@+id/switchAdmin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            tools:checked="true" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        <Button
+        <!-- Botón Material -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonCrearUsuarioConfirm"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-        android:text="@string/create" />
+            android:layout_marginTop="24dp"
+            android:text="@string/create"
+            android:backgroundTint="@color/buttonPrimary"
+            android:textColor="@android:color/white" />
 
     </LinearLayout>
 

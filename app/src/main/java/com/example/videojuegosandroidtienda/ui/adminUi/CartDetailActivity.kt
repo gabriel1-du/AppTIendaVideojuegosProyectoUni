@@ -7,7 +7,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.videojuegosandroidtienda.R
 import android.widget.TextView
-import android.widget.Button
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.lifecycle.lifecycleScope
@@ -17,7 +16,9 @@ import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
 import com.example.videojuegosandroidtienda.data.functions.showCustomOkToast
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.CartRepository
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.VideogameRepository
+import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
 import com.example.videojuegosandroidtienda.ui.adapter.VideogameAdapter
+import com.google.android.material.button.MaterialButton
 import java.text.DateFormat
 import java.util.Date
 
@@ -52,8 +53,8 @@ class CartDetailActivity : AppCompatActivity() {
         recyclerViewVideogames.adapter = videogameAdapter
         recyclerViewVideogames.layoutManager = LinearLayoutManager(this)
 
-        val buttonApruebo = findViewById<Button>(R.id.buttonApruebo)
-        val buttonRechazo = findViewById<Button>(R.id.buttonRechazo)
+        val buttonApruebo = findViewById<MaterialButton>(R.id.buttonApruebo)
+        val buttonRechazo = findViewById<MaterialButton>(R.id.buttonRechazo)
 
         // Obtener cart_id del intent y cargar datos
         val cartId = intent.getStringExtra("cart_id")?.trim()
@@ -74,7 +75,13 @@ class CartDetailActivity : AppCompatActivity() {
                 } catch (_: Exception) { cart.created_at.toString() }
                 textViewFechaCarrito.text = getString(R.string.cart_created_format, formattedDate)
                 textViewTotalCarrito.text = getString(R.string.cart_total_format, cart.total)
-                textViewUserId.text = getString(R.string.cart_user_id_format, cart.user_id)
+                // Mostrar nombre del usuario en vez de ID
+                try {
+                    val user = UserRepository().getUser(cart.user_id)
+                    textViewUserId.text = getString(R.string.cart_user_name_format, user.name)
+                } catch (_: Exception) {
+                    textViewUserId.text = getString(R.string.cart_user_id_format, cart.user_id)
+                }
                 textViewEstado.text = getString(
                     R.string.cart_status_format,
                     getString(if (cart.aprobado) R.string.status_approved else R.string.status_pending)
