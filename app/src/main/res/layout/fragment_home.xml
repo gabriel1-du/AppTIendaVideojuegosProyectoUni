@@ -83,7 +83,12 @@
         android:layout_height="match_parent"
         android:hint="Search games..."
         app:layout_anchor="@id/searchBar">
-        <!-- Search suggestions go here, but for now it will just be a search view -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/searchSuggestionsRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp"
+            tools:listitem="@layout/item_videogame"/>
     </com.google.android.material.search.SearchView>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

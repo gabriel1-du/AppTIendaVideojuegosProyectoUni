@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.entities.Genre
 import com.example.videojuegosandroidtienda.data.entities.Platform
@@ -30,6 +31,7 @@ class HomeFragment : Fragment() {
 
     private val videogameRepository = VideogameRepository()
     private val adapter = VideogameAdapter()
+    private val suggestionsAdapter = VideogameAdapter()
 
     private var allVideogames: List<Videogame> = emptyList()
     private var platforms: List<Platform> = emptyList()
@@ -53,7 +55,12 @@ class HomeFragment : Fragment() {
         binding.recyclerVideogames.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerVideogames.adapter = adapter
 
-        adapter.setOnItemClickListener { vg ->
+        // Sugerencias dentro del SearchView (overlay)
+        val suggestionsRecycler = binding.searchView.findViewById<RecyclerView>(R.id.searchSuggestionsRecycler)
+        suggestionsRecycler.layoutManager = LinearLayoutManager(requireContext())
+        suggestionsRecycler.adapter = suggestionsAdapter
+
+        val onClick: (Videogame) -> Unit = { vg ->
             val intent = Intent(requireContext(), DetailActivity::class.java).apply {
                 putExtra(DetailActivity.EXTRA_ID, vg.id)
                 putExtra(DetailActivity.EXTRA_IMAGE_URL, vg.cover_image?.url)
@@ -67,16 +74,26 @@ class HomeFragment : Fragment() {
             }
             startActivity(intent)
         }
+        adapter.setOnItemClickListener(onClick)
+        suggestionsAdapter.setOnItemClickListener(onClick)
 
         // Setup Material Search
         binding.searchView.setupWithSearchBar(binding.searchBar)
         binding.searchView.editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                applyFilters()
+                applyFilters()          // Actualiza lista base debajo
+                updateSuggestions()      // Actualiza el overlay de búsqueda en tiempo real
             }
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        // Limpiar sugerencias cuando se oculta el SearchView
+        binding.searchView.addTransitionListener { _, _, newState ->
+            if (newState == com.google.android.material.search.SearchView.TransitionState.HIDDEN) {
+                suggestionsAdapter.submit(emptyList(), genreNamesMap, platformNamesMap)
+            }
+        }
 
         // Setup Material Dropdown Menus
         binding.spinnerPlatform.setOnItemClickListener { _, _, _, _ -> applyFilters() }
@@ -148,6 +165,18 @@ class HomeFragment : Fragment() {
                 showCustomErrorToast(requireContext(), "No se encontraron resultados")
             }
         }
+    }
+
+    private fun updateSuggestions() {
+        val query = binding.searchView.text.toString()
+        val selectedPlatformName = binding.spinnerPlatform.text.toString()
+        val selectedGenreName = binding.spinnerGenre.text.toString()
+
+        val platformId = if (selectedPlatformName == "Todas") null else platforms.firstOrNull { it.name == selectedPlatformName }?.id
+        val genreId = if (selectedGenreName == "Todos") null else genres.firstOrNull { it.name == selectedGenreName }?.id
+
+        val filtered = videogameRepository.filterVideogames(allVideogames, query, platformId, genreId)
+        suggestionsAdapter.submit(filtered, genreNamesMap, platformNamesMap)
     }
 
     override fun onResume() {
