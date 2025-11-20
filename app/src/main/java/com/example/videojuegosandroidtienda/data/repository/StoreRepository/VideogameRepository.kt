@@ -16,16 +16,58 @@ import retrofit2.HttpException
 
 class VideogameRepository {
 
+    companion object {
+        private const val CACHE_WINDOW_MS = 20_000L
+
+        private var cachedVideogames: List<Videogame>? = null
+        private var cachedPlatforms: List<Platform>? = null
+        private var cachedGenres: List<Genre>? = null
+
+        private var lastVideogamesAt: Long = 0L
+        private var lastPlatformsAt: Long = 0L
+        private var lastGenresAt: Long = 0L
+    }
+
     private val storeService: StoreService =
         RetrofitProvider.createService(ApiConfig.STORE_BASE_URL, StoreService::class.java)
 
     private val uploadClient = com.example.videojuegosandroidtienda.data.upload.UploadClient()
-    suspend fun getVideogames(): List<Videogame> = storeService.listVideogames()
+    suspend fun getVideogames(): List<Videogame> {
+        val now = System.currentTimeMillis()
+        val cached = cachedVideogames
+        if (cached != null && cached.isNotEmpty() && (now - lastVideogamesAt) < CACHE_WINDOW_MS) {
+            return cached
+        }
+        val fresh = storeService.listVideogames()
+        cachedVideogames = fresh
+        lastVideogamesAt = now
+        return fresh
+    }
     // Obtiene plataformas disponibles
 
-    suspend fun getPlatforms(): List<Platform> = storeService.listPlatforms()
+    suspend fun getPlatforms(): List<Platform> {
+        val now = System.currentTimeMillis()
+        val cached = cachedPlatforms
+        if (cached != null && cached.isNotEmpty() && (now - lastPlatformsAt) < CACHE_WINDOW_MS) {
+            return cached
+        }
+        val fresh = storeService.listPlatforms()
+        cachedPlatforms = fresh
+        lastPlatformsAt = now
+        return fresh
+    }
     // Obtiene géneros disponibles
-    suspend fun getGenres(): List<Genre> = storeService.listGenres()
+    suspend fun getGenres(): List<Genre> {
+        val now = System.currentTimeMillis()
+        val cached = cachedGenres
+        if (cached != null && cached.isNotEmpty() && (now - lastGenresAt) < CACHE_WINDOW_MS) {
+            return cached
+        }
+        val fresh = storeService.listGenres()
+        cachedGenres = fresh
+        lastGenresAt = now
+        return fresh
+    }
 
     fun filterVideogames(
         all: List<Videogame>,

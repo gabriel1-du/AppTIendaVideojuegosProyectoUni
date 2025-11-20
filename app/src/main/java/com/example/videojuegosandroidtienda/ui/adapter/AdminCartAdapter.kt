@@ -13,8 +13,15 @@ class AdminCartAdapter(
     private val onVerMasClick: (Cart) -> Unit
 ) : RecyclerView.Adapter<AdminCartAdapter.ViewHolder>() {
 
+    private var userNames: Map<String, String> = emptyMap()
+
     fun submit(list: List<Cart>) {
         items = list
+        notifyDataSetChanged()
+    }
+
+    fun setUserNames(map: Map<String, String>) {
+        userNames = map
         notifyDataSetChanged()
     }
 
@@ -26,7 +33,8 @@ class AdminCartAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
-        holder.textViewIdUser.text = "Id del usuario: ${item.user_id}"
+        val name = userNames[item.user_id] ?: item.user_id
+        holder.textViewUserName.text = "Usuario: ${name}"
         holder.textViewTotalCart.text = "Total: ${item.total}"
         holder.textViewCheckStatus.text = "Estado: ${if (item.aprobado == true) "Aprobado" else "Pendiente"}"
         val buttonVerMas = holder.itemView.findViewById<android.widget.Button>(R.id.buttonVerMas)
@@ -36,7 +44,7 @@ class AdminCartAdapter(
     override fun getItemCount(): Int = items.size
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val textViewIdUser: TextView = itemView.findViewById(R.id.TextViewIdUser)
+        val textViewUserName: TextView = itemView.findViewById(R.id.TextViewUserName)
         val textViewTotalCart: TextView = itemView.findViewById(R.id.TextViewTotalCart)
         val textViewCheckStatus: TextView = itemView.findViewById(R.id.TextViewCheckStatus)
     }

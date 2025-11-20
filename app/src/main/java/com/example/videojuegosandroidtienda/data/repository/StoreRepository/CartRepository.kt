@@ -10,12 +10,28 @@ import com.example.videojuegosandroidtienda.data.network.RetrofitProvider
 
 class CartRepository {
 
+    companion object {
+        private const val CACHE_WINDOW_MS = 20_000L
+        private var cachedCarts: List<Cart>? = null
+        private var lastCartsAt: Long = 0L
+    }
+
     private val storeService: StoreService =
         RetrofitProvider.createService(ApiConfig.STORE_BASE_URL, StoreService::class.java)
     private val cartService: CartService =
         RetrofitProvider.createService(ApiConfig.CART_BASE_URL, CartService::class.java)
     // Lista carritos remotos (ejemplo/demo)
-    suspend fun getCarts(): List<Cart> = storeService.listCarts()
+    suspend fun getCarts(): List<Cart> {
+        val now = System.currentTimeMillis()
+        val cached = cachedCarts
+        if (cached != null && cached.isNotEmpty() && (now - lastCartsAt) < CACHE_WINDOW_MS) {
+            return cached
+        }
+        val fresh = storeService.listCarts()
+        cachedCarts = fresh
+        lastCartsAt = now
+        return fresh
+    }
     // Obtiene detalle de ítem de carrito por id
     suspend fun getCartItem(id: String): CartItem = storeService.getCartItem(id)
     suspend fun getCartById(cartId: String) = cartService.getCartById(cartId)

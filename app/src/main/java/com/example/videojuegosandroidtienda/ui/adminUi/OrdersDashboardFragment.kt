@@ -86,6 +86,7 @@ class OrdersDashboardFragment : Fragment() {
                 all = carts
                 val users = userRepository.listUsers()
                 userNames = users.associate { it.id to it.name }
+                adapter.setUserNames(userNames)
 
                 val items = listOf("Todos", "Aprobados", "Pendientes")
                 val sAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, items).apply {
