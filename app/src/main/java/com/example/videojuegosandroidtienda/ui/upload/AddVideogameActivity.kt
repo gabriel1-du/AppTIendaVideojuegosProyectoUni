@@ -3,10 +3,10 @@ package com.example.videojuegosandroidtienda.ui.upload
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
-import android.widget.Button
-import android.widget.EditText
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import android.widget.ImageView
-import android.widget.Spinner
 import android.widget.ArrayAdapter
 import android.widget.LinearLayout
 import androidx.activity.enableEdgeToEdge
@@ -48,14 +48,17 @@ class AddVideogameActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_add_videogame)
 
-        val inputTitle = findViewById<EditText>(R.id.inputTitle)
-        val spinnerPlatform = findViewById<Spinner>(R.id.spinnerPlatform)
-        val spinnerGenre = findViewById<Spinner>(R.id.spinnerGenre)
-        val inputPrice = findViewById<EditText>(R.id.inputPrice)
-        val inputDescription = findViewById<EditText>(R.id.inputDescription)
-        val buttonSelectCover = findViewById<Button>(R.id.buttonSelectImage)
-        val buttonSelectAdditional = findViewById<Button>(R.id.buttonSelectAdditionalImages)
-        val buttonUpload = findViewById<Button>(R.id.buttonUpload)
+        imagePreview = findViewById(R.id.imagePreview)
+        additionalImagesPreviewContainer = findViewById(R.id.additionalImagesPreviewContainer)
+
+        val inputTitle = findViewById<TextInputEditText>(R.id.inputTitle)
+        val spinnerPlatform = findViewById<MaterialAutoCompleteTextView>(R.id.spinnerPlatform)
+        val spinnerGenre = findViewById<MaterialAutoCompleteTextView>(R.id.spinnerGenre)
+        val inputPrice = findViewById<TextInputEditText>(R.id.inputPrice)
+        val inputDescription = findViewById<TextInputEditText>(R.id.inputDescription)
+        val buttonSelectCover = findViewById<MaterialButton>(R.id.buttonSelectImage)
+        val buttonSelectAdditional = findViewById<MaterialButton>(R.id.buttonSelectAdditionalImages)
+        val buttonUpload = findViewById<MaterialButton>(R.id.buttonUpload)
 
         val pickCoverImage = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             coverImageUri = uri
@@ -77,18 +80,18 @@ class AddVideogameActivity : AppCompatActivity() {
 
         buttonSelectAdditional.setOnClickListener { pickAdditionalImages.launch("image/*") }
 
-        loadSpinnersData(spinnerPlatform, spinnerGenre)
+        loadDropdownData(spinnerPlatform, spinnerGenre)
 
         buttonUpload.setOnClickListener {
-            if (!validateInputs(inputTitle, inputPrice, spinnerPlatform, spinnerGenre)) return@setOnClickListener
+            if (!validateInputs(inputTitle, inputPrice, selectedPlatformIndex, selectedGenreIndex)) return@setOnClickListener
 
             lifecycleScope.launch {
                 try {
                     val title = inputTitle.text.toString().trim()
                     val price = inputPrice.text.toString().toInt()
                     val description = inputDescription.text.toString().trim()
-                    val platformId = platforms[spinnerPlatform.selectedItemPosition].id
-                    val genreId = genres[spinnerGenre.selectedItemPosition].id
+                    val platformId = platforms[selectedPlatformIndex].id
+                    val genreId = genres[selectedGenreIndex].id
 
                     val coverImagePart = buildImagePartFromUri(coverImageUri!!, "cover.jpg")
                     val coverImageResponse = videogameRepository.uploadCoverImage(coverImagePart)
@@ -121,21 +124,28 @@ class AddVideogameActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadSpinnersData(spinnerPlatform: Spinner, spinnerGenre: Spinner) {
+    private var selectedPlatformIndex: Int = -1
+    private var selectedGenreIndex: Int = -1
+
+    private fun loadDropdownData(spinnerPlatform: MaterialAutoCompleteTextView, spinnerGenre: MaterialAutoCompleteTextView) {
         lifecycleScope.launch {
             try {
                 platforms = videogameRepository.getPlatforms()
                 genres = videogameRepository.getGenres()
-                spinnerPlatform.adapter = ArrayAdapter(this@AddVideogameActivity, android.R.layout.simple_spinner_dropdown_item, platforms.map { it.name })
-                spinnerGenre.adapter = ArrayAdapter(this@AddVideogameActivity, android.R.layout.simple_spinner_dropdown_item, genres.map { it.name })
+                val pAdapter = ArrayAdapter(this@AddVideogameActivity, android.R.layout.simple_list_item_1, platforms.map { it.name })
+                val gAdapter = ArrayAdapter(this@AddVideogameActivity, android.R.layout.simple_list_item_1, genres.map { it.name })
+                spinnerPlatform.setAdapter(pAdapter)
+                spinnerGenre.setAdapter(gAdapter)
+                spinnerPlatform.setOnItemClickListener { _, _, position, _ -> selectedPlatformIndex = position }
+                spinnerGenre.setOnItemClickListener { _, _, position, _ -> selectedGenreIndex = position }
             } catch (e: Exception) {
                 showCustomErrorToast(this@AddVideogameActivity, "Error al cargar listas: ${e.message}")
             }
         }
     }
 
-    private fun validateInputs(inputTitle: EditText, inputPrice: EditText, spinnerPlatform: Spinner, spinnerGenre: Spinner): Boolean {
-        if (inputTitle.text.isBlank()) {
+    private fun validateInputs(inputTitle: TextInputEditText, inputPrice: TextInputEditText, platformIndex: Int, genreIndex: Int): Boolean {
+        if (inputTitle.text.isNullOrBlank()) {
             showCustomErrorToast(this, "Ingresa el nombre del videojuego")
             return false
         }
@@ -143,15 +153,15 @@ class AddVideogameActivity : AppCompatActivity() {
             showCustomErrorToast(this, "Selecciona una portada")
             return false
         }
-        if (inputPrice.text.toString().toIntOrNull() == null) {
+        if (inputPrice.text?.toString()?.toIntOrNull() == null) {
             showCustomErrorToast(this, "Ingresa un precio válido")
             return false
         }
-        if (spinnerPlatform.selectedItemPosition !in platforms.indices) {
+        if (platformIndex !in platforms.indices) {
             showCustomErrorToast(this, "Selecciona una plataforma")
             return false
         }
-        if (spinnerGenre.selectedItemPosition !in genres.indices) {
+        if (genreIndex !in genres.indices) {
             showCustomErrorToast(this, "Selecciona un género")
             return false
         }

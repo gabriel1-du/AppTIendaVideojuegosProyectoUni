@@ -7,7 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.appcompat.widget.SearchView
+import android.text.Editable
+import android.text.TextWatcher
+import com.google.android.material.search.SearchBar
+import com.google.android.material.search.SearchView
+import com.google.android.material.textfield.MaterialAutoCompleteTextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,8 +35,9 @@ class OrdersDashboardFragment : Fragment() {
     private var approvedFilter: Boolean? = null
 
     // Views
+    private lateinit var searchBar: SearchBar
     private lateinit var search: SearchView
-    private lateinit var spinnerApproved: android.widget.Spinner
+    private lateinit var spinnerApproved: MaterialAutoCompleteTextView
     private lateinit var recycler: RecyclerView
     private var lastDataLoadAt: Long = 0
 
@@ -47,6 +52,7 @@ class OrdersDashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        searchBar = view.findViewById(R.id.searchBarOrders)
         search = view.findViewById(R.id.searchOrdersByUser)
         spinnerApproved = view.findViewById(R.id.spinnerApproved)
         recycler = view.findViewById(R.id.recyclerOrders)
@@ -62,15 +68,17 @@ class OrdersDashboardFragment : Fragment() {
         // Evitar carga inmediata para no disparar múltiples requests al iniciar la actividad.
         // Se cargará en onResume cuando el fragment esté visible.
 
-        search.queryHint = "Buscar por usuario"
-        search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean { render(); return true }
-            override fun onQueryTextChange(newText: String?): Boolean { render(); return true }
+        search.setupWithSearchBar(searchBar)
+        search.editText.hint = getString(R.string.search_orders_query_hint)
+        search.editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { render() }
+            override fun afterTextChanged(s: Editable?) {}
         })
     }
 
     private fun render() {
-        val q = search.query?.toString()?.trim()?.lowercase().orEmpty()
+        val q = search.editText.text?.toString()?.trim()?.lowercase().orEmpty()
         var list = all
         approvedFilter?.let { ap -> list = list.filter { (it.aprobado ?: false) == ap } }
         if (q.isNotEmpty()) {
@@ -89,20 +97,15 @@ class OrdersDashboardFragment : Fragment() {
                 adapter.setUserNames(userNames)
 
                 val items = listOf("Todos", "Aprobados", "Pendientes")
-                val sAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, items).apply {
-                    setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                }
-                spinnerApproved.adapter = sAdapter
-                spinnerApproved.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                        approvedFilter = when (position) {
-                            1 -> true
-                            2 -> false
-                            else -> null
-                        }
-                        render()
+                val sAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, items)
+                spinnerApproved.setAdapter(sAdapter)
+                spinnerApproved.setOnItemClickListener { _, _, position, _ ->
+                    approvedFilter = when (position) {
+                        1 -> true
+                        2 -> false
+                        else -> null
                     }
-                    override fun onNothingSelected(parent: AdapterView<*>) {}
+                    render()
                 }
 
                 lastDataLoadAt = System.currentTimeMillis()

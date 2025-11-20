@@ -7,17 +7,25 @@
     android:background="@color/backgroundDark"
     tools:context=".ui.adminUi.OrdersDashboardFragment">
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/searchOrdersByUser"
+    <com.google.android.material.search.SearchBar
+        android:id="@+id/searchBarOrders"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="24dp"
+        android:hint="@string/search_orders_query_hint"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:queryHint="@string/search_orders_query_hint"/>
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <com.google.android.material.search.SearchView
+        android:id="@+id/searchOrdersByUser"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="@string/search_orders_query_hint"
+        app:layout_anchor="@id/searchBarOrders">
+    </com.google.android.material.search.SearchView>
 
     <LinearLayout
         android:id="@+id/approvedContainer"
@@ -25,7 +33,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@id/searchOrdersByUser"
+        app:layout_constraintTop_toBottomOf="@id/searchBarOrders"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginStart="16dp"
@@ -38,17 +46,25 @@
             android:textColor="@color/textPrimary"
             android:layout_marginEnd="8dp"/>
 
-        <Spinner
-            android:id="@+id/spinnerApproved"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="@string/orders_status_label">
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/spinnerApproved"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"/>
+        </com.google.android.material.textfield.TextInputLayout>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerOrders"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@id/approvedContainer"
+        app:layout_constraintTop_toBottomOf="@+id/approvedContainer"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"

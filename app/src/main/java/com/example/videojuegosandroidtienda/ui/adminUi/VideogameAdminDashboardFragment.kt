@@ -7,7 +7,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.appcompat.widget.SearchView
+import android.text.Editable
+import android.text.TextWatcher
+import com.google.android.material.search.SearchBar
+import com.google.android.material.search.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,6 +20,7 @@ import com.example.videojuegosandroidtienda.data.entities.Videogame
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.VideogameRepository
 import com.example.videojuegosandroidtienda.ui.adapter.AdminVideogameAdapter
 import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
+import com.example.videojuegosandroidtienda.ui.upload.AddVideogameActivity
 import retrofit2.HttpException
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.delay
@@ -28,9 +32,10 @@ class VideogameAdminDashboardFragment : Fragment() {
 
     private var platformId: String? = null
     private var genreId: String? = null
+    private lateinit var searchBar: SearchBar
     private lateinit var searchView: SearchView
-    private lateinit var spinnerPlatform: android.widget.Spinner
-    private lateinit var spinnerGenre: android.widget.Spinner
+    private lateinit var spinnerPlatform: com.google.android.material.textfield.MaterialAutoCompleteTextView
+    private lateinit var spinnerGenre: com.google.android.material.textfield.MaterialAutoCompleteTextView
     private var platformNamesMap: Map<String, String> = emptyMap()
     private var genreNamesMap: Map<String, String> = emptyMap()
     private var lastDataLoadAt: Long = 0
@@ -46,10 +51,12 @@ class VideogameAdminDashboardFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        searchBar = view.findViewById(R.id.searchBarVideogame)
         searchView = view.findViewById(R.id.searchViewVideogame)
         spinnerPlatform = view.findViewById(R.id.spinnerPlatformAdmin)
         spinnerGenre = view.findViewById(R.id.spinnerGenreAdmin)
         val recycler = view.findViewById<RecyclerView>(R.id.recyclerVideogamesAdmin)
+        val buttonAdd = view.findViewById<com.google.android.material.button.MaterialButton>(R.id.buttonAddVideogame)
 
         adapter = AdminVideogameAdapter(emptyList()) { vg ->
             val intent = Intent(requireContext(), com.example.videojuegosandroidtienda.ui.detail.DetailActivity::class.java)
@@ -66,18 +73,24 @@ class VideogameAdminDashboardFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
 
+        buttonAdd.setOnClickListener {
+            startActivity(Intent(requireContext(), AddVideogameActivity::class.java))
+        }
+
         // No cargar aún para evitar ráfaga de requests al crear múltiples fragments.
         // La carga se realizará en onResume cuando el fragment esté visible.
 
-        searchView.queryHint = "Buscar por nombre"
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean { render(); return true }
-            override fun onQueryTextChange(newText: String?): Boolean { render(); return true }
+        searchView.setupWithSearchBar(searchBar)
+        searchView.editText.hint = getString(R.string.search_videogame_query_hint_short)
+        searchView.editText.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { render() }
+            override fun afterTextChanged(s: Editable?) {}
         })
     }
 
     private fun render() {
-        val q = searchView.query?.toString()?.trim()
+        val q = searchView.editText.text?.toString()?.trim()
         val list = repository.filterVideogames(all, q, platformId, genreId)
         adapter.submit(list, platformNamesMap, genreNamesMap)
     }
@@ -93,31 +106,19 @@ class VideogameAdminDashboardFragment : Fragment() {
                 genreNamesMap = genres.associate { it.id to it.name }
 
                 val platformItems = listOf("Todas") + platforms.map { it.name }
-                val genreItems = listOf("Todos") + genres.map { it.name }
-
-                val platformAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, platformItems).apply {
-                    setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+                val platformAdapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, platformItems)
+                spinnerPlatform.setAdapter(platformAdapter)
+                spinnerPlatform.setOnItemClickListener { _, _, position, _ ->
+                    platformId = if (position == 0) null else platforms[position - 1].id
+                    render()
                 }
-                spinnerPlatform.adapter = platformAdapter
 
-                val genreAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, genreItems).apply {
-                    setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-                }
-                spinnerGenre.adapter = genreAdapter
-
-                spinnerPlatform.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                        platformId = if (position == 0) null else platforms[position - 1].id
-                        render()
-                    }
-                    override fun onNothingSelected(parent: AdapterView<*>) { }
-                }
-                spinnerGenre.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                    override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
-                        genreId = if (position == 0) null else genres[position - 1].id
-                        render()
-                    }
-                    override fun onNothingSelected(parent: AdapterView<*>) { }
+                val genreItems = listOf("Todas") + genres.map { it.name }
+                val genreAdapter = android.widget.ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, genreItems)
+                spinnerGenre.setAdapter(genreAdapter)
+                spinnerGenre.setOnItemClickListener { _, _, position, _ ->
+                    genreId = if (position == 0) null else genres[position - 1].id
+                    render()
                 }
 
                 lastDataLoadAt = System.currentTimeMillis()
