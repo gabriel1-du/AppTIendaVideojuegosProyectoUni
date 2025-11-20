@@ -14,7 +14,10 @@ import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.entities.User
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
 import com.example.videojuegosandroidtienda.ui.adapter.AdminUserAdapter
+import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
+import retrofit2.HttpException
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 class UserAdminDashboardFragment : Fragment() {
     private val repository = UserRepository()
@@ -22,6 +25,7 @@ class UserAdminDashboardFragment : Fragment() {
     private lateinit var adapter: AdminUserAdapter
     private lateinit var searchView: SearchView
     private lateinit var switchOrder: android.widget.Switch
+    private var lastDataLoadAt: Long = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -46,13 +50,8 @@ class UserAdminDashboardFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
 
-        lifecycleScope.launch {
-            try {
-                allUsers = repository.listUsers()
-                render()
-            } catch (_: Exception) {
-            }
-        }
+        // Evitar carga inmediata para reducir ráfagas de red al crear múltiples fragments.
+        // Cargaremos en onResume cuando esté visible.
 
         searchView.queryHint = "Buscar usuario por nombre"
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -79,5 +78,33 @@ class UserAdminDashboardFragment : Fragment() {
             list.sortedBy { it.created_at?.toLongOrNull() ?: Long.MAX_VALUE }
         }
         adapter.submit(list)
+    }
+
+    private fun loadInitialData() {
+        lifecycleScope.launch {
+            try {
+                allUsers = repository.listUsers()
+                lastDataLoadAt = System.currentTimeMillis()
+                render()
+            } catch (e: Exception) {
+                if (e is HttpException && e.code() == 429) {
+                    showCustomErrorToast(requireContext(), "Límite de API alcanzado. Espera ~20s e intenta de nuevo")
+                    lifecycleScope.launch {
+                        delay(20_000)
+                        if (isResumed) loadInitialData()
+                    }
+                } else {
+                    showCustomErrorToast(requireContext(), "Error al cargar datos")
+                }
+            }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val now = System.currentTimeMillis()
+        if (now - lastDataLoadAt >= 20_000L || allUsers.isEmpty()) {
+            loadInitialData()
+        }
     }
 }

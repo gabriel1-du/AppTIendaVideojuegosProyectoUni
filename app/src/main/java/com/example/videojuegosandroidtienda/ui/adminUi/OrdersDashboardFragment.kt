@@ -17,7 +17,10 @@ import com.example.videojuegosandroidtienda.data.entities.Cart
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.CartRepository
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.UserRepository
 import com.example.videojuegosandroidtienda.ui.adapter.AdminCartAdapter
+import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
+import retrofit2.HttpException
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 class OrdersDashboardFragment : Fragment() {
     private val cartRepository = CartRepository()
@@ -31,6 +34,7 @@ class OrdersDashboardFragment : Fragment() {
     private lateinit var search: SearchView
     private lateinit var spinnerApproved: android.widget.Spinner
     private lateinit var recycler: RecyclerView
+    private var lastDataLoadAt: Long = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -55,6 +59,27 @@ class OrdersDashboardFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
 
+        // Evitar carga inmediata para no disparar múltiples requests al iniciar la actividad.
+        // Se cargará en onResume cuando el fragment esté visible.
+
+        search.queryHint = "Buscar por usuario"
+        search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean { render(); return true }
+            override fun onQueryTextChange(newText: String?): Boolean { render(); return true }
+        })
+    }
+
+    private fun render() {
+        val q = search.query?.toString()?.trim()?.lowercase().orEmpty()
+        var list = all
+        approvedFilter?.let { ap -> list = list.filter { (it.aprobado ?: false) == ap } }
+        if (q.isNotEmpty()) {
+            list = list.filter { (userNames[it.user_id]?.lowercase() ?: "").contains(q) }
+        }
+        adapter.submit(list)
+    }
+
+    private fun loadInitialData() {
         lifecycleScope.launch {
             try {
                 val carts = cartRepository.getCarts()
@@ -79,24 +104,27 @@ class OrdersDashboardFragment : Fragment() {
                     override fun onNothingSelected(parent: AdapterView<*>) {}
                 }
 
+                lastDataLoadAt = System.currentTimeMillis()
                 render()
-            } catch (_: Exception) { }
+            } catch (e: Exception) {
+                if (e is HttpException && e.code() == 429) {
+                    showCustomErrorToast(requireContext(), "Límite de API alcanzado. Espera ~20s e intenta de nuevo")
+                    lifecycleScope.launch {
+                        delay(20_000)
+                        if (isResumed) loadInitialData()
+                    }
+                } else {
+                    showCustomErrorToast(requireContext(), "Error al cargar datos")
+                }
+            }
         }
-
-        search.queryHint = "Buscar por usuario"
-        search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean { render(); return true }
-            override fun onQueryTextChange(newText: String?): Boolean { render(); return true }
-        })
     }
 
-    private fun render() {
-        val q = search.query?.toString()?.trim()?.lowercase().orEmpty()
-        var list = all
-        approvedFilter?.let { ap -> list = list.filter { (it.aprobado ?: false) == ap } }
-        if (q.isNotEmpty()) {
-            list = list.filter { (userNames[it.user_id]?.lowercase() ?: "").contains(q) }
+    override fun onResume() {
+        super.onResume()
+        val now = System.currentTimeMillis()
+        if (now - lastDataLoadAt >= 20_000L || all.isEmpty()) {
+            loadInitialData()
         }
-        adapter.submit(list)
     }
 }

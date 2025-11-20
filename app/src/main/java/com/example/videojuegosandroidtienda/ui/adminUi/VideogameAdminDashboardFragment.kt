@@ -16,7 +16,10 @@ import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.entities.Videogame
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.VideogameRepository
 import com.example.videojuegosandroidtienda.ui.adapter.AdminVideogameAdapter
+import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
+import retrofit2.HttpException
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 class VideogameAdminDashboardFragment : Fragment() {
     private val repository = VideogameRepository()
@@ -30,6 +33,7 @@ class VideogameAdminDashboardFragment : Fragment() {
     private lateinit var spinnerGenre: android.widget.Spinner
     private var platformNamesMap: Map<String, String> = emptyMap()
     private var genreNamesMap: Map<String, String> = emptyMap()
+    private var lastDataLoadAt: Long = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -62,11 +66,28 @@ class VideogameAdminDashboardFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
 
+        // No cargar aún para evitar ráfaga de requests al crear múltiples fragments.
+        // La carga se realizará en onResume cuando el fragment esté visible.
+
+        searchView.queryHint = "Buscar por nombre"
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean { render(); return true }
+            override fun onQueryTextChange(newText: String?): Boolean { render(); return true }
+        })
+    }
+
+    private fun render() {
+        val q = searchView.query?.toString()?.trim()
+        val list = repository.filterVideogames(all, q, platformId, genreId)
+        adapter.submit(list, platformNamesMap, genreNamesMap)
+    }
+
+    private fun loadInitialData() {
         lifecycleScope.launch {
             try {
-                all = repository.getVideogames()
                 val platforms = repository.getPlatforms()
                 val genres = repository.getGenres()
+                all = repository.getVideogames()
 
                 platformNamesMap = platforms.associate { it.id to it.name }
                 genreNamesMap = genres.associate { it.id to it.name }
@@ -99,20 +120,28 @@ class VideogameAdminDashboardFragment : Fragment() {
                     override fun onNothingSelected(parent: AdapterView<*>) { }
                 }
 
+                lastDataLoadAt = System.currentTimeMillis()
                 render()
-            } catch (_: Exception) { }
+            } catch (e: Exception) {
+                if (e is HttpException && e.code() == 429) {
+                    showCustomErrorToast(requireContext(), "Límite de API alcanzado. Espera ~20s e intenta de nuevo")
+                    // Reintento único tras 20s si sigue visible
+                    lifecycleScope.launch {
+                        delay(20_000)
+                        if (isResumed) loadInitialData()
+                    }
+                } else {
+                    showCustomErrorToast(requireContext(), "Error al cargar datos")
+                }
+            }
         }
-
-        searchView.queryHint = "Buscar por nombre"
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean { render(); return true }
-            override fun onQueryTextChange(newText: String?): Boolean { render(); return true }
-        })
     }
 
-    private fun render() {
-        val q = searchView.query?.toString()?.trim()
-        val list = repository.filterVideogames(all, q, platformId, genreId)
-        adapter.submit(list, platformNamesMap, genreNamesMap)
+    override fun onResume() {
+        super.onResume()
+        val now = System.currentTimeMillis()
+        if (now - lastDataLoadAt >= 20_000L || all.isEmpty()) {
+            loadInitialData()
+        }
     }
 }
