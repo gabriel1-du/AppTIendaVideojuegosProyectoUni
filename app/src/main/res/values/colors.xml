@@ -4,4 +4,7 @@
     <color name="cardLight">#FFFFFF</color>
     <color name="textPrimary">#000000</color>
     <color name="textSecondary">#000000</color>
+    <color name="buttonPrimary">#6200EE</color>
+    <color name="buttonAccent">#03DAC6</color>
+    <color name="buttonDanger">#B00020</color>
 </resources>

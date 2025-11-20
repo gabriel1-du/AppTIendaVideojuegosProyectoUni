@@ -17,100 +17,121 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/textUserId"
+        <!-- Caja (casilla) con información del usuario -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-        android:text="@string/user_id_prefix"
-            android:textColor="@color/textPrimary"
-            android:textSize="18sp"
-            tools:text="id: 12345" />
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
 
-        <TextView
-            android:id="@+id/textUserName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-        android:text="@string/user_name_prefix"
-            android:textColor="@color/textSecondary"
-            android:textSize="18sp"
-            tools:text="nombre: User Name" />
-
-        <TextView
-            android:id="@+id/textUserEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-        android:text="@string/user_email_prefix"
-            android:textColor="@color/textSecondary"
-            android:textSize="18sp"
-            tools:text="email: user@example.com" />
-
-        <TextView
-            android:id="@+id/textUserCreated"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-        android:text="@string/user_created_prefix"
-            android:textColor="@color/textSecondary"
-            android:textSize="18sp"
-            tools:text="creado: 2024-01-01" />
-
-        <TextView
-            android:id="@+id/textUserAdmin"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-        android:text="@string/user_admin_prefix"
-            android:textColor="@color/textSecondary"
-            android:textSize="18sp"
-            tools:text="admin: false" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:id="@+id/textUserBloqueoLabel"
-                android:layout_width="0dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-        android:text="@string/label_blocked"
-                android:textColor="@color/textSecondary"
-                android:textSize="18sp" />
+                android:orientation="vertical"
+                android:padding="16dp">
 
-            <Switch
-                android:id="@+id/switchUserBloqueo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:ignore="UseSwitchCompatOrMaterial3"
-                tools:checked="false" />
-        </LinearLayout>
+                <TextView
+                    android:id="@+id/textUserId"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/user_id_prefix"
+                    android:textColor="@color/textPrimary"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                    tools:text="id: 12345" />
 
-        <Button
+                <TextView
+                    android:id="@+id/textUserName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/user_name_prefix"
+                    android:textColor="@color/textSecondary"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    tools:text="nombre: User Name" />
+
+                <TextView
+                    android:id="@+id/textUserEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/user_email_prefix"
+                    android:textColor="@color/textSecondary"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    tools:text="email: user@example.com" />
+
+                <TextView
+                    android:id="@+id/textUserCreated"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/user_created_prefix"
+                    android:textColor="@color/textSecondary"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    tools:text="creado: 2024-01-01" />
+
+                <TextView
+                    android:id="@+id/textUserAdmin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="@string/user_admin_prefix"
+                    android:textColor="@color/textSecondary"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+                    tools:text="admin: false" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textUserBloqueoLabel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/label_blocked"
+                        android:textColor="@color/textSecondary"
+                        android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
+
+                    <Switch
+                        android:id="@+id/switchUserBloqueo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:ignore="UseSwitchCompatOrMaterial3"
+                        tools:checked="false" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Botones con estilos Material y colores distintos -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonActualizarBloqueo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-        android:text="@string/update_block" />
+            android:text="@string/update_block"
+            android:backgroundTint="@color/buttonPrimary"
+            android:textColor="@android:color/white" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonEditar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-        android:text="@string/edit" />
+            android:layout_marginTop="12dp"
+            android:text="@string/edit"
+            android:backgroundTint="@color/buttonAccent"
+            android:textColor="@android:color/white" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonEliminar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-        android:text="@string/delete"
-            android:backgroundTint="@android:color/holo_red_dark"/>
+            android:layout_marginTop="12dp"
+            android:text="@string/delete"
+            android:backgroundTint="@color/buttonDanger"
+            android:textColor="@android:color/white" />
 
     </LinearLayout>
 
