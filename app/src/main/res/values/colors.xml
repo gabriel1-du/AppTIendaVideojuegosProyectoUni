@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="backgroundDark">#FFFFFF</color>
+    <color name="cardLight">#FFFFFF</color>
+    <color name="textPrimary">#000000</color>
+    <color name="textSecondary">#000000</color>
+    <color name="buttonPrimary">#6200EE</color>
+    <color name="buttonAccent">#03DAC6</color>
+    <color name="buttonDanger">#B00020</color>
+    <color name="buttonSecondary">#FFBB86FC</color>
+</resources>
