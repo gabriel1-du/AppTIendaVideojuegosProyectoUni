@@ -8,4 +8,6 @@
     <color name="buttonAccent">#03DAC6</color>
     <color name="buttonDanger">#B00020</color>
     <color name="buttonSecondary">#FFBB86FC</color>
+    <color name="statusApproved">#2E7D32</color>
+    <color name="statusPending">#EF6C00</color>
 </resources>

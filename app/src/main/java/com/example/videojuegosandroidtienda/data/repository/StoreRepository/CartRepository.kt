@@ -41,7 +41,8 @@ class CartRepository {
             id = cart.id,
             created_at = cart.created_at,
             total = cart.total.toDouble(),
-            user_id = cart.user_id.toString(),
+            user_id = cart.user_id,
+            aprobado = cart.aprobado ?: false,
             videogames_id = videogamesIds
         )
     )
@@ -58,5 +59,7 @@ class CartRepository {
         )
         return cartService.patchCart(cartId, req)
     }
+
+    suspend fun deleteCart(cartId: String): Any? = storeService.deleteCart(cartId)
 
 }

@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.entities.Cart
 import com.google.android.material.button.MaterialButton
+import androidx.core.content.ContextCompat
 
 class AdminCartAdapter(
     private var items: List<Cart>,
@@ -37,7 +38,10 @@ class AdminCartAdapter(
         val name = userNames[item.user_id] ?: item.user_id
         holder.textViewUserName.text = "Usuario: ${name}"
         holder.textViewTotalCart.text = "Total: ${item.total}"
-        holder.textViewCheckStatus.text = "Estado: ${if (item.aprobado == true) "Aprobado" else "Pendiente"}"
+        val statusText = if (item.aprobado == true) "Aprobado" else "Pendiente"
+        holder.textViewCheckStatus.text = "Estado: ${statusText}"
+        val statusColorRes = if (item.aprobado == true) R.color.statusApproved else R.color.statusPending
+        holder.textViewCheckStatus.setTextColor(ContextCompat.getColor(holder.itemView.context, statusColorRes))
         val buttonVerMas = holder.itemView.findViewById<MaterialButton>(R.id.buttonVerMas)
         buttonVerMas.setOnClickListener { onVerMasClick(item) }
     }

@@ -94,7 +94,7 @@
     <string name="cart_status_label">Estado:</string>
     <string name="cart_id_format">ID del carrito: %1$s</string>
     <string name="cart_created_format">Fecha de creación: %1$s</string>
-    <string name="cart_total_format">Total del carrito: %1$d</string>
+    <string name="cart_total_format">Total del carrito: %1$.2f</string>
     <string name="cart_user_id_format">ID del usuario: %1$s</string>
     <string name="cart_user_name_format">Usuario: %1$s</string>
     <string name="cart_status_format">Estado: %1$s</string>
@@ -131,6 +131,11 @@
     <string name="signup_succes">Registro exitoso</string>
     <string name="login_fill_credentials">Completa email y contraseña</string>
     <string name="already_have_account">¿Ya tienes una cuenta? Inicia sesión</string>
+
+    <!-- User orders dashboard / detail -->
+    <string name="orders_load_error_base">Error al cargar tus compras</string>
+    <string name="delete_cart">Eliminar carrito</string>
+    <string name="cart_deleted_success">Carrito eliminado correctamente</string>
 
 
 </resources>

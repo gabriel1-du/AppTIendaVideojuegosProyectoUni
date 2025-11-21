@@ -54,5 +54,10 @@ interface StoreService {
         @Path("id") id: String
     ): Any?
 
+    @DELETE("cart/{id}")
+    suspend fun deleteCart(
+        @Path("id") id: String
+    ): Any?
+
 
 }

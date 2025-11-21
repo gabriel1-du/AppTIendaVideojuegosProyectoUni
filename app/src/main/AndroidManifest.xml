@@ -53,6 +53,12 @@
         <activity
             android:name=".ui.upload.AddVideogameActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.userUi.UserCartDashboardProfile"
+            android:exported="false" />
+        <activity
+            android:name=".ui.userUi.DetailOrderUserProfile"
+            android:exported="false" />
     </application>
 
 </manifest>

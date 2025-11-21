@@ -51,6 +51,10 @@ class ProfileFragment : Fragment() {
             startActivity(Intent(requireContext(), AdminDashboardActivity::class.java))
         }
 
+        binding.buttonVerCompras.setOnClickListener {
+            startActivity(Intent(requireContext(), com.example.videojuegosandroidtienda.ui.userUi.UserCartDashboardProfile::class.java))
+        }
+
         viewLifecycleOwner.lifecycleScope.launch {
             try {
                 val authUser = repository.getAuthMe()
