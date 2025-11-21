@@ -30,11 +30,16 @@ class UserDetailActivity : AppCompatActivity() {
         val textAdmin = findViewById<TextView>(R.id.textUserAdmin)
         val switchBloqueo = findViewById<MaterialSwitch>(R.id.switchUserBloqueo)
         val switchAdmin = findViewById<MaterialSwitch>(R.id.switchUserAdmin)
-        val buttonActualizarBloqueo = findViewById<MaterialButton>(R.id.buttonActualizarBloqueo)
         val buttonEliminar = findViewById<MaterialButton>(R.id.buttonEliminar)
         val buttonEditar = findViewById<MaterialButton>(R.id.buttonEditar)
 
         val userId = intent.getStringExtra("user_id")?.trim().orEmpty()
+
+        if (userId.isBlank()) {
+            showCustomErrorToast(this, "ID de usuario no válido")
+            finish()
+            return
+        }
 
         lifecycleScope.launch {
             try {
@@ -58,30 +63,11 @@ class UserDetailActivity : AppCompatActivity() {
                         getString(R.string.http_error_format, getString(R.string.user_load_error), e.code())
                     )
                 }
+                finish()
             } catch (e: Exception) {
                 val msg = e.message?.let { " (${it})" } ?: ""
                 showCustomErrorToast(this@UserDetailActivity, getString(R.string.user_load_error) + msg)
-            }
-        }
-
-        buttonActualizarBloqueo.setOnClickListener {
-            lifecycleScope.launch {
-                try {
-                    userRepository.patchUser(userId, mapOf("bloqueo" to switchBloqueo.isChecked))
-                    showCustomOkToast(this@UserDetailActivity, getString(R.string.block_status_updated))
-                } catch (e: HttpException) {
-                    if (e.code() == 429) {
-                        showCustomErrorToast(this@UserDetailActivity, getString(R.string.api_limit_error_retry))
-                    } else {
-                        showCustomErrorToast(
-                            this@UserDetailActivity,
-                            getString(R.string.http_error_format, getString(R.string.update_error_base), e.code())
-                        )
-                    }
-                } catch (e: Exception) {
-                    val msg = e.message?.let { " (${it})" } ?: ""
-                    showCustomErrorToast(this@UserDetailActivity, getString(R.string.user_block_update_error) + msg)
-                }
+                finish()
             }
         }
 

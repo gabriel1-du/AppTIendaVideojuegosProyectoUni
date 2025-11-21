@@ -64,7 +64,14 @@ class ProfileFragment : Fragment() {
                 }
                 binding.textName.text = getString(R.string.profile_name_format, fetchedUser.name)
                 binding.textEmail.text = getString(R.string.profile_email_format, fetchedUser.email)
+
+                if (fetchedUser.admin) {
+                    binding.buttonIraDashboard.visibility = View.VISIBLE
+                } else {
+                    binding.buttonIraDashboard.visibility = View.GONE
+                }
             } catch (e: Exception) {
+                binding.buttonIraDashboard.visibility = View.GONE
                 if (e is HttpException && e.code() == 429) {
                     showCustomErrorToast(requireContext(), getString(R.string.api_limit_error_retry))
                 } else {

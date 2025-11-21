@@ -20,7 +20,6 @@ import com.example.videojuegosandroidtienda.data.network.TokenStore
 import com.example.videojuegosandroidtienda.data.repository.AuthRepository
 import com.example.videojuegosandroidtienda.data.repository.StoreRepository.CartRepository
 import com.example.videojuegosandroidtienda.databinding.FragmentCartBinding
-import com.example.videojuegosandroidtienda.ui.auth.LoginFragment
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 
@@ -52,7 +51,10 @@ class CartFragment : Fragment() {
                 val token = TokenStore.token
                 if (token.isNullOrBlank()) {
                     showCustomErrorToast(requireContext(), "Debes iniciar sesión para pagar")
-                    startActivity(Intent(requireContext(), LoginFragment::class.java))
+                    requireActivity().supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, ProfileFragment())
+                        .addToBackStack(null)
+                        .commit()
                     return@setOnClickListener
                 }
                 viewLifecycleOwner.lifecycleScope.launch {
