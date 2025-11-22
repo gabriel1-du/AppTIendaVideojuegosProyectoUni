@@ -3,7 +3,7 @@ package com.example.videojuegosandroidtienda.ui.adminUi
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import android.widget.Switch
+import com.google.android.material.materialswitch.MaterialSwitch
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -27,8 +27,8 @@ class UserEditActivity : AppCompatActivity() {
         val editCreated = findViewById<EditText>(R.id.editUserCreated)
         val editName = findViewById<EditText>(R.id.editUserName)
         val editEmail = findViewById<EditText>(R.id.editUserEmail)
-        val switchAdmin = findViewById<Switch>(R.id.switchUserAdmin)
-        val switchBloqueo = findViewById<Switch>(R.id.switchUserBloqueo)
+        val switchAdmin = findViewById<MaterialSwitch>(R.id.switchUserAdmin)
+        val switchBloqueo = findViewById<MaterialSwitch>(R.id.switchUserBloqueo)
         val buttonEditarConfirm = findViewById<Button>(R.id.buttonEditarConfirm)
 
         val userId = intent.getStringExtra("user_id")?.trim().orEmpty()
