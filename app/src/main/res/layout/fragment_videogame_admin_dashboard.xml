@@ -25,6 +25,11 @@
         android:layout_height="match_parent"
         android:hint="@string/search_videogame_query_hint_short"
         app:layout_anchor="@id/searchBarVideogame">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/searchSuggestionsRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"/>
     </com.google.android.material.search.SearchView>
 
     <LinearLayout

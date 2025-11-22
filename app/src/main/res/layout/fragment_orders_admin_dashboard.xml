@@ -25,6 +25,11 @@
         android:layout_height="match_parent"
         android:hint="@string/search_orders_query_hint"
         app:layout_anchor="@id/searchBarOrders">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/searchSuggestionsRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"/>
     </com.google.android.material.search.SearchView>
 
     <LinearLayout

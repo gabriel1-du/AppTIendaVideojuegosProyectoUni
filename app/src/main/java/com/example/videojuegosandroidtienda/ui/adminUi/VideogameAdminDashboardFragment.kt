@@ -29,6 +29,7 @@ class VideogameAdminDashboardFragment : Fragment() {
     private val repository = VideogameRepository()
     private var all: List<Videogame> = emptyList()
     private lateinit var adapter: AdminVideogameAdapter
+    private lateinit var suggestionsAdapter: AdminVideogameAdapter
 
     private var platformId: String? = null
     private var genreId: String? = null
@@ -73,6 +74,22 @@ class VideogameAdminDashboardFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
 
+        val suggestionsRecycler = searchView.findViewById<RecyclerView>(R.id.searchSuggestionsRecycler)
+        suggestionsAdapter = AdminVideogameAdapter(emptyList()) { vg ->
+            val intent = Intent(requireContext(), com.example.videojuegosandroidtienda.ui.detail.DetailActivity::class.java)
+            intent.putExtra(com.example.videojuegosandroidtienda.ui.detail.DetailActivity.EXTRA_ID, vg.id)
+            intent.putExtra(com.example.videojuegosandroidtienda.ui.detail.DetailActivity.EXTRA_IMAGE_URL, vg.cover_image?.url)
+            intent.putExtra(com.example.videojuegosandroidtienda.ui.detail.DetailActivity.EXTRA_TITLE, vg.title)
+            intent.putExtra(com.example.videojuegosandroidtienda.ui.detail.DetailActivity.EXTRA_GENRE_ID, vg.genre_id)
+            intent.putExtra(com.example.videojuegosandroidtienda.ui.detail.DetailActivity.EXTRA_PLATFORM_ID, vg.platform_id)
+            intent.putExtra(com.example.videojuegosandroidtienda.ui.detail.DetailActivity.EXTRA_PRICE, vg.price)
+            intent.putExtra(com.example.videojuegosandroidtienda.ui.detail.DetailActivity.EXTRA_DESCRIPTION, vg.description ?: "")
+            intent.putExtra("extra_admin_mode", true)
+            startActivity(intent)
+        }
+        suggestionsRecycler.layoutManager = LinearLayoutManager(requireContext())
+        suggestionsRecycler.adapter = suggestionsAdapter
+
         buttonAdd.setOnClickListener {
             startActivity(Intent(requireContext(), AddVideogameActivity::class.java))
         }
@@ -84,15 +101,34 @@ class VideogameAdminDashboardFragment : Fragment() {
         searchView.editText.hint = getString(R.string.search_videogame_query_hint_short)
         searchView.editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { render() }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                render()
+                updateSuggestions()
+            }
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        searchView.addTransitionListener { _, _, newState ->
+            if (newState == SearchView.TransitionState.HIDDEN) {
+                suggestionsAdapter.submit(emptyList(), platformNamesMap, genreNamesMap)
+            }
+        }
     }
 
     private fun render() {
         val q = searchView.editText.text?.toString()?.trim()
         val list = repository.filterVideogames(all, q, platformId, genreId)
         adapter.submit(list, platformNamesMap, genreNamesMap)
+    }
+
+    private fun updateSuggestions() {
+        val q = searchView.editText.text?.toString()?.trim()
+        val list = repository.filterVideogames(all, q, platformId, genreId)
+        if (q.isNullOrBlank()) {
+            suggestionsAdapter.submit(emptyList(), platformNamesMap, genreNamesMap)
+        } else {
+            suggestionsAdapter.submit(list, platformNamesMap, genreNamesMap)
+        }
     }
 
     private fun loadInitialData() {

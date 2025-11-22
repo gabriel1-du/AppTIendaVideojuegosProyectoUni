@@ -30,6 +30,7 @@ class OrdersDashboardFragment : Fragment() {
     private val cartRepository = CartRepository()
     private val userRepository = UserRepository()
     private lateinit var adapter: AdminCartAdapter
+    private lateinit var suggestionsAdapter: AdminCartAdapter
     private var all: List<Cart> = emptyList()
     private var userNames: Map<String, String> = emptyMap()
     private var approvedFilter: Boolean? = null
@@ -65,6 +66,15 @@ class OrdersDashboardFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
 
+        val suggestionsRecycler = search.findViewById<RecyclerView>(R.id.searchSuggestionsRecycler)
+        suggestionsAdapter = AdminCartAdapter(emptyList()) { cart ->
+            val intent = Intent(requireContext(), CartDetailActivity::class.java)
+            intent.putExtra("cart_id", cart.id)
+            startActivity(intent)
+        }
+        suggestionsRecycler.layoutManager = LinearLayoutManager(requireContext())
+        suggestionsRecycler.adapter = suggestionsAdapter
+
         // Evitar carga inmediata para no disparar múltiples requests al iniciar la actividad.
         // Se cargará en onResume cuando el fragment esté visible.
 
@@ -72,9 +82,18 @@ class OrdersDashboardFragment : Fragment() {
         search.editText.hint = getString(R.string.search_orders_query_hint)
         search.editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) { render() }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                render()
+                updateSuggestions()
+            }
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        search.addTransitionListener { _, _, newState ->
+            if (newState == SearchView.TransitionState.HIDDEN) {
+                suggestionsAdapter.submit(emptyList())
+            }
+        }
     }
 
     private fun render() {
@@ -87,6 +106,19 @@ class OrdersDashboardFragment : Fragment() {
         adapter.submit(list)
     }
 
+    private fun updateSuggestions() {
+        val q = search.editText.text?.toString()?.trim()?.lowercase().orEmpty()
+        var list = all
+        approvedFilter?.let { ap -> list = list.filter { (it.aprobado ?: false) == ap } }
+        if (q.isNotEmpty()) {
+            list = list.filter { (userNames[it.user_id]?.lowercase() ?: "").contains(q) }
+        } else {
+            list = emptyList()
+        }
+        suggestionsAdapter.setUserNames(userNames)
+        suggestionsAdapter.submit(list)
+    }
+
     private fun loadInitialData() {
         lifecycleScope.launch {
             try {
@@ -95,6 +127,7 @@ class OrdersDashboardFragment : Fragment() {
                 val users = userRepository.listUsers()
                 userNames = users.associate { it.id to it.name }
                 adapter.setUserNames(userNames)
+                suggestionsAdapter.setUserNames(userNames)
 
                 val items = listOf("Todos", "Aprobados", "Pendientes")
                 val sAdapter = ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, items)
