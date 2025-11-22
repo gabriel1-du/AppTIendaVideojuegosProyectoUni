@@ -66,20 +66,21 @@ class OrdersDashboardFragment : Fragment() {
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
 
-        val suggestionsRecycler = search.findViewById<RecyclerView>(R.id.searchSuggestionsRecycler)
-        suggestionsAdapter = AdminCartAdapter(emptyList()) { cart ->
-            val intent = Intent(requireContext(), CartDetailActivity::class.java)
-            intent.putExtra("cart_id", cart.id)
-            startActivity(intent)
-        }
-        suggestionsRecycler.layoutManager = LinearLayoutManager(requireContext())
-        suggestionsRecycler.adapter = suggestionsAdapter
-
         // Evitar carga inmediata para no disparar múltiples requests al iniciar la actividad.
         // Se cargará en onResume cuando el fragment esté visible.
 
         search.setupWithSearchBar(searchBar)
         search.editText.hint = getString(R.string.search_orders_query_hint)
+        // Recycler de sugerencias dentro del overlay del SearchView
+        val suggestionsRecycler = search.findViewById<RecyclerView>(R.id.searchSuggestionsRecycler)
+        suggestionsRecycler.layoutManager = LinearLayoutManager(requireContext())
+        suggestionsAdapter = AdminCartAdapter(emptyList()) { cart ->
+            val intent = Intent(requireContext(), CartDetailActivity::class.java)
+            intent.putExtra("cart_id", cart.id)
+            startActivity(intent)
+        }
+        suggestionsRecycler.adapter = suggestionsAdapter
+
         search.editText.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -98,25 +99,30 @@ class OrdersDashboardFragment : Fragment() {
 
     private fun render() {
         val q = search.editText.text?.toString()?.trim()?.lowercase().orEmpty()
-        var list = all
-        approvedFilter?.let { ap -> list = list.filter { (it.aprobado ?: false) == ap } }
-        if (q.isNotEmpty()) {
-            list = list.filter { (userNames[it.user_id]?.lowercase() ?: "").contains(q) }
-        }
+        val list = computeList(q)
         adapter.submit(list)
     }
 
     private fun updateSuggestions() {
         val q = search.editText.text?.toString()?.trim()?.lowercase().orEmpty()
+        val list = computeList(q)
+        if (q.isEmpty()) {
+            suggestionsAdapter.submit(emptyList())
+        } else {
+            suggestionsAdapter.submit(list)
+        }
+    }
+
+    private fun computeList(q: String): List<Cart> {
         var list = all
         approvedFilter?.let { ap -> list = list.filter { (it.aprobado ?: false) == ap } }
         if (q.isNotEmpty()) {
-            list = list.filter { (userNames[it.user_id]?.lowercase() ?: "").contains(q) }
-        } else {
-            list = emptyList()
+            list = list.filter {
+                (userNames[it.user_id]?.lowercase() ?: "").contains(q) ||
+                        (it.id?.lowercase() ?: "").contains(q)
+            }
         }
-        suggestionsAdapter.setUserNames(userNames)
-        suggestionsAdapter.submit(list)
+        return list
     }
 
     private fun loadInitialData() {

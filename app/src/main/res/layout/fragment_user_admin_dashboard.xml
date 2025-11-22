@@ -7,17 +7,30 @@
     android:background="@color/backgroundDark"
     tools:context=".ui.adminUi.UserAdminDashboardFragment">
 
-    <androidx.appcompat.widget.SearchView
-        android:id="@+id/searchUsers"
+    <com.google.android.material.search.SearchBar
+        android:id="@+id/searchBarUsers"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="24dp"
-        app:queryHint="@string/search_user_query_hint"/>
+        android:hint="@string/search_user_query_hint"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <com.google.android.material.search.SearchView
+        android:id="@+id/searchViewUsers"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:hint="@string/search_user_query_hint"
+        app:layout_anchor="@id/searchBarUsers">
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/searchSuggestionsRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="8dp"/>
+    </com.google.android.material.search.SearchView>
 
     <LinearLayout
         android:id="@+id/orderContainer"
@@ -25,7 +38,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:padding="8dp"
-        app:layout_constraintTop_toBottomOf="@id/searchUsers"
+        app:layout_constraintTop_toBottomOf="@id/searchBarUsers"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginStart="16dp"

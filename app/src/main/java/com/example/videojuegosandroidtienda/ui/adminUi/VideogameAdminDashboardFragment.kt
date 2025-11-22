@@ -117,18 +117,22 @@ class VideogameAdminDashboardFragment : Fragment() {
 
     private fun render() {
         val q = searchView.editText.text?.toString()?.trim()
-        val list = repository.filterVideogames(all, q, platformId, genreId)
+        val list = computeList(q)
         adapter.submit(list, platformNamesMap, genreNamesMap)
     }
 
     private fun updateSuggestions() {
         val q = searchView.editText.text?.toString()?.trim()
-        val list = repository.filterVideogames(all, q, platformId, genreId)
+        val list = computeList(q)
         if (q.isNullOrBlank()) {
             suggestionsAdapter.submit(emptyList(), platformNamesMap, genreNamesMap)
         } else {
             suggestionsAdapter.submit(list, platformNamesMap, genreNamesMap)
         }
+    }
+
+    private fun computeList(q: String?): List<Videogame> {
+        return repository.filterVideogames(all, q, platformId, genreId)
     }
 
     private fun loadInitialData() {
