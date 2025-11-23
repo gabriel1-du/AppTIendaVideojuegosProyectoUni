@@ -17,7 +17,7 @@ import retrofit2.HttpException
 class VideogameRepository {
 
     companion object {
-        private const val CACHE_WINDOW_MS = 20_000L
+        private const val CACHE_WINDOW_MS = 60_000L
 
         private var cachedVideogames: List<Videogame>? = null
         private var cachedPlatforms: List<Platform>? = null
@@ -104,11 +104,18 @@ class VideogameRepository {
         android.util.Log.d("VideogameUpload", "URL: " + ApiConfig.STORE_BASE_URL + "videogame")
         android.util.Log.d("VideogameUpload", "Token: " + (com.example.videojuegosandroidtienda.data.network.TokenStore.token ?: "(sin token)"))
         try {
-            return storeService.createVideogame(videogame)
+            val created = storeService.createVideogame(videogame)
+            // Invalidate cache to reflejar nuevo videojuego
+            cachedVideogames = null
+            lastVideogamesAt = 0L
+            return created
         } catch (e: HttpException) {
             if (e.code() == 404) {
                 // Fallback absoluto al endpoint
-                return storeService.createVideogameAbsolute(videogame)
+                val created = storeService.createVideogameAbsolute(videogame)
+                cachedVideogames = null
+                lastVideogamesAt = 0L
+                return created
             }
             throw e
         }
@@ -134,11 +141,16 @@ class VideogameRepository {
             genre_id = genreId,
             platform_id = platformId
         )
-        return storeService.updateVideogame(id, req)
+        val updated = storeService.updateVideogame(id, req)
+        cachedVideogames = null
+        lastVideogamesAt = 0L
+        return updated
     }
 
     suspend fun deleteVideogame(id: String) {
         storeService.deleteVideogame(id)
+        cachedVideogames = null
+        lastVideogamesAt = 0L
     }
 
 

@@ -56,7 +56,10 @@ class CartRepository {
             aprobado = approved,
             videogames_id = current.videogames_id
         )
-        return cartService.patchCart(cartId, req)
+        val updated = cartService.patchCart(cartId, req)
+        cachedCarts = null
+        lastCartsAt = 0L
+        return updated
     }
 
 }

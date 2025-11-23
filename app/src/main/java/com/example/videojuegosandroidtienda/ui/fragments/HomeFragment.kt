@@ -1,6 +1,7 @@
 package com.example.videojuegosandroidtienda.ui.fragments
 
 import android.content.Intent
+import androidx.activity.result.contract.ActivityResultContracts
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -22,6 +23,7 @@ import com.example.videojuegosandroidtienda.databinding.FragmentHomeBinding
 import com.example.videojuegosandroidtienda.ui.adapter.VideogameAdapter
 import com.example.videojuegosandroidtienda.ui.detail.DetailActivity
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.async
 import retrofit2.HttpException
 
 class HomeFragment : Fragment() {
@@ -39,6 +41,9 @@ class HomeFragment : Fragment() {
     private var platformNamesMap: Map<String, String> = emptyMap()
     private var genreNamesMap: Map<String, String> = emptyMap()
     private var lastDataLoadAt: Long = 0
+    private val detailLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        loadInitialData()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -72,7 +77,7 @@ class HomeFragment : Fragment() {
                 putExtra(DetailActivity.EXTRA_PRICE, vg.price)
                 putExtra(DetailActivity.EXTRA_DESCRIPTION, vg.description ?: "")
             }
-            startActivity(intent)
+            detailLauncher.launch(intent)
         }
         adapter.setOnItemClickListener(onClick)
         suggestionsAdapter.setOnItemClickListener(onClick)
@@ -104,18 +109,26 @@ class HomeFragment : Fragment() {
 
     fun loadInitialData() {
         lifecycleScope.launch {
+            val now = System.currentTimeMillis()
             try {
-                platforms = videogameRepository.getPlatforms()
-                genres = videogameRepository.getGenres()
-                allVideogames = videogameRepository.getVideogames()
+                val vgDeferred = async { videogameRepository.getVideogames() }
+                val platformsDeferred = async { videogameRepository.getPlatforms() }
+                val genresDeferred = async { videogameRepository.getGenres() }
 
-                platformNamesMap = platforms.associate { it.id to it.name }
-                genreNamesMap = genres.associate { it.id to it.name }
+                try {
+                    allVideogames = vgDeferred.await()
+                    lastDataLoadAt = now
+                    applyFilters()
+                } catch (_: Exception) {}
 
-                setupSpinners()
-
-                // Apply initial filters after data is loaded
-                applyFilters()
+                try {
+                    platforms = platformsDeferred.await()
+                    genres = genresDeferred.await()
+                    platformNamesMap = platforms.associate { it.id to it.name }
+                    genreNamesMap = genres.associate { it.id to it.name }
+                    setupSpinners()
+                    applyFilters()
+                } catch (_: Exception) {}
 
             } catch (e: Exception) {
                 if (e is HttpException && e.code() == 429) {
@@ -124,6 +137,14 @@ class HomeFragment : Fragment() {
                     showCustomErrorToast(requireContext(), "Error al cargar datos")
                 }
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val now = System.currentTimeMillis()
+        if (now - lastDataLoadAt >= 60_000L || allVideogames.isEmpty()) {
+            loadInitialData()
         }
     }
 
@@ -155,8 +176,6 @@ class HomeFragment : Fragment() {
         val genreId = if (selectedGenreName == "Todos") null else genres.firstOrNull { it.name == selectedGenreName }?.id
 
         val filtered = videogameRepository.filterVideogames(allVideogames, query, platformId, genreId)
-        platformNamesMap = platforms.associate { it.id to it.name }
-        genreNamesMap = genres.associate { it.id to it.name }
         adapter.submit(filtered, genreNamesMap, platformNamesMap)
 
         if (filtered.isEmpty()) {
@@ -179,14 +198,7 @@ class HomeFragment : Fragment() {
         suggestionsAdapter.submit(filtered, genreNamesMap, platformNamesMap)
     }
 
-    override fun onResume() {
-        super.onResume()
-        val now = System.currentTimeMillis()
-        if (now - lastDataLoadAt >= 20_000L || allVideogames.isEmpty()) {
-            lastDataLoadAt = now
-            loadInitialData()
-        }
-    }
+    
 
     override fun onDestroyView() {
         super.onDestroyView()

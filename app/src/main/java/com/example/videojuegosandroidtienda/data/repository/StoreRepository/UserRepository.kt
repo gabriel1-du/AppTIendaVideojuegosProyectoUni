@@ -44,9 +44,26 @@ class UserRepository {
 
     suspend fun createUser(req: User): User = service.createUser(req)
 
-    suspend fun patchUser(id: String, fields: Map<String, Any?>): User = service.patchUser(id, fields)
+    suspend fun patchUser(id: String, fields: Map<String, Any?>): User {
+        val user = service.patchUser(id, fields)
+        cachedUsers = null
+        lastUsersAt = 0L
+        cachedUserById.remove(id)
+        return user
+    }
 
-    suspend fun putUser(id: String, req: User): User = service.putUser(id, req)
+    suspend fun putUser(id: String, req: User): User {
+        val user = service.putUser(id, req)
+        cachedUsers = null
+        lastUsersAt = 0L
+        cachedUserById[id] = user to System.currentTimeMillis()
+        return user
+    }
 
-    suspend fun deleteUser(id: String) = service.deleteUser(id)
+    suspend fun deleteUser(id: String) {
+        service.deleteUser(id)
+        cachedUsers = null
+        lastUsersAt = 0L
+        cachedUserById.remove(id)
+    }
 }

@@ -1,6 +1,7 @@
 package com.example.videojuegosandroidtienda.ui.adminUi
 
 import android.content.Intent
+import androidx.activity.result.contract.ActivityResultContracts
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -41,6 +42,9 @@ class OrdersDashboardFragment : Fragment() {
     private lateinit var spinnerApproved: MaterialAutoCompleteTextView
     private lateinit var recycler: RecyclerView
     private var lastDataLoadAt: Long = 0
+    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        loadInitialData()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -61,7 +65,7 @@ class OrdersDashboardFragment : Fragment() {
         adapter = AdminCartAdapter(emptyList()) { cart ->
             val intent = Intent(requireContext(), CartDetailActivity::class.java)
             intent.putExtra("cart_id", cart.id)
-            startActivity(intent)
+            resultLauncher.launch(intent)
         }
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
@@ -77,7 +81,7 @@ class OrdersDashboardFragment : Fragment() {
         suggestionsAdapter = AdminCartAdapter(emptyList()) { cart ->
             val intent = Intent(requireContext(), CartDetailActivity::class.java)
             intent.putExtra("cart_id", cart.id)
-            startActivity(intent)
+            resultLauncher.launch(intent)
         }
         suggestionsRecycler.adapter = suggestionsAdapter
 
@@ -166,7 +170,7 @@ class OrdersDashboardFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         val now = System.currentTimeMillis()
-        if (now - lastDataLoadAt >= 20_000L || all.isEmpty()) {
+        if (now - lastDataLoadAt >= 60_000L || all.isEmpty()) {
             loadInitialData()
         }
     }

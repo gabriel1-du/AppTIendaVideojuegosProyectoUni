@@ -1,6 +1,7 @@
 package com.example.videojuegosandroidtienda.ui.adminUi
 
 import android.content.Intent
+import androidx.activity.result.contract.ActivityResultContracts
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,6 +31,9 @@ class UserAdminDashboardFragment : Fragment() {
     private lateinit var suggestionsAdapter: AdminUserAdapter
     private lateinit var switchOrder: android.widget.Switch
     private var lastDataLoadAt: Long = 0
+    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
+        loadInitialData()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,7 +55,7 @@ class UserAdminDashboardFragment : Fragment() {
         adapter = AdminUserAdapter(emptyList()) { user ->
             val intent = Intent(requireContext(), UserDetailActivity::class.java)
             intent.putExtra("user_id", user.id)
-            startActivity(intent)
+            resultLauncher.launch(intent)
         }
         recycler.layoutManager = LinearLayoutManager(requireContext())
         recycler.adapter = adapter
@@ -60,19 +64,19 @@ class UserAdminDashboardFragment : Fragment() {
         suggestionsAdapter = AdminUserAdapter(emptyList()) { user ->
             val intent = Intent(requireContext(), UserDetailActivity::class.java)
             intent.putExtra("user_id", user.id)
-            startActivity(intent)
+            resultLauncher.launch(intent)
         }
         suggestionsRecycler.layoutManager = LinearLayoutManager(requireContext())
         suggestionsRecycler.adapter = suggestionsAdapter
 
         buttonCrearUsuario.setOnClickListener {
             val intent = Intent(requireContext(), UserCreateActivity::class.java)
-            startActivity(intent)
+            resultLauncher.launch(intent)
         }
 
         // Evitar carga inmediata para reducir ráfagas de red al crear múltiples fragments.
-        // Cargaremos en onResume cuando esté visible.
 
+        // Cargaremos en onResume cuando esté visible.
         searchView.setupWithSearchBar(searchBar)
         searchView.editText.hint = getString(R.string.search_user_query_hint)
         searchView.editText.addTextChangedListener(object : android.text.TextWatcher {
@@ -93,6 +97,7 @@ class UserAdminDashboardFragment : Fragment() {
         switchOrder.setOnCheckedChangeListener { _, _ -> render() }
     }
 
+
     private fun render() {
         val q = searchView.editText.text?.toString()?.trim()?.lowercase().orEmpty()
         var list = if (q.isEmpty()) allUsers else allUsers.filter { it.name.lowercase().contains(q) }
@@ -104,6 +109,7 @@ class UserAdminDashboardFragment : Fragment() {
         adapter.submit(list)
     }
 
+
     private fun updateSuggestions() {
         val q = searchView.editText.text?.toString()?.trim()?.lowercase().orEmpty()
         var list = if (q.isEmpty()) emptyList() else allUsers.filter { it.name.lowercase().contains(q) }
@@ -114,6 +120,7 @@ class UserAdminDashboardFragment : Fragment() {
         }
         suggestionsAdapter.submit(list)
     }
+
 
     private fun loadInitialData() {
         lifecycleScope.launch {
@@ -135,10 +142,11 @@ class UserAdminDashboardFragment : Fragment() {
         }
     }
 
+    
     override fun onResume() {
         super.onResume()
         val now = System.currentTimeMillis()
-        if (now - lastDataLoadAt >= 20_000L || allUsers.isEmpty()) {
+        if (now - lastDataLoadAt >= 60_000L || allUsers.isEmpty()) {
             loadInitialData()
         }
     }
