@@ -106,16 +106,8 @@
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
+        
         <!-- Botones con estilos Material y colores distintos -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/buttonActualizarBloqueo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/update_block"
-            android:backgroundTint="@color/buttonPrimary"
-            android:textColor="@android:color/white" />
-
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonEditar"
             android:layout_width="match_parent"

@@ -27,6 +27,7 @@ class UserEditActivity : AppCompatActivity() {
         val editCreated = findViewById<EditText>(R.id.editUserCreated)
         val editName = findViewById<EditText>(R.id.editUserName)
         val editEmail = findViewById<EditText>(R.id.editUserEmail)
+        val editPassword = findViewById<EditText>(R.id.editUserPassword)
         val switchAdmin = findViewById<MaterialSwitch>(R.id.switchUserAdmin)
         val switchBloqueo = findViewById<MaterialSwitch>(R.id.switchUserBloqueo)
         val buttonEditarConfirm = findViewById<Button>(R.id.buttonEditarConfirm)
@@ -59,11 +60,28 @@ class UserEditActivity : AppCompatActivity() {
             val admin = switchAdmin.isChecked
             val bloqueo = switchBloqueo.isChecked
             val created = editCreated.text?.toString()
+            val password = editPassword.text?.toString()?.trim().orEmpty()
 
             // Restricciones alineadas con Signup: campos obligatorios
             if (name.isBlank() || email.isBlank()) {
                 showCustomErrorToast(this@UserEditActivity, "Completa nombre y email")
                 return@setOnClickListener
+            }
+
+            // Validación opcional de contraseña (si se proporciona)
+            if (password.isNotBlank()) {
+                if (password.length < 8) {
+                    showCustomErrorToast(this@UserEditActivity, getString(R.string.password_length_error))
+                    return@setOnClickListener
+                }
+                if (!password.any { it.isLetter() }) {
+                    showCustomErrorToast(this@UserEditActivity, getString(R.string.password_letter_error))
+                    return@setOnClickListener
+                }
+                if (!password.any { !it.isLetterOrDigit() }) {
+                    showCustomErrorToast(this@UserEditActivity, getString(R.string.password_special_char_error))
+                    return@setOnClickListener
+                }
             }
 
             lifecycleScope.launch {
@@ -73,7 +91,7 @@ class UserEditActivity : AppCompatActivity() {
                         created_at = created,
                         name = name,
                         email = email,
-                        password = null,
+                        password = if (password.isBlank()) null else password,
                         admin = admin,
                         bloqueo = bloqueo
                     )
