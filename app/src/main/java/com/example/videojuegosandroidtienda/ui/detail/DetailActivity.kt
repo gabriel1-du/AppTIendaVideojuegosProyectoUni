@@ -171,12 +171,45 @@ class DetailActivity : AppCompatActivity() {
                         finish()
                     } catch (e: HttpException) {
                         if (e.code() == 429) {
-                            showCustomErrorToast(this@DetailActivity, "Límite de API, intenta en unos segundos")
+                            showCustomErrorToast(this@DetailActivity, getString(R.string.api_limit_error_retry))
                         } else {
-                            showCustomErrorToast(this@DetailActivity, "Error al eliminar: ${e.message()}")
+                            try {
+                                repo.getVideogameById(deleteId)
+                                showCustomErrorToast(
+                                    this@DetailActivity,
+                                    getString(R.string.http_error_format, getString(R.string.delete_error_base), e.code())
+                                )
+                            } catch (inner: HttpException) {
+                                if (inner.code() == 404) {
+                                    showCustomOkToast(this@DetailActivity, getString(R.string.videogame_deleted))
+                                    finish()
+                                } else {
+                                    showCustomErrorToast(
+                                        this@DetailActivity,
+                                        getString(R.string.http_error_format, getString(R.string.delete_error_base), inner.code())
+                                    )
+                                }
+                            } catch (inner: Exception) {
+                                showCustomErrorToast(this@DetailActivity, getString(R.string.delete_error_base))
+                            }
                         }
                     } catch (e: Exception) {
-                        showCustomErrorToast(this@DetailActivity, "Error al eliminar: ${e.message}")
+                        try {
+                            repo.getVideogameById(deleteId)
+                            showCustomErrorToast(this@DetailActivity, getString(R.string.delete_error_base))
+                        } catch (inner: HttpException) {
+                            if (inner.code() == 404) {
+                                showCustomOkToast(this@DetailActivity, getString(R.string.videogame_deleted))
+                                finish()
+                            } else {
+                                showCustomErrorToast(
+                                    this@DetailActivity,
+                                    getString(R.string.http_error_format, getString(R.string.delete_error_base), inner.code())
+                                )
+                            }
+                        } catch (inner: Exception) {
+                            showCustomErrorToast(this@DetailActivity, getString(R.string.delete_error_base))
+                        }
                     }
                 }
             }
