@@ -111,12 +111,11 @@ class MainActivity : AppCompatActivity() {
                 val token = com.example.videojuegosandroidtienda.data.network.TokenStore.token
                 if (!token.isNullOrBlank()) {
                     val me = authRepository.getAuthMe()
-                    val fetched = userRepository.getUser(me.id)
-                    if (fetched.bloqueo) {
+                    if (me.bloqueo) {
                         authRepository.logout()
                         showCustomErrorToast(this@MainActivity, "Usuario bloqueado")
-                        setCurrentFragment(loginFragment) // Mostrar login si está bloqueado
-                        updateUiBasedOnAuthState() // Actualizar la UI
+                        setCurrentFragment(loginFragment)
+                        updateUiBasedOnAuthState()
                         return@launch
                     }
                 }
@@ -143,9 +142,8 @@ class MainActivity : AppCompatActivity() {
                 } else {
                     // Get authenticated user and then their data by ID
                     val authUser = authRepository.getAuthMe()
-                    val fetchedUser = userRepository.getUser(authUser.id)
-                    currentUser = fetchedUser
-                    uploadItem?.isVisible = fetchedUser.admin
+                    currentUser = authUser
+                    uploadItem?.isVisible = authUser.admin
                 }
             } catch (_: Exception) {
                 binding.toolbar.menu.findItem(R.id.action_upload_videogame)?.isVisible = false

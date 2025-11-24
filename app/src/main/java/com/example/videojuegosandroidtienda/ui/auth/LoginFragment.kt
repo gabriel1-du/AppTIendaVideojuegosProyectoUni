@@ -59,9 +59,8 @@ class LoginFragment : Fragment() {
             lifecycleScope.launch {
                 try {
                     repository.login(email, password)
-                    val authUser = repository.getAuthMe()
-                    val fullUser = UserRepository().getUser(authUser.id)
-                    if (fullUser.bloqueo) {
+                    val me = repository.getAuthMe()
+                    if (me.bloqueo) {
                         repository.logout()
                         showCustomErrorToast(requireActivity(), getString(R.string.user_blocked))
                         return@launch

@@ -8,7 +8,9 @@ data class LoginRequest(
 data class SignupRequest(
     val name: String,
     val email: String,
-    val password: String
+    val password: String,
+    val admin: Boolean = false,
+    val bloqueo: Boolean = false
 )
 
 data class AuthTokenResponse(

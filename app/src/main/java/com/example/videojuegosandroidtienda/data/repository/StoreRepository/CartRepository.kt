@@ -62,4 +62,10 @@ class CartRepository {
         return updated
     }
 
+    suspend fun deleteCart(cartId: String) {
+        cartService.deleteCart(cartId)
+        cachedCarts = null
+        lastCartsAt = 0L
+    }
+
 }

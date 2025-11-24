@@ -6,32 +6,33 @@ Aplicación Android nativa en Kotlin para explorar un catálogo de videojuegos, 
 
 - Kotlin `2.0.21` y Android Gradle Plugin `8.12.3`.
 - AndroidX: `core-ktx`, `appcompat`, `activity`, `constraintlayout`, `recyclerview`, `lifecycle-runtime-ktx`.
-- Material Components `1.13.0`.
-- Networking: `Retrofit 2.9.0`, `OkHttp Logging 4.12.0`, `Gson Converter 2.9.0`.
-- Asincronía: `kotlinx-coroutines-android 1.8.1`.
-- Imágenes: `Coil 2.6.0`.
+- Material Components (Material Design 3) `1.13.0`.
+- Networking: `Retrofit 2.9.0`, `OkHttp 4.12.0`, `Gson Converter 2.9.0`.
+- Asincronía: `kotlinx-coroutines-android 1.8.1` (cargas paralelas con `async/await`).
+- Imágenes: `Coil 2.6.0` con caché automático y `ImageView.load(...)`.
 - Inspector de red: `Chucker 4.0.0` (debug) y `library-no-op` (release).
-- Soporte adicional: `Okio 3.9.0` para manejo de streams.
+- Soporte adicional: `Okio 3.9.0`.
 
 ## Cómo opera (arquitectura y flujo)
 
 - Configuración de API:
-  - Base URLs en `ApiConfig`: `STORE_BASE_URL` y `AUTH_BASE_URL` (Xano).
+  - Base URLs en `ApiConfig`: `STORE_BASE_URL`, `AUTH_BASE_URL` y `CART_BASE_URL` (Xano).
   - Clase `RetrofitProvider` centraliza la creación de `Retrofit` y `OkHttpClient`.
     - Interceptor de autenticación añade `Authorization: Bearer <token>` si existe en `TokenStore`.
-    - `HttpLoggingInterceptor` y `Chucker` para trazas y depuración de tráfico.
+    - Rate limiting y reintentos para mitigar `429`.
+    - Cache HTTP en `GET` con `Cache-Control`.
+    - `HttpLoggingInterceptor` y `Chucker` para trazas y depuración.
     - `Gson` registra `AuthTokenResponseDeserializer` para tolerar múltiples formatos de token (`token`, `authToken`, `access_token`, `jwt`).
 - Autenticación:
-  - `AuthService` expone `auth/login`, `auth/register` y `auth/me` (además de `auth/signup` como fallback).
-  - `StoreRepository.login/register` guardan el token en `TokenStore` para futuras llamadas.
-  - Pantallas que requieren sesión (`CartActivity`, `ProfileActivity`, `AddVideogameActivity`) redirigen a `LoginActivity` si el token está vacío.
+  - `AuthService` expone `auth/login`, `auth/signup` y `auth/me`.
+  - `AuthRepository` persiste el token en `SharedPreferences` y en `TokenStore`.
+  - Tras login se verifica `bloqueo` con `auth/me`; si está bloqueado se cierra sesión y se muestra un toast.
 - Catálogo y filtros:
-  - `MainActivity` carga plataformas, géneros y videojuegos desde `StoreRepository` y aplica filtros con `SearchView` + `Spinner`.
-  - `VideogameAdapter` usa `Coil` para cargar portadas y navega al detalle con un listener.
+  - `HomeFragment` carga plataformas, géneros y videojuegos en paralelo (coroutines) y aplica filtros con `SearchView` + spinners.
+  - Los adapters usan `Coil` para cargar portadas y navegar al detalle.
 - Detalle y carrito:
-  - `DetailActivity` muestra datos y agrega al carrito con `CartManager.add`.
-  - `CartManager` mantiene un mapa en memoria con cantidades, total y utilidades (`increase`, `decrease`, `clear`).
-  - `CartActivity` renderiza items, actualiza cantidades y muestra total acumulado; el botón “Pagar” simula compra y vuelve al inicio.
+  - `DetailActivity` muestra datos y agrega al carrito.
+  - `OrdersDashboardFragment` y `CartDetailActivity` permiten aprobar, rechazar y eliminar carritos vía API.
 - Subida de videojuego:
   - `AddVideogameActivity` permite seleccionar imagen del dispositivo y crear videojuego.
   - `UploadClient` intenta subir la portada vía `/upload/image` con reintentos; si falla aplica fallbacks (`/file/upload`, `/files/upload`).
@@ -44,24 +45,22 @@ Aplicación Android nativa en Kotlin para explorar un catálogo de videojuegos, 
 
 - `app/`: módulo principal.
   - `src/main/AndroidManifest.xml`: declara actividades, tema y permisos (`INTERNET`).
-  - `src/main/java/com/example/videojuegosandroidtienda/`:
+- `src/main/java/com/example/videojuegosandroidtienda/`:
     - `App.kt`: inicializa `appContext` global.
-    - `MainActivity.kt`: catálogo y filtros.
+    - `MainActivity.kt`: navegación y estado de sesión.
     - `ui/`
-      - `auth/`: `LoginActivity.kt`, `SignupActivity.kt`.
-      - `cart/`: `CartActivity.kt`.
+      - `auth/`: `LoginFragment.kt`, `SignUpFragment.kt`.
+      - `adminUi/`: dashboards de usuarios, videojuegos y órdenes.
       - `detail/`: `DetailActivity.kt`.
-      - `profile/`: `ProfileActivity.kt`.
+      - `fragments/`: `HomeFragment.kt` y otros.
       - `upload/`: `AddVideogameActivity.kt`.
-      - `main/`: `VideogameAdapter.kt`, `SimpleItemSelectedListener.kt`.
     - `data/`
-      - `api/`: `AuthService.kt`, `StoreService.kt`.
+      - `api/`: `AuthService.kt`, `StoreService.kt`, `CartService.kt`.
       - `network/`: `ApiConfig.kt`, `RetrofitProvider.kt`, `TokenStore.kt`, `AuthTokenResponseDeserializer.kt`.
-      - `repository/`: `StoreRepository.kt`.
-      - `entities/`: modelos (`Videogame`, `Genre`, `Platform`, `FileInfo`, `UploadResponse`, `CartProduct`, etc.).
-      - `cart/`: `CartManager.kt`.
-      - `upload/`: `UploadClient.kt`, `UploadService.kt`, `UploadFilesService.kt`, `UploadFileService.kt`.
-      - `functions/`: `setupBottomNavigation`, toasts personalizados.
+      - `repository/`: `AuthRepository.kt`, `StoreRepository/*`.
+      - `entities/`: modelos.
+      - `upload/`: `UploadClient.kt` y servicios de upload.
+      - `functions/`: utilidades y toasts personalizados.
   - `src/main/res/`
     - `layout/`: `activity_*` y vistas de ítem (`item_videogame.xml`, `view_cart_product.xml`).
     - `menu/`: `menu_main.xml`, `menu_bottom_nav.xml`.
@@ -83,21 +82,98 @@ Aplicación Android nativa en Kotlin para explorar un catálogo de videojuegos, 
 
 ## Endpoints de backend (Xano)
 
-- Auth (`AUTH_BASE_URL`): `auth/login`, `auth/register`, `auth/signup` (fallback), `auth/me`.
-- Store (`STORE_BASE_URL`): `videogame` (GET/POST), `platform` (GET), `genre` (GET), `cart`, `cart_item/{id}`.
+- Auth (`AUTH_BASE_URL`): `auth/login`, `auth/signup`, `auth/me`.
+- Store (`STORE_BASE_URL`): `videogame` (GET/POST/PATCH/DELETE), `platform` (GET), `genre` (GET), `cart` (GET), `cart_item/{id}` (GET).
+- Cart (`CART_BASE_URL`): `cart/{cart_id}` (GET/PATCH/DELETE).
 - Upload: `upload/image` (absoluto), `file/upload`, `files/upload` (fallbacks).
 
 ## Consideraciones de seguridad y depuración
 
-- El token se almacena en `TokenStore` (en memoria). No persiste entre lanzamientos.
+- El token se persiste en `SharedPreferences` y se mantiene en `TokenStore`.
 - `Chucker` sólo se incluye en debug; en release se usa `library-no-op`.
 - `HttpLoggingInterceptor` está en nivel `BODY` para desarrollo; ajusta en producción según necesidad.
 
 ## Diseño visual
 
+- Material Design 3 con `MaterialButton`, `MaterialCardView`, `MaterialAutoCompleteTextView`, `SearchBar` y `SearchView`.
 - Tarjetas con borde negro y fondo claro (`MaterialCardView` + `cart_item_border.xml`).
 - Barra inferior fija y toolbar con acciones (login, subir videojuego, carrito, refrescar).
 - Toasts personalizados para estados OK y error.
+
+## Cómo se muestran las imágenes
+
+- `Coil` carga imágenes en `ImageView` con `imageView.load(url)`.
+- Soporta caché automática, placeholders y manejo de errores.
+- Las URLs provienen del backend (p. ej. `UploadResponse.url`) tras subir archivos.
+
+## Ejemplos rápidos
+
+```kotlin
+interface AuthService {
+    @POST("auth/login")
+    suspend fun login(@Body req: LoginRequest): AuthTokenResponse
+
+    @GET("auth/me")
+    suspend fun getAuthMe(): User
+
+    @POST("auth/signup")
+    suspend fun signup(@Body req: SignupRequest): AuthTokenResponse
+}
+
+suspend fun loginAndFetch(authService: AuthService, email: String, password: String): User {
+    val token = authService.login(LoginRequest(email, password)).token
+    com.example.videojuegosandroidtienda.data.network.TokenStore.token = token
+    return authService.getAuthMe()
+}
+```
+
+```kotlin
+interface StoreService {
+    @PATCH("videogame/{id}")
+    suspend fun updateVideogame(@Path("id") id: String, @Body req: VideogameUpdateRequest): Videogame
+}
+
+suspend fun updateTitle(service: StoreService, id: String, title: String): Videogame {
+    return service.updateVideogame(
+        id,
+        VideogameUpdateRequest(
+            title = title,
+            price = null,
+            description = null,
+            genre_id = null,
+            platform_id = null
+        )
+    )
+}
+```
+
+```kotlin
+imageView.load(url) {
+    crossfade(true)
+    placeholder(R.drawable.placeholder)
+    error(R.drawable.image_error)
+}
+```
+
+```kotlin
+lifecycleScope.launch {
+    val vg = async { repo.getVideogames() }
+    val platforms = async { repo.getPlatforms() }
+    val genres = async { repo.getGenres() }
+
+    val list = vg.await()
+    val pls = platforms.await()
+    val gns = genres.await()
+}
+```
+
+```xml
+<com.google.android.material.button.MaterialButton
+    android:id="@+id/buttonApruebo"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/approve_purchase"/>
+```
 
 ## Testing y mantenimiento
 

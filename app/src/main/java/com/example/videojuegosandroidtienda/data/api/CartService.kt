@@ -1,6 +1,7 @@
 package com.example.videojuegosandroidtienda.data.api
 
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PATCH
 import retrofit2.http.Path
@@ -14,6 +15,9 @@ interface CartService {
         @Path("cart_id") cartId: String,
         @Body req: CartUpdateRequest
     ): CartResponse
+
+    @DELETE("cart/{cart_id}")
+    suspend fun deleteCart(@Path("cart_id") cartId: String): Unit
 }
 
 

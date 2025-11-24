@@ -55,6 +55,7 @@ class CartDetailActivity : AppCompatActivity() {
 
         val buttonApruebo = findViewById<MaterialButton>(R.id.buttonApruebo)
         val buttonRechazo = findViewById<MaterialButton>(R.id.buttonRechazo)
+        val buttonEliminar = findViewById<MaterialButton>(R.id.buttonEliminarCarrito)
 
         // Obtener cart_id del intent y cargar datos
         val cartId = intent.getStringExtra("cart_id")?.trim()
@@ -159,6 +160,28 @@ class CartDetailActivity : AppCompatActivity() {
                 } catch (e: Exception) {
                     val msg = e.message?.let { " (${it})" } ?: ""
                     showCustomErrorToast(this@CartDetailActivity, getString(R.string.reject_error_base) + msg)
+                }
+            }
+        }
+
+        buttonEliminar.setOnClickListener {
+            lifecycleScope.launch {
+                try {
+                    cartRepository.deleteCart(cartId)
+                    showCustomOkToast(this@CartDetailActivity, "Carrito eliminado")
+                    finish()
+                } catch (e: HttpException) {
+                    if (e.code() == 429) {
+                        showCustomErrorToast(this@CartDetailActivity, getString(R.string.api_limit_error_retry))
+                    } else {
+                        showCustomErrorToast(
+                            this@CartDetailActivity,
+                            getString(R.string.http_error_format, getString(R.string.delete_error_base), e.code())
+                        )
+                    }
+                } catch (e: Exception) {
+                    val msg = e.message?.let { " (${it})" } ?: ""
+                    showCustomErrorToast(this@CartDetailActivity, getString(R.string.delete_error_base) + msg)
                 }
             }
         }

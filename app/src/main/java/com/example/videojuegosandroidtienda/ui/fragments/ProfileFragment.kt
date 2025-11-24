@@ -42,8 +42,10 @@ class ProfileFragment : Fragment() {
 
         val token = TokenStore.token
         if (token.isNullOrBlank()) {
-            startActivity(Intent(requireContext(), LoginFragment::class.java))
-            activity?.finish()
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.fragment_container, LoginFragment())
+                .addToBackStack(null)
+                .commit()
             return
         }
 
@@ -58,8 +60,10 @@ class ProfileFragment : Fragment() {
                 if (fetchedUser.bloqueo) {
                     repository.logout()
                     showCustomErrorToast(requireContext(), getString(R.string.user_blocked))
-                    startActivity(Intent(requireContext(), LoginFragment::class.java))
-                    activity?.finish()
+                    requireActivity().supportFragmentManager.beginTransaction()
+                        .replace(R.id.fragment_container, LoginFragment())
+                        .addToBackStack(null)
+                        .commit()
                     return@launch
                 }
                 binding.textName.text = getString(R.string.profile_name_format, fetchedUser.name)

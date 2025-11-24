@@ -19,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import com.example.videojuegosandroidtienda.MainActivity
 import com.example.videojuegosandroidtienda.R
 import com.example.videojuegosandroidtienda.data.functions.showCustomErrorToast
+import com.example.videojuegosandroidtienda.data.functions.showCustomOkToast
 import com.example.videojuegosandroidtienda.data.repository.AuthRepository
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
@@ -67,26 +68,10 @@ class SignUpFragment : Fragment() {
             lifecycleScope.launch {
                 try {
                     repository.register(name, email, password)
-                    repository.login(email, password)
-
-                    val dialog = Dialog(requireActivity())
-                    dialog.setContentView(R.layout.custom_toast_ok)
-                    dialog.window?.setBackgroundDrawable(Color.TRANSPARENT.toDrawable())
-
-                    val textView = dialog.findViewById<TextView>(R.id.toast_text)
-                    textView.text = getString(R.string.signup_succes)
-
-                    dialog.setCancelable(false)
-                    dialog.show()
-
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        if (dialog.isShowing) {
-                            dialog.dismiss()
-                        }
-                        val intent = Intent(requireActivity(), MainActivity::class.java)
-                        startActivity(intent)
-                        requireActivity().finish()
-                    }, 2000)
+                    showCustomOkToast(requireActivity(), getString(R.string.signup_succes))
+                    val intent = Intent(requireActivity(), MainActivity::class.java)
+                    startActivity(intent)
+                    requireActivity().finish()
                 } catch (e: Exception) {
                     val baseMsg = "Error al crear cuenta (Comunicar con soporte)"
                     if (e is HttpException) {
