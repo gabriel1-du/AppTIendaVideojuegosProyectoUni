@@ -175,8 +175,4 @@ lifecycleScope.launch {
     android:text="@string/approve_purchase"/>
 ```
 
-## Testing y mantenimiento
 
-- Pruebas instrumentadas y unitarias base (`junit`, `androidx.test.ext:junit`, `espresso`).
-- Si cambian los formatos de respuesta de token, `AuthTokenResponseDeserializer` tolera variantes comunes.
-- Ajusta las base URLs en `ApiConfig` si tu backend varía.
