@@ -175,4 +175,6 @@ lifecycleScope.launch {
     android:text="@string/approve_purchase"/>
 ```
 
+## Video de demostracion
 
+https://www.youtube.com/watch?v=AiDU_zzL058
